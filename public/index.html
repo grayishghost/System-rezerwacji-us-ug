@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Główna Strona Hotelu</title>
+    <title>Główna Strona Spa</title>
     <link rel="stylesheet" type="text/css" href="../css/main.css">
 <!-- Czcionka użyta w headerze -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,18 +28,27 @@
 <section class="rezerwacja">
   <div class="pola">
     <div class="pole">
-      <label for="check-in">Zameldowanie:</label>
-      <input type="date" id="check-in">
+      <label for="id_pokoju">Wybrany pokój:</label>
+      <select id="id_pokoju" name="id_pokoju">
+        <option value="">-- Wybierz pokój --</option>
+        <option value="1">Pokój 101 - Standard 1 osoba (200.00 zł/doba)</option>
+        <option value="2">Pokój 102 - Apartament deluxe (500.00 zł/doba)</option>
+      </select>
     </div>
 
     <div class="pole">
-      <label for="check-out">Wymeldowanie:</label>
-      <input type="date" id="check-out">
+      <label for="data_od">Data zameldowania (DataOd):</label>
+      <input type="date" id="data_od" name="data_od">
     </div>
 
     <div class="pole">
-      <label for="goście">Goście:</label>
-      <input type="number" id="goście" min="1" max="10" value="1">
+      <label for="data_do">Data wymeldowania (DataDo):</label>
+      <input type="date" id="data_do" name="data_do">
+    </div>
+
+    <div class="pole">
+      <label for="ilosc_osob">Liczba osób:</label>
+      <input type="number" id="ilosc_osob" name="ilosc_osob" min="1" max="10" value="1">
     </div>
   </div>
 
@@ -50,9 +59,8 @@
 </section>
 
 <footer class="footer">
-    <p>&copy; 2026 Hotel. Wszelkie prawa zastrzeżone.</p>
+    <p>&copy; 2026 Spa. Wszelkie prawa zastrzeżone.</p>
 </footer>
-
 
 </body>
 </html>
