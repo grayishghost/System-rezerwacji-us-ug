@@ -2,6 +2,16 @@
   box-sizing: border-box;
 }
 
+:root {
+  --ink: #26394b;
+  --navy: #1d3045;
+  --deep-teal: #294953;
+  --mist: #edf0ed;
+  --paper: #fbfaf6;
+  --amber: #d9ae5a;
+  --amber-light: #f1d28a;
+}
+
 html,
 body {
   min-height: 100%;
@@ -10,8 +20,8 @@ body {
 body {
   margin: 0;
   padding: 0;
-  background-color: #f4f1ea;
-  color: #2c3531;
+  background-color: var(--mist);
+  color: var(--ink);
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.4;
   overflow-x: hidden;
@@ -22,7 +32,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background-color: #1b2e2b;
+  background-color: var(--navy);
   border-radius: 0;
   min-height: 70px;
   width: 100%;
@@ -53,7 +63,7 @@ body {
   font-family: "Faculty Glyphic", Arial, sans-serif;
   font-style: normal;
   font-weight: bold;
-  color: #d4af37;
+  color: var(--amber-light);
   background-color: transparent;
   text-decoration: none;
   white-space: nowrap;
@@ -61,24 +71,157 @@ body {
 }
 
 .nav a:hover {
-  color: #f3e5ab;
+  color: #fff0b4;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 500px;
+  margin: 28px auto 0;
+  width: calc(100vw - 44px);
+  border-radius: 14px;
+  background-color: var(--navy);
+  box-shadow: 0 12px 32px rgba(27, 46, 43, 0.2);
+}
+
+.hero-slides,
+.hero-slide,
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-slides {
+  display: flex;
+  width: 300%;
+  animation: spa-slideshow 18s infinite;
+}
+
+.hero-slide {
+  position: relative;
+  flex: 0 0 33.3333%;
+  width: 33.3333%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(2px);
+}
+
+.hero-overlay {
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(18, 35, 53, 0.86), rgba(18, 35, 53, 0.32) 70%, rgba(18, 35, 53, 0.14));
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 500px;
+  width: min(590px, 100%);
+  padding: 56px clamp(24px, 7vw, 88px);
+  color: #fcfbf9;
+  animation: hero-arrival 0.8s ease-out both;
+}
+
+.hero-eyebrow {
+  margin: 0 0 12px;
+  color: var(--amber-light);
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: none;
+  margin: 0;
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-size: clamp(30px, 4vw, 50px);
+  font-weight: normal;
+  line-height: 1.08;
+  white-space: nowrap;
+}
+
+.hero-content > p:not(.hero-eyebrow) {
+  max-width: 470px;
+  margin: 20px 0 28px;
+  color: #f1eee6;
+  font-size: 17px;
+}
+
+.hero-link {
+  display: inline-block;
+  padding: 12px 18px;
+  border: 1px solid #e4c45b;
+  border-radius: 5px;
+  color: var(--navy);
+  background-color: var(--amber);
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hero-link:hover {
+  color: #fcfbf9;
+  background-color: transparent;
+}
+
+.hero-dots {
+  position: absolute;
+  z-index: 2;
+  right: 28px;
+  bottom: 24px;
+  display: flex;
+  gap: 8px;
+}
+
+.hero-dots span {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #f4f1ea;
+  border-radius: 50%;
+  opacity: 0.75;
+}
+
+@keyframes spa-slideshow {
+  0%, 28% { transform: translateX(0); }
+  33%, 61% { transform: translateX(-33.3333%); }
+  66%, 94% { transform: translateX(-66.6666%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes hero-arrival {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .rezerwacja {
-  padding: 35px 25px;
-  margin-top: 40px;
-  background-color: #2d443e;
+  padding: 20px 25px;
+  margin-top: 28px;
+  background-color: var(--deep-teal);
   border-radius: 12px;
-  width: min(760px, calc(100vw - 40px));
+  width: calc(100vw - 44px);
   margin-inline: auto;
   box-shadow: 0 8px 24px rgba(27, 46, 43, 0.15);
+}
+
+.rezerwacja-form {
+  display: flex;
+  align-items: end;
+  gap: 20px;
 }
 
 .pola {
   display: flex;
   align-items: end;
   gap: 20px;
-  max-width: 900px;
+  max-width: none;
   width: 100%;
   margin: 0 auto;
   color: #f4f1ea;
@@ -94,7 +237,7 @@ body {
 
 .pole label {
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: #f4f1ea;
   letter-spacing: 0.3px;
 }
@@ -103,20 +246,20 @@ body {
 .pole select {
   width: 100%;
   min-width: 0;
-  padding: 10px 12px;
+  padding: 8px 12px;
   border: 1px solid #7d938a;
   border-radius: 6px;
   font-size: 14px;
-  color: #2c3531;
-  background-color: #fcfbf9;
+  color: var(--ink);
+  background-color: var(--paper);
   outline: none;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .pole input:focus,
 .pole select:focus {
-  border-color: #d4af37;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(217, 174, 90, 0.25);
 }
 
 .pole select {
@@ -128,22 +271,79 @@ body {
   padding-right: 30px;
 }
 
+.booking-button {
+  flex: 0 0 auto;
+  padding: 9px 18px;
+  border: 1px solid var(--amber);
+  border-radius: 6px;
+  color: var(--navy);
+  background-color: var(--amber);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.booking-button:hover {
+  color: var(--paper);
+  background-color: transparent;
+}
+
 .footer {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #1b2e2b;
+  background-color: var(--navy);
   color: #c2cbbd;
   text-align: right;
   padding: 12px 20px;
   font-size: 14px;
   width: 100%;
   z-index: 10;
-  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  border-top: 1px solid rgba(217, 174, 90, 0.3);
 }
 
 .footer p {
   margin: 0;
   white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding: 14px 18px;
+  }
+
+  .nav {
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .hero {
+    min-height: 470px;
+    width: calc(100% - 44px);
+    margin-top: 18px;
+  }
+
+  .hero-content {
+    min-height: 470px;
+    padding: 40px 24px 58px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+    white-space: normal;
+  }
+
+  .hero-content > p:not(.hero-eyebrow) {
+    font-size: 16px;
+  }
+
+  .rezerwacja-form {
+    display: block;
+  }
+
+  .booking-button {
+    width: 100%;
+    margin-top: 16px;
+  }
 }
