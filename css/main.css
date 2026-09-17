@@ -288,6 +288,185 @@ body {
   background-color: transparent;
 }
 
+.rooms-page {
+  width: min(1120px, calc(100% - 44px));
+  margin: 52px auto 110px;
+}
+
+.rooms-heading {
+  margin-bottom: 30px;
+}
+
+.rooms-heading h1 {
+  margin: 0;
+  color: var(--navy);
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: normal;
+}
+
+.rooms-heading p:last-child {
+  margin: 12px 0 0;
+  font-size: 17px;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.room-card {
+  overflow: hidden;
+  background-color: var(--paper);
+  border: 1px solid rgba(38, 57, 75, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(27, 46, 43, 0.12);
+}
+
+.room-card > img {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+}
+
+.room-card-content {
+  padding: 22px;
+}
+
+.room-number {
+  margin: 0 0 6px;
+  color: var(--deep-teal);
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.room-card h2 {
+  margin: 0;
+  color: var(--navy);
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-size: 25px;
+  font-weight: normal;
+}
+
+.room-card-content > p:not(.room-number) {
+  min-height: 48px;
+  margin: 12px 0 18px;
+}
+
+.room-card strong {
+  display: block;
+  margin-bottom: 18px;
+  color: var(--deep-teal);
+  font-size: 18px;
+}
+
+.room-button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.login-page {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 170px);
+  padding: 48px 22px 100px;
+}
+
+.login-panel {
+  width: min(100%, 520px);
+  padding: 42px;
+  background-color: var(--paper);
+  border: 1px solid rgba(38, 57, 75, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(27, 46, 43, 0.14);
+}
+
+.login-intro h1 {
+  margin: 0;
+  color: var(--navy);
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-size: clamp(34px, 6vw, 52px);
+  font-weight: normal;
+  line-height: 1.1;
+}
+
+.login-intro > p:last-child {
+  margin: 14px 0 28px;
+  font-size: 16px;
+}
+
+.login-form {
+  display: grid;
+  gap: 20px;
+}
+
+.login-field {
+  display: grid;
+  gap: 7px;
+}
+
+.login-field label {
+  color: var(--navy);
+  font-weight: bold;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #7d938a;
+  border-radius: 6px;
+  color: var(--ink);
+  background-color: #fff;
+  font: inherit;
+}
+
+.login-field input:focus {
+  border-color: var(--amber);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(217, 174, 90, 0.25);
+}
+
+.login-button {
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px 18px;
+}
+
+.form-message {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.form-message-error {
+  color: #7b2828;
+  background-color: #f8e1df;
+  border: 1px solid #e6b5b1;
+}
+
+.login-note {
+  margin: 24px 0 12px;
+  color: #53636c;
+  font-size: 13px;
+}
+
+.login-back-link {
+  color: var(--deep-teal);
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.login-back-link:hover {
+  color: var(--navy);
+  text-decoration: underline;
+}
+
 .footer {
   position: fixed;
   left: 0;
@@ -327,6 +506,28 @@ body {
   .hero-content {
     min-height: 470px;
     padding: 40px 24px 58px;
+  }
+
+  .rooms-page {
+    width: calc(100% - 36px);
+    margin-top: 36px;
+  }
+
+  .rooms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-card > img {
+    height: 190px;
+  }
+
+  .login-page {
+    min-height: calc(100vh - 150px);
+    padding: 30px 18px 92px;
+  }
+
+  .login-panel {
+    padding: 30px 22px;
   }
 
   .hero h1 {
