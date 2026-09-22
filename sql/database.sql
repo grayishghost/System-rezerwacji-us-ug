@@ -22,13 +22,15 @@ CREATE TABLE `Klienci` (
   `Nazwisko` VARCHAR(50) NOT NULL,
   `Telefon` VARCHAR(15),
   `Email` VARCHAR(100) NOT NULL UNIQUE,
+  `Haslo` VARCHAR(255) NOT NULL,
   `Pesel` VARCHAR(11) UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `Klienci` VALUES 
-(1,'Anna','Kowalska','123456789','anna.kowal@dk.pl','12345456789'),
-(2,'Jacek','Sowa','987-654-321','jacek.kowal@dk.pl','14565876545'),
-(3,'Adam','Nowak','456-321-789','adam.nowak@dk.pl','13573554389');
+(1,'Anna','Kowalska','123456789','anna.kowal@dk.pl','$2y$10$e0MYzXyjpJS7Pd0RVvHwHe1e.5fS0/3g9U0T3oK9bB7S5l7c3qBqS','12345456789'),
+(2,'Jacek','Sowa','987-654-321','jacek.kowal@dk.pl','$2y$10$e0MYzXyjpJS7Pd0RVvHwHe1e.5fS0/3g9U0T3oK9bB7S5l7c3qBqS','14565876545'),
+(3,'Adam','Nowak','456-321-789','adam.nowak@dk.pl','$2y$10$e0MYzXyjpJS7Pd0RVvHwHe1e.5fS0/3g9U0T3oK9bB7S5l7c3qBqS','13573554389');
+
 
 CREATE TABLE `Stanowiska` (
   `ID_stanowiska` INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,13 +50,16 @@ CREATE TABLE `Pracownicy` (
   `ID_stanowiska` INT,
   `Telefon` VARCHAR(15),
   `Email` VARCHAR(100) NOT NULL UNIQUE,
+  `Haslo` VARCHAR(255) NOT NULL,
+  `Rola` ENUM('Admin', 'Manager', 'Pracownik') DEFAULT 'Pracownik',
   `Pesel` VARCHAR(11) UNIQUE,
   FOREIGN KEY (`ID_stanowiska`) REFERENCES `Stanowiska`(`ID_stanowiska`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `Pracownicy` VALUES 
-(1,'John','Doe',1,'212-132-435','john.doe@email.com','92438281093'),
-(2,'William','Dafie',2,'932-748-578','will.dafie@email.com','98543768754');
+(1,'Jan','Administrator',4,'111-222-333','admin@hotel.pl','$2y$10$e0MYzXyjpJS7Pd0RVvHwHe1e.5fS0/3g9U0T3oK9bB7S5l7c3qBqS','Admin','80010112345'),
+(2,'John','Doe',1,'212-132-435','john.doe@email.com','$2y$10$e0MYzXyjpJS7Pd0RVvHwHe1e.5fS0/3g9U0T3oK9bB7S5l7c3qBqS','Pracownik','92438281093'),
+(3,'William','Dafie',2,'932-748-578','will.dafie@email.com','$2y$10$e0MYzXyjpJS7Pd0RVvHwHe1e.5fS0/3g9U0T3oK9bB7S5l7c3qBqS','Manager','98543768754');
 
 CREATE TABLE `TypyPokoi` (
   `ID_Typu` INT AUTO_INCREMENT PRIMARY KEY,
