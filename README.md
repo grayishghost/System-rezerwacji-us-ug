@@ -1,116 +1,92 @@
 # Grand Access Hotel
 
- System zarządzania **Grand Access Hotel** – pięciogwiazdkowym hotelem, którego celem jest stworzenie nowoczesnej aplikacji internetowej wspierającej obsługę rezerwacji, klientów, pracowników, pokoi oraz usług dodatkowych.
+System zarządzania pięciogwiazdkowym hotelem Grand Access Hotel: rezerwacje, klienci, pracownicy, pokoje i usługi dodatkowe.
+Projekt semestralny (przedmiot: Tworzenie stron i aplikacji internetowych).
 
- Projekt realizowany jest jako **projekt semestralny** i obejmuje zarówno warstwę prezentacji, logikę aplikacji, jak i relacyjną bazę danych.
+## Autorzy
 
-# Autorzy projektu
+* Oliwia Drygiel
+* Tobiasz Mućko
+* Dawid Domagała
 
-- Oliwia Drygiel
-- Tobiasz Mućko
-- Dawid Domagała
+## Opis systemu
 
- ## Opis projektu
+Aplikacja internetowa w PHP z bazą MySQL. Użytkownicy mają jedną z trzech ról:
 
- **Grand Access Hotel** to system informatyczny przeznaczony do zarządzania działalnością hotelu. Aplikacja umożliwia obsługę najważniejszych procesów związanych z pobytem gości – od zarządzania pokojami i rezerwacjami, przez obsługę klientów, aż po dodatkowe usługi i płatności.
+|Rola|Co może|
+|-|-|
+|**klient**|zakłada konto, loguje się, edytuje profil, (w kolejnych etapach) rezerwuje i anuluje własne rezerwacje|
+|**pracownik**|loguje się do swojego panelu, (w kolejnych etapach) obsługuje swoje wizyty|
+|**admin**|zarządza użytkownikami (blokowanie kont), (w kolejnych etapach) całym systemem|
 
- System został zaprojektowany z myślą o dwóch głównych grupach użytkowników:
+## Technologie
 
- - **Klientach hotelu** – którzy mogą przeglądać ofertę, dokonywać rezerwacji oraz korzystać z dodatkowych usług.
-- **Pracownikach hotelu** – odpowiedzialnych za zarządzanie rezerwacjami, pokojami, klientami, personelem oraz usługami.
+* PHP 8 (PDO, sesje), HTML5, CSS3, JavaScript
+* MySQL / MariaDB
+* Git i GitHub
 
- Projekt wykorzystuje relacyjną bazę danych **MySQL**, której struktura została przedstawiona za pomocą diagramu ERD.
+## Instrukcja uruchomienia (XAMPP, Windows)
 
- ## Główne funkcjonalności
+1. Zainstaluj XAMPP i uruchom w panelu **Apache** oraz **MySQL**.
+2. Skopiuj folder projektu do `C:\\\\xampp\\\\htdocs\\\\` (np. `C:\\\\xampp\\\\htdocs\\\\System-rezerwacji-us-ug`).
+3. Otwórz `http://localhost/phpmyadmin`, wybierz **Import** i wskaż plik `database/database.sql`
+(plik sam tworzy bazę `grand\\\_access\\\_hotel` i wszystkie tabele z danymi testowymi).
+4. W folderze `includes` zmodyfikuj `config.php`. Sprawdź dane bazy
+i ustaw `BASE\\\_URL` na nazwę folderu projektu, np. `/System-rezerwacji-us-ug`.
+5. Wejdź na `http://localhost/System-rezerwacji-us-ug/public/index.php`.
 
- System będzie obejmował między innymi:
+Szybkie uruchomienie bez XAMPP-a (gdy PHP jest zainstalowany): w folderze projektu
+`php -S localhost:8000`, w `config.php` ustaw `BASE\\\_URL` na pusty tekst `''`, wejdź na `http://localhost:8000/public/index.php`.
 
- - zarządzanie klientami,
-- zarządzanie pokojami hotelowymi,
-- obsługę typów pokoi,
-- tworzenie i zarządzanie rezerwacjami,
-- zarządzanie pracownikami,
-- prowadzenie grafiku pracowników,
-- obsługę usług dodatkowych,
-- obsługę zamówień usług przypisanych do rezerwacji,
-- rejestrowanie płatności,
-- przechowywanie informacji o statusach rezerwacji i płatności,
-- obsługę danych użytkowników i ich bezpieczeństwa.
+## Konta testowe
 
- ## Baza danych
+|Rola|E-mail|Hasło|
+|-|-|-|
+|administrator|`admin@hotel.pl`|`Admin123!`|
+|pracownik|`john.doe@email.com`|`Pracownik123!`|
+|pracownik|`will.dafie@email.com`|`Pracownik123!`|
+|klient|`anna.kowal@dk.pl`|`Klient123!`|
 
- Integralną częścią projektu jest relacyjna baza danych MySQL. Została ona podzielona na kilka powiązanych ze sobą tabel:
+Nowych klientów można zarejestrować na stronie `public/rejestracja.php`.
 
- | Tabela | Opis |
-| --- | --- |
-| `Klienci` | Dane osób korzystających z usług hotelu |
-| `Rezerwacje` | Informacje dotyczące rezerwacji pokoi |
-| `Pokoje` | Dane dotyczące dostępnych pokoi |
-| `TypyPokoi` | Rodzaje i charakterystyka pokoi |
-| `Pracownicy` | Informacje o pracownikach hotelu |
-| `Stanowiska` | Stanowiska zajmowane przez pracowników |
-| `GrafikPracownikow` | Harmonogram pracy personelu |
-| `Uslugi_dodatkowe` | Oferta dodatkowych usług hotelowych |
-| `ZamowieniaUslugi` | Usługi zamówione w ramach konkretnej rezerwacji |
-| `Pracownicy_Uslugi` | Powiązanie pracowników z obsługiwanymi usługami |
-| `Platnosci` | Informacje dotyczące płatności za pobyt i usługi |
+## Struktura repozytorium
 
-Struktura bazy danych została zaprojektowana zgodnie z zasadami relacyjnych baz danych, wykorzystując **klucze główne, klucze obce oraz relacje pomiędzy tabelami**.
+```
+README.md
+database/database.sql     baza danych (struktura + dane testowe)
+database/diagram\\\_bazy.png diagram ERD
+includes/                 wspólny kod: połączenie z bazą, sesje, role, nagłówek i stopka
+public/                   strony aplikacji (index, logowanie, rejestracja, profil, panele)
+  admin/ klient/ pracownik/
+css/  js/  assets/
+```
 
- ## Diagram ERD
+## Baza danych
 
- Schemat bazy danych projektu przedstawia zależności pomiędzy klientami, rezerwacjami, pokojami, pracownikami, usługami oraz płatnościami.
+Tabele: `Uzytkownicy` (logowanie i role), `Pracownicy`, `Stanowiska`, `Pokoje`, `TypyPokoi`,
+`Rezerwacje`, `Platnosci`, `Uslugi\\\_dodatkowe`, `ZamowieniaUslugi`, `Pracownicy\\\_Uslugi` (relacja N:M),
+`GrafikPracownikow` (grafik, urlopy), `Proby\\\_logowania` (limit błędnych logowań).
+Klucze obce, UNIQUE (np. e-mail), indeksy i ograniczenie `CHECK (DataDo > DataOd)` są opisane w `database.sql`.
 
- Najważniejsze zależności obejmują między innymi:
+## Funkcje etapu 2 (użytkownicy i logowanie)
 
- - klient może posiadać wiele rezerwacji,
-- rezerwacja dotyczy konkretnego pokoju,
-- pracownik może być przypisany do wielu rezerwacji,
-- pokój posiada określony typ,
-- pracownik zajmuje określone stanowisko,
-- rezerwacja może obejmować wiele usług dodatkowych,
-- usługi mogą być obsługiwane przez wielu pracowników,
-- jedna rezerwacja może mieć powiązane płatności.
+* rejestracja z walidacją po stronie serwera (pola, e-mail, unikalność e-maila, zgodność haseł),
+* hasła zapisywane przez `password\\\_hash()`, sprawdzane przez `password\\\_verify()`,
+* logowanie jednym formularzem dla trzech ról, sesje, wylogowanie, przekierowanie do właściwego panelu,
+* kontrola ról po stronie PHP na każdej chronionej stronie (wpisanie adresu URL ręcznie nie pomoże),
+* profil użytkownika z edycją danych,
+* zapytania przygotowane (PDO) i zabezpieczenie wyświetlanych danych przed XSS (`htmlspecialchars`),
+* komunikaty błędów bez ujawniania informacji technicznych.
 
- ## Technologie
+### Funkcje dodatkowe
 
- Projekt zostanie wykonany z wykorzystaniem następujących technologii.
+* tokeny CSRF we wszystkich formularzach POST,
+* limit błędnych prób logowania (5 prób na 15 minut dla jednego e-maila),
+* zmiana hasła po podaniu starego,
+* blokowanie i odblokowywanie kont przez administratora (działa od razu, także dla zalogowanych),
+* bezpieczne zarządzanie sesją: regeneracja ID po logowaniu, ciasteczko `httponly` + `samesite`, wylogowanie po 30 minutach bezczynności.
 
- ### Frontend
+## Status projektu
 
- - **HTML5** – tworzenie struktury stron internetowych,
-- **CSS3** – stylowanie oraz zapewnienie responsywności interfejsu,
-- **JavaScript** – obsługa interakcji i dynamicznych elementów aplikacji.
+Etap 2 (użytkownicy, logowanie, role, profil) wykonany. Kolejne etapy: panel administracyjny, rezerwacje, prezentacja.
 
- ### Backend
-
- - **PHP** – implementacja logiki aplikacji, obsługa formularzy, komunikacja z bazą danych oraz realizacja procesów biznesowych.
-
- ### Baza danych
-
- - **MySQL** – przechowywanie, organizacja oraz zarządzanie danymi systemu.
-
- ## Cele projektu
-
- Głównym celem projektu jest stworzenie funkcjonalnego systemu hotelowego, który pozwoli na praktyczne wykorzystanie wiedzy zdobytej podczas zajęć z:
-
- - tworzenia stron internetowych,
-- programowania po stronie klienta i serwera,
-- projektowania relacyjnych baz danych,
-- języka SQL,
-- komunikacji aplikacji z bazą danych,
-- projektowania interfejsów użytkownika.
-
- Projekt ma również na celu odwzorowanie rzeczywistych procesów zachodzących w pięciogwiazdkowym hotelu oraz stworzenie spójnego systemu łączącego warstwę frontendową, backendową i bazodanową.
-
- ## Status projektu
-
- **Projekt w trakcie realizacji**
-
- Planowane jest dalsze rozwijanie funkcjonalności systemu, interfejsu użytkownika oraz warstwy backendowej i bazodanowej.
-
- ## Projekt semestralny
-
- Projekt **Grand Access Hotel** powstaje w ramach projektu semestralnego i stanowi praktyczne połączenie technologii **HTML, CSS, JavaScript, PHP oraz MySQL** w jednym systemie informatycznym.
-
----
