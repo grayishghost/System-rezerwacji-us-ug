@@ -1,0 +1,111 @@
+/* Style dodatkowe dla etapu 2: panele, tabele, komunikaty. Uzupełnia main.css. */
+
+.form-message-success {
+  color: #1f5130;
+  background-color: #e0f1e5;
+  border: 1px solid #b4d9bf;
+}
+
+.form-message-info {
+  color: #294953;
+  background-color: #e3eef0;
+  border: 1px solid #b9d2d7;
+}
+
+.login-panel-wide {
+  width: min(100%, 640px);
+}
+
+.login-panel h1 {
+  margin-top: 0;
+  color: var(--navy);
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-weight: normal;
+}
+
+.field-hint {
+  color: #53636c;
+  font-size: 13px;
+}
+
+.login-field input[readonly] {
+  background-color: #eef1ef;
+  color: #53636c;
+}
+
+/* Panel (klient / pracownik / admin) */
+.panel-page {
+  width: min(1120px, calc(100% - 44px));
+  margin: 52px auto 110px;
+}
+
+.panel-page h1 {
+  color: var(--navy);
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-weight: normal;
+}
+
+.panel-box {
+  padding: 28px;
+  margin-bottom: 24px;
+  background-color: var(--paper);
+  border: 1px solid rgba(38, 57, 75, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(27, 46, 43, 0.1);
+}
+
+.panel-box h2 {
+  margin-top: 0;
+  color: var(--navy);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.panel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.panel-table th,
+.panel-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(38, 57, 75, 0.15);
+}
+
+.panel-table th {
+  color: var(--navy);
+  background-color: #e6ebe7;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge-ok {
+  color: #1f5130;
+  background-color: #e0f1e5;
+}
+
+.badge-off {
+  color: #7b2828;
+  background-color: #f8e1df;
+}
+
+.small-button {
+  padding: 5px 12px;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .login-panel {
+    padding: 26px 20px;
+  }
+}

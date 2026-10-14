@@ -1,18 +1,78 @@
 <?php
-$host = 'localhost';
-$user = 'root';           
-$password = '';           
-$database = 'moja_baza';  
-
-$conn = mysqli_connect($host, $user, $password, $database);
-
-if (!$conn) {
-    die("Błąd połączenia: " . mysqli_connect_error());
-}
-
-mysqli_set_charset($conn, "utf8");
-
-echo "Połączono z bazą danych!";
-
-mysqli_close($conn);
+require_once __DIR__ . '/../includes/auth.php';
+$tytul = 'Strona główna';
+require __DIR__ . '/../includes/header.php';
 ?>
+
+<main>
+  <section class="hero" aria-label="Witamy w Grand Access Hotel">
+    <div class="hero-slides">
+      <img src="<?= e(BASE_URL) ?>/assets/scroll (1).jpg" alt="Relaksująca przestrzeń" class="hero-slide hero-slide-one">
+      <img src="<?= e(BASE_URL) ?>/assets/scroll (2).jpg" alt="Eleganckie wnętrze hotelowe" class="hero-slide hero-slide-two">
+      <img src="<?= e(BASE_URL) ?>/assets/scroll (3).png" alt="Chwila odprężenia" class="hero-slide hero-slide-three">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Grand Access Hotel</p>
+      <h1>Znajdź chwilę tylko dla siebie</h1>
+      <p>Witamy w naszym hotelu. Odpocznij, odzyskaj energię i pozwól nam zadbać o Twój komfort.</p>
+      <a class="hero-link" href="#rezerwacja">Zarezerwuj pobyt</a>
+    </div>
+    <div class="hero-dots" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </section>
+
+<section class="rezerwacja" id="rezerwacja">
+  <form class="rezerwacja-form" action="pokoje.php" method="get">
+    <div class="pola">
+      <div class="pole">
+        <label for="id_pokoju">Wybrany pokój:</label>
+        <select id="id_pokoju" name="id_pokoju" required>
+          <option value="">-- Wybierz pokój --</option>
+          <option value="1">Pokój 101 - Standard 1 osoba (200.00 zł/doba)</option>
+          <option value="2">Pokój 102 - Apartament deluxe (500.00 zł/doba)</option>
+        </select>
+      </div>
+
+      <div class="pole">
+        <label for="data_od">Data zameldowania:</label>
+        <input type="date" id="data_od" name="data_od" required>
+      </div>
+
+      <div class="pole">
+        <label for="data_do">Data wymeldowania:</label>
+        <input type="date" id="data_do" name="data_do" required>
+      </div>
+
+      <div class="pole">
+        <label for="ilosc_osob">Liczba osób:</label>
+        <input type="number" id="ilosc_osob" name="ilosc_osob" min="1" max="10" value="1" required>
+      </div>
+    </div>
+    <button class="booking-button" type="submit">Przejdź do rezerwacji</button>
+  </form>
+
+</section>
+</main>
+
+<script>
+  const checkIn = document.querySelector("#data_od");
+  const checkOut = document.querySelector("#data_do");
+
+  checkIn.addEventListener("change", () => {
+    checkOut.min = checkIn.value;
+  });
+
+  checkOut.addEventListener("change", () => {
+    checkOut.setCustomValidity(
+      checkOut.value && checkOut.value <= checkIn.value
+        ? "Data wymeldowania musi być późniejsza niż data zameldowania."
+        : ""
+    );
+  });
+</script>
+
+<?php require __DIR__ . '/../includes/footer.php'; ?>
