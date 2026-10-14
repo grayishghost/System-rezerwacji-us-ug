@@ -1,0 +1,2 @@
+# Blokuje wejście na pliki z tego folderu przez przeglądarkę (Apache 2.4)
+Require all denied
