@@ -25,19 +25,6 @@ Aplikacja internetowa w PHP z bazą MySQL. Użytkownicy mają jedną z trzech r�
 * MySQL / MariaDB
 * Git i GitHub
 
-## Instrukcja uruchomienia (XAMPP, Windows)
-
-1. Zainstaluj XAMPP i uruchom w panelu **Apache** oraz **MySQL**.
-2. Skopiuj folder projektu do `C:\\\\xampp\\\\htdocs\\\\` (np. `C:\\\\xampp\\\\htdocs\\\\System-rezerwacji-us-ug`).
-3. Otwórz `http://localhost/phpmyadmin`, wybierz **Import** i wskaż plik `database/database.sql`
-(plik sam tworzy bazę `grand\\\_access\\\_hotel` i wszystkie tabele z danymi testowymi).
-4. W folderze `includes` zmodyfikuj `config.php`. Sprawdź dane bazy
-i ustaw `BASE\\\_URL` na nazwę folderu projektu, np. `/System-rezerwacji-us-ug`.
-5. Wejdź na `http://localhost/System-rezerwacji-us-ug/public/index.php`.
-
-Szybkie uruchomienie bez XAMPP-a (gdy PHP jest zainstalowany): w folderze projektu
-`php -S localhost:8000`, w `config.php` ustaw `BASE\\\_URL` na pusty tekst `''`, wejdź na `http://localhost:8000/public/index.php`.
-
 ## Konta testowe
 
 |Rola|E-mail|Hasło|
@@ -47,7 +34,7 @@ Szybkie uruchomienie bez XAMPP-a (gdy PHP jest zainstalowany): w folderze projek
 |pracownik|`will.dafie@email.com`|`Pracownik123!`|
 |klient|`anna.kowal@dk.pl`|`Klient123!`|
 
-Nowych klientów można zarejestrować na stronie `public/rejestracja.php`.
+Nowych klientów można zarejestrować na stronie `/rejestracja.php`.
 
 ## Struktura repozytorium
 
