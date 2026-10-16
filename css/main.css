@@ -44,11 +44,11 @@ body {
   align-items: center;
 }
 
-.logo img {
-  height: 40px;
-  width: auto;
-  background-color: transparent;
-  object-fit: contain;
+.logo a {
+  color: var(--amber-light);
+  font-family: "Faculty Glyphic", Arial, sans-serif;
+  font-size: 22px;
+  text-decoration: none;
 }
 
 .nav {
@@ -59,7 +59,8 @@ body {
   flex-wrap: wrap;
 }
 
-.nav a {
+.nav a,
+.nav-logout button {
   font-family: "Faculty Glyphic", Arial, sans-serif;
   font-style: normal;
   font-weight: bold;
@@ -70,7 +71,11 @@ body {
   transition: color 0.3s ease;
 }
 
-.nav a:hover {
+.nav-logout { margin: 0; }
+.nav-logout button { border: 0; padding: 0; cursor: pointer; }
+
+.nav a:hover,
+.nav-logout button:hover {
   color: #fff0b4;
 }
 
@@ -82,7 +87,7 @@ body {
   margin: 28px auto 0;
   width: calc(100vw - 44px);
   border-radius: 14px;
-  background-color: var(--navy);
+  background: linear-gradient(120deg, #142b3b, #3b656c 65%, #b18c59);
   box-shadow: 0 12px 32px rgba(27, 46, 43, 0.2);
 }
 
@@ -331,6 +336,21 @@ body {
   object-fit: cover;
 }
 
+.room-card-image {
+  height: 230px;
+  background: linear-gradient(145deg, #20394c, #6f8b87 65%, #d9ae5a);
+}
+
+.booking-summary {
+  margin-top: 28px;
+  padding: 20px;
+  border: 1px solid rgba(38, 57, 75, 0.16);
+  border-radius: 8px;
+  background: #f2f4ef;
+}
+
+.booking-summary h2 { margin-top: 0; }
+
 .room-card-content {
   padding: 22px;
 }
@@ -414,7 +434,8 @@ body {
   font-weight: bold;
 }
 
-.login-field input {
+.login-field input,
+.login-field select {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid #7d938a;

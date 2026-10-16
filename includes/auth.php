@@ -32,6 +32,11 @@ function e($tekst)
     return htmlspecialchars((string)$tekst, ENT_QUOTES, 'UTF-8');
 }
 
+function pole_tekstowe($nazwa)
+{
+    return isset($_POST[$nazwa]) && is_string($_POST[$nazwa]) ? $_POST[$nazwa] : '';
+}
+
 // Przekierowanie na inną stronę projektu, np. przekieruj('/public/logowanie.php')
 function przekieruj($sciezka)
 {
@@ -81,8 +86,9 @@ function sprawdz_dane_osobowe($imie, $nazwisko, $telefon)
     if ($nazwisko === '' || mb_strlen($nazwisko) > 50) {
         $bledy[] = 'Podaj nazwisko (maksymalnie 50 znaków).';
     }
-    if (!preg_match('/^[0-9+ \-]{9,20}$/', $telefon)) {
-        $bledy[] = 'Podaj poprawny numer telefonu (9-20 znaków: cyfry, spacje, + lub -).';
+    $cyfry = preg_replace('/\D/', '', $telefon);
+    if (!preg_match('/^\+?[0-9][0-9 -]{8,19}$/', $telefon) || strlen($cyfry) < 9 || strlen($cyfry) > 15) {
+        $bledy[] = 'Podaj poprawny numer telefonu (9-15 cyfr; dozwolone spacje i myślniki).';
     }
     return $bledy;
 }
@@ -138,14 +144,25 @@ function panel_roli($rola)
     return '/public/klient/index.php';
 }
 
-// Strona dostępna tylko dla zalogowanych. Przy każdym wejściu sprawdza w bazie,
-// czy konto nadal istnieje, jest aktywne i jaką ma rolę (blokada konta działa od razu).
+// Strona dostępna tylko dla zalogowanych. Stan konta i rola są odświeżane
+// podczas ładowania auth.php, także dla stron publicznych.
 function wymagaj_logowania()
+{
+    if (!zalogowany()) {
+        if (empty($_SESSION['komunikat'])) {
+            ustaw_komunikat('error', 'Zaloguj się, aby zobaczyć tę stronę.');
+        }
+        przekieruj('/public/logowanie.php');
+    }
+}
+
+// Odświeżamy rolę i stan konta także na stronach publicznych. Zablokowany
+// użytkownik nie może widzieć formularza rezerwacji z dawnej sesji.
+function odswiez_sesje_uzytkownika()
 {
     global $pdo;
     if (!zalogowany()) {
-        ustaw_komunikat('error', 'Zaloguj się, aby zobaczyć tę stronę.');
-        przekieruj('/public/logowanie.php');
+        return;
     }
     $st = $pdo->prepare('SELECT Rola, Aktywny FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
     $st->execute([$_SESSION['user_id']]);
@@ -175,3 +192,5 @@ function wymagaj_roli(...$dozwolone)
         exit;
     }
 }
+
+odswiez_sesje_uzytkownika();

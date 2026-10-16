@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 
+// Zalogowany użytkownik nie potrzebuje rejestracji
 if (zalogowany()) {
     przekieruj(panel_roli($_SESSION['rola'] ?? 'klient'));
 }
@@ -11,13 +12,15 @@ $dane = ['imie' => '', 'nazwisko' => '', 'email' => '', 'telefon' => ''];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_sprawdz();
 
-    $dane['imie']     = trim($_POST['imie'] ?? '');
-    $dane['nazwisko'] = trim($_POST['nazwisko'] ?? '');
-    $dane['email']    = mb_strtolower(trim($_POST['email'] ?? ''));
-    $dane['telefon']  = trim($_POST['telefon'] ?? '');
-    $haslo  = $_POST['haslo'] ?? '';
-    $haslo2 = $_POST['haslo2'] ?? '';
+    // 1. Pobieramy dane z formularza (trim usuwa spacje z początku i końca)
+    $dane['imie']     = trim(pole_tekstowe('imie'));
+    $dane['nazwisko'] = trim(pole_tekstowe('nazwisko'));
+    $dane['email']    = mb_strtolower(trim(pole_tekstowe('email')));
+    $dane['telefon']  = trim(pole_tekstowe('telefon'));
+    $haslo  = pole_tekstowe('haslo');
+    $haslo2 = pole_tekstowe('haslo2');
 
+    // 2. Walidacja po stronie serwera
     $bledy = sprawdz_dane_osobowe($dane['imie'], $dane['nazwisko'], $dane['telefon']);
 
     if ($dane['email'] === '' || mb_strlen($dane['email']) > 100 || !filter_var($dane['email'], FILTER_VALIDATE_EMAIL)) {
@@ -31,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bledy[] = 'Hasła nie są takie same.';
     }
 
+    // 3. Czy e-mail jest wolny? (zapytanie przygotowane - bezpieczne przed SQL injection)
     if (empty($bledy)) {
         $st = $pdo->prepare('SELECT COUNT(*) FROM Uzytkownicy WHERE Email = ?');
         $st->execute([$dane['email']]);
@@ -39,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // 4. Zapis do bazy - hasło zapisujemy jako hash, rola zawsze "klient"
     if (empty($bledy)) {
         try {
             $st = $pdo->prepare(
@@ -52,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ustaw_komunikat('success', 'Konto zostało utworzone. Możesz się teraz zalogować.');
             przekieruj('/public/logowanie.php');
         } catch (PDOException $ex) {
-            if ($ex->getCode() === '23000') {
+            if ($ex->getCode() === '23000') {   // naruszenie UNIQUE (ktoś zajął e-mail chwilę wcześniej)
                 $bledy[] = 'Konto z takim adresem e-mail już istnieje.';
             } else {
                 error_log('Błąd rejestracji: ' . $ex->getMessage());

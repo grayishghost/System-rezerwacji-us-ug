@@ -16,7 +16,7 @@
 <body>
 <header class="header">
     <div class="logo">
-        <img src="<?= e(BASE_URL) ?>/assets/logo.png" alt="Grand Access Hotel">
+        <a href="<?= e(BASE_URL) ?>/public/index.php">Grand Access Hotel</a>
     </div>
     <nav class="nav">
         <a href="<?= e(BASE_URL) ?>/public/index.php">Strona główna</a>
@@ -24,7 +24,10 @@
         <?php if (zalogowany()): ?>
             <a href="<?= e(BASE_URL . panel_roli($_SESSION['rola'] ?? 'klient')) ?>">Mój panel</a>
             <a href="<?= e(BASE_URL) ?>/public/profil.php">Profil</a>
-            <a href="<?= e(BASE_URL) ?>/public/wyloguj.php">Wyloguj (<?= e($_SESSION['imie'] ?? '') ?>)</a>
+            <form action="<?= e(BASE_URL) ?>/public/wyloguj.php" method="post" class="nav-logout">
+                <?= csrf_pole() ?>
+                <button type="submit">Wyloguj (<?= e($_SESSION['imie'] ?? '') ?>)</button>
+            </form>
         <?php else: ?>
             <a href="<?= e(BASE_URL) ?>/public/logowanie.php">Logowanie</a>
             <a href="<?= e(BASE_URL) ?>/public/rejestracja.php">Rejestracja</a>

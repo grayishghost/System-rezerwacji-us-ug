@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-wymagaj_logowania();         
+wymagaj_logowania();          // każda rola może edytować swój profil
 
 $bledy = [];
 
-
+// Dane zalogowanego użytkownika (id bierzemy Z SESJI, nigdy z formularza ani z adresu URL)
 $st = $pdo->prepare('SELECT Imie, Nazwisko, Email, Telefon, Rola, DataUtworzenia FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
 $st->execute([$_SESSION['user_id']]);
 $u = $st->fetch();
@@ -12,9 +12,9 @@ $u = $st->fetch();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_sprawdz();
 
-    $imie     = trim($_POST['imie'] ?? '');
-    $nazwisko = trim($_POST['nazwisko'] ?? '');
-    $telefon  = trim($_POST['telefon'] ?? '');
+    $imie     = trim(pole_tekstowe('imie'));
+    $nazwisko = trim(pole_tekstowe('nazwisko'));
+    $telefon  = trim(pole_tekstowe('telefon'));
 
     $bledy = sprawdz_dane_osobowe($imie, $nazwisko, $telefon);
 
@@ -23,9 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $st->execute([$imie, $nazwisko, $telefon, $_SESSION['user_id']]);
         $_SESSION['imie'] = $imie;
         ustaw_komunikat('success', 'Dane zostały zapisane.');
-        przekieruj('/public/profil.php');    
+        przekieruj('/public/profil.php');    // przekierowanie, żeby F5 nie wysyłało formularza drugi raz
     }
 
+    // przy błędzie pokazujemy to, co wpisał użytkownik
     $u['Imie'] = $imie;
     $u['Nazwisko'] = $nazwisko;
     $u['Telefon'] = $telefon;

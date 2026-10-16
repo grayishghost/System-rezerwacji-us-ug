@@ -1,7 +1,14 @@
+-- ============================================================
+-- Grand Access Hotel - baza danych (MySQL / MariaDB)
+-- Import: phpMyAdmin -> Import -> wybierz ten plik
+-- Konta testowe (hasła): patrz README.md
+-- ============================================================
+
 CREATE DATABASE IF NOT EXISTS `grand_access_hotel`
   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `grand_access_hotel`;
 
+-- Usuwamy stare tabele (kolejność nie ma znaczenia, bo wyłączamy klucze obce)
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `Proby_logowania`;
 DROP TABLE IF EXISTS `GrafikPracownikow`;
@@ -18,18 +25,23 @@ DROP TABLE IF EXISTS `Uzytkownicy`;
 DROP TABLE IF EXISTS `Klienci`;
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- ------------------------------------------------------------
+-- UZYTKOWNICY: jedna tabela dla klientów, pracowników i admina.
+-- To ona służy do logowania. Rola decyduje o uprawnieniach.
+-- ------------------------------------------------------------
 CREATE TABLE `Uzytkownicy` (
   `ID_Uzytkownika` INT AUTO_INCREMENT PRIMARY KEY,
   `Imie` VARCHAR(50) NOT NULL,
   `Nazwisko` VARCHAR(50) NOT NULL,
   `Email` VARCHAR(100) NOT NULL UNIQUE,
   `Telefon` VARCHAR(20),
-  `Haslo` VARCHAR(255) NOT NULL,
+  `Haslo` VARCHAR(255) NOT NULL,              -- hash z password_hash(), nigdy jawne hasło
   `Rola` ENUM('klient', 'pracownik', 'admin') NOT NULL DEFAULT 'klient',
-  `Aktywny` TINYINT(1) NOT NULL DEFAULT 1,
+  `Aktywny` TINYINT(1) NOT NULL DEFAULT 1,    -- 0 = konto zablokowane
   `DataUtworzenia` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Hasła testowe: admin = Admin123!, pracownicy = Pracownik123!, klienci = Klient123!
 INSERT INTO `Uzytkownicy` (`ID_Uzytkownika`, `Imie`, `Nazwisko`, `Email`, `Telefon`, `Haslo`, `Rola`, `Aktywny`) VALUES
 (1, 'Jan',     'Administrator', 'admin@hotel.pl',      '111222333', '$2y$10$qO.tSnS2CRGWJdkgYCf5W.0cwhQmvRZxxXxz0fdm5gAjYKgYjukIO', 'admin',     1),
 (2, 'John',    'Doe',           'john.doe@email.com',  '212132435', '$2y$10$HDzGqwQW1I2XSpyByyl8k.iG33AyFf0k1cGmfw9RDVM8SEsiBUG9a', 'pracownik', 1),
@@ -38,6 +50,7 @@ INSERT INTO `Uzytkownicy` (`ID_Uzytkownika`, `Imie`, `Nazwisko`, `Email`, `Telef
 (5, 'Jacek',   'Sowa',          'jacek.kowal@dk.pl',   '987654321', '$2y$10$whLGCAHW.ja4vx.4xn7y1uQHtysNy0AgbZ6thJYfD3CDziLk8dBGC', 'klient',    1),
 (6, 'Adam',    'Nowak',         'adam.nowak@dk.pl',    '456321789', '$2y$10$whLGCAHW.ja4vx.4xn7y1uQHtysNy0AgbZ6thJYfD3CDziLk8dBGC', 'klient',    1);
 
+-- ------------------------------------------------------------
 CREATE TABLE `Stanowiska` (
   `ID_Stanowiska` INT AUTO_INCREMENT PRIMARY KEY,
   `Nazwa_stanowiska` VARCHAR(50) NOT NULL,
@@ -49,6 +62,10 @@ INSERT INTO `Stanowiska` (`ID_Stanowiska`, `Nazwa_stanowiska`, `Placa_brutto`) V
 (2, 'Menadżer usług', 5000.00),
 (3, 'Pokojówka', 4666.00);
 
+-- ------------------------------------------------------------
+-- PRACOWNICY: dane osobowe i hasło są w Uzytkownicy,
+-- tutaj tylko to, co dotyczy pracy (stanowisko). Relacja 1:1 z Uzytkownicy.
+-- ------------------------------------------------------------
 CREATE TABLE `Pracownicy` (
   `ID_Pracownika` INT AUTO_INCREMENT PRIMARY KEY,
   `ID_Uzytkownika` INT NOT NULL UNIQUE,
@@ -61,6 +78,7 @@ INSERT INTO `Pracownicy` (`ID_Pracownika`, `ID_Uzytkownika`, `ID_Stanowiska`) VA
 (1, 2, 1),
 (2, 3, 2);
 
+-- ------------------------------------------------------------
 CREATE TABLE `TypyPokoi` (
   `ID_Typu` INT AUTO_INCREMENT PRIMARY KEY,
   `NazwaTypu` VARCHAR(50) NOT NULL,
@@ -88,7 +106,7 @@ INSERT INTO `Pokoje` (`ID_Pokoju`, `NrPokoju`, `ID_Typu`, `CenaDobowa`, `Status`
 (1, 101, 1, 200.00, 'Zajęty', 1, 1, NULL),
 (2, 102, 2, 500.00, 'Wolny',  2, 1, NULL);
 
-
+-- ------------------------------------------------------------
 CREATE TABLE `Uslugi_dodatkowe` (
   `ID_Uslugi` INT AUTO_INCREMENT PRIMARY KEY,
   `Nazwa_Uslugi` VARCHAR(100) NOT NULL,
@@ -102,6 +120,7 @@ INSERT INTO `Uslugi_dodatkowe` (`ID_Uslugi`, `Nazwa_Uslugi`, `Opis`, `Cena`, `Ka
 (1, 'Drinki do pokoju', 'Drinki dostarczane do pokoju', 200.00, 'Napoje', 1),
 (2, 'Śniadanie do łóżka', 'Śniadanie dostarczane do łóżka', 500.00, 'Jedzenie', 1);
 
+-- Relacja N:M: pracownik może obsługiwać wiele usług, usługę wielu pracowników
 CREATE TABLE `Pracownicy_Uslugi` (
   `ID_Pracownika` INT NOT NULL,
   `ID_Uslugi` INT NOT NULL,
@@ -113,10 +132,11 @@ CREATE TABLE `Pracownicy_Uslugi` (
 INSERT INTO `Pracownicy_Uslugi` (`ID_Pracownika`, `ID_Uslugi`) VALUES
 (1, 1), (1, 2), (2, 2);
 
+-- ------------------------------------------------------------
 CREATE TABLE `Rezerwacje` (
   `ID_Rezerwacji` INT AUTO_INCREMENT PRIMARY KEY,
   `ID_Pokoju` INT NOT NULL,
-  `ID_Klienta` INT NOT NULL,
+  `ID_Klienta` INT NOT NULL,                  -- wskazuje na Uzytkownicy (rola klient)
   `ID_Pracownika` INT,
   `DataOd` DATETIME NOT NULL,
   `DataDo` DATETIME NOT NULL,
@@ -134,6 +154,7 @@ CREATE TABLE `Rezerwacje` (
 INSERT INTO `Rezerwacje` (`ID_Rezerwacji`, `ID_Pokoju`, `ID_Klienta`, `ID_Pracownika`, `DataOd`, `DataDo`, `Kwota`, `Status`, `Zrodlo_rezerwacji`, `Uwagi`) VALUES
 (1, 1, 4, 1, '2026-01-27 00:00:00', '2026-01-30 00:00:00', 800.00, 'Ukończone', 'Bezpośrednio', 'brak');
 
+-- ------------------------------------------------------------
 CREATE TABLE `Platnosci` (
   `ID_Platnosci` INT AUTO_INCREMENT PRIMARY KEY,
   `ID_Rezerwacji` INT NOT NULL,
@@ -159,6 +180,7 @@ CREATE TABLE `ZamowieniaUslugi` (
   FOREIGN KEY (`ID_Uslugi`) REFERENCES `Uslugi_dodatkowe`(`ID_Uslugi`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Grafik pracy (obsługuje też urlopy i dni wolne - TypDnia)
 CREATE TABLE `GrafikPracownikow` (
   `ID_Wpisu` INT AUTO_INCREMENT PRIMARY KEY,
   `ID_Pracownika` INT NOT NULL,
@@ -175,6 +197,9 @@ INSERT INTO `GrafikPracownikow` (`ID_Pracownika`, `Data`, `TypDnia`, `GodzinaOd`
 (1, '2026-11-03', 'Praca', '08:00:00', '16:00:00'),
 (2, '2026-11-02', 'Urlop', NULL, NULL);
 
+-- ------------------------------------------------------------
+-- PROBY_LOGOWANIA: zapis nieudanych prób logowania (blokada po 5 błędach)
+-- ------------------------------------------------------------
 CREATE TABLE `Proby_logowania` (
   `ID_Proby` INT AUTO_INCREMENT PRIMARY KEY,
   `Email` VARCHAR(100) NOT NULL,

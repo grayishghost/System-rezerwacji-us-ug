@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/rezerwacje.php';
+$pokoje = pokoje_do_rezerwacji($pdo);
+$czy_klient = zalogowany() && ($_SESSION['rola'] ?? '') === 'klient';
 $tytul = 'Dostępne pokoje';
 require __DIR__ . '/../includes/header.php';
 ?>
@@ -12,30 +14,24 @@ require __DIR__ . '/../includes/header.php';
     </section>
 
     <section class="rooms-grid" aria-label="Lista dostępnych pokoi">
-        <article class="room-card">
-            <img src="<?= e(BASE_URL) ?>/assets/scroll (2).jpg" alt="Pokój standardowy">
-            <div class="room-card-content">
-                <p class="room-number">Pokój 101</p>
-                <h2>Standard dla 1 osoby</h2>
-                <p>Przytulny pokój z wygodnym łóżkiem i spokojnym widokiem.</p>
-                <strong>200 zł / doba</strong>
-                <a class="booking-button room-button" href="index.php#rezerwacja">Wybierz pokój</a>
-            </div>
-        </article>
-
-        <article class="room-card">
-            <img src="<?= e(BASE_URL) ?>/assets/scroll (1).jpg" alt="Apartament deluxe">
-            <div class="room-card-content">
-                <p class="room-number">Pokój 102</p>
-                <h2>Apartament deluxe</h2>
-                <p>Więcej przestrzeni, eleganckie wnętrze i dodatkowy komfort.</p>
-                <strong>500 zł / doba</strong>
-                <a class="booking-button room-button" href="index.php#rezerwacja">Wybierz pokój</a>
-            </div>
-        </article>
+        <?php foreach ($pokoje as $pokoj): ?>
+            <article class="room-card">
+                <div class="room-card-image" aria-hidden="true"></div>
+                <div class="room-card-content">
+                    <p class="room-number">Pokój <?= e($pokoj['NrPokoju']) ?></p>
+                    <h2><?= e($pokoj['NazwaTypu']) ?></h2>
+                    <p><?= e($pokoj['Opis'] ?: 'Komfortowy pokój w Grand Access Hotel.') ?> Maksymalnie <?= (int)$pokoj['IloscOsob'] ?> os.</p>
+                    <strong><?= e(number_format((float)$pokoj['CenaDobowa'], 2, ',', ' ')) ?> zł / doba</strong>
+                    <?php if ($czy_klient): ?>
+                        <a class="booking-button room-button" href="<?= e(BASE_URL) ?>/public/rezerwacja.php?id_pokoju=<?= (int)$pokoj['ID_Pokoju'] ?>">Wybierz pokój</a>
+                    <?php elseif (!zalogowany()): ?>
+                        <a class="booking-button room-button" href="<?= e(BASE_URL) ?>/public/logowanie.php">Zaloguj się, aby zarezerwować</a>
+                    <?php endif; ?>
+                </div>
+            </article>
+        <?php endforeach; ?>
+        <?php if (!$pokoje): ?><p>Aktualnie nie ma pokoi dostępnych do rezerwacji.</p><?php endif; ?>
     </section>
 </main>
-
-
 
 <?php require __DIR__ . '/../includes/footer.php'; ?>
