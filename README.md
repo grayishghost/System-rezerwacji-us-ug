@@ -1,5 +1,7 @@
 # Grand Access Hotel
 
+Link do strony: [gah.gt.tc](https://gah.gt.tc/)
+
 System zarządzania pięciogwiazdkowym hotelem Grand Access Hotel: rezerwacje, klienci, pracownicy, pokoje i usługi dodatkowe.
 Projekt semestralny (przedmiot: Tworzenie stron i aplikacji internetowych).
 
