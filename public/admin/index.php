@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
-wymagaj_roli('admin');       // tylko administrator
+wymagaj_roli('admin');
 
-// Blokowanie / odblokowywanie kont (formularz POST + token CSRF)
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_sprawdz();
 
