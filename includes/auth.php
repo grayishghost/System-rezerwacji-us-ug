@@ -1,19 +1,21 @@
-<?php
-// Wspólne funkcje: sesja, logowanie, role, komunikaty, ochrona CSRF.
-// Każda strona zaczyna się od:  require_once __DIR__ . '/../includes/auth.php';
+<?php                                                                          
 require_once __DIR__ . '/db.php';
 
 date_default_timezone_set('Europe/Warsaw');
 
-// ---------- SESJA ----------
+                              
 if (session_status() === PHP_SESSION_NONE) {
-    // httponly: JavaScript nie ma dostępu do ciasteczka sesji (ochrona przed kradzieżą przez XSS)
-    // samesite: przeglądarka nie wysyła ciasteczka z innych stron (dodatkowa ochrona przed CSRF)
-    session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'path' => '/']);
+                                                                                                     
+                                                                                                   
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    $https = !empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off';
+    $secure = defined('SESSION_SECURE') ? SESSION_SECURE : $https;
+    session_set_cookie_params(['httponly' => true, 'secure' => $secure, 'samesite' => 'Lax', 'path' => '/']);
     session_start();
 }
 
-// Automatyczne wylogowanie po 30 minutach bezczynności
+                                                        
 define('CZAS_SESJI', 1800);
 if (isset($_SESSION['user_id'])) {
     if (time() - ($_SESSION['ostatnia_aktywnosc'] ?? time()) > CZAS_SESJI) {
@@ -24,9 +26,9 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-// ---------- FUNKCJE POMOCNICZE ----------
+                                           
 
-// Zabezpieczenie tekstu przed XSS - używaj ZAWSZE przy wypisywaniu danych w HTML
+                                                                                  
 function e($tekst)
 {
     return htmlspecialchars((string)$tekst, ENT_QUOTES, 'UTF-8');
@@ -37,15 +39,15 @@ function pole_tekstowe($nazwa)
     return isset($_POST[$nazwa]) && is_string($_POST[$nazwa]) ? $_POST[$nazwa] : '';
 }
 
-// Przekierowanie na inną stronę projektu, np. przekieruj('/public/logowanie.php')
+                                                                                    
 function przekieruj($sciezka)
 {
     header('Location: ' . BASE_URL . $sciezka);
     exit;
 }
 
-// Komunikaty "flash": ustawiamy je przed przekierowaniem, wyświetlamy raz na następnej stronie
-function ustaw_komunikat($typ, $tekst)   // $typ: 'error', 'success' albo 'info'
+                                                                                                 
+function ustaw_komunikat($typ, $tekst)                                          
 {
     $_SESSION['komunikat'] = [$typ, $tekst];
 }
@@ -59,16 +61,19 @@ function pokaz_komunikat()
     }
 }
 
-// ---------- WALIDACJA (po stronie serwera; wspólna dla rejestracji, profilu i zmiany hasła) ----------
+                                                                                                          
 
-// Zwraca tekst błędu albo '' gdy hasło jest poprawne
+                                                        
 function sprawdz_haslo($haslo)
 {
+    if (str_contains($haslo, "\0")) {
+        return 'Hasło zawiera niedozwolony znak.';
+    }
     if (strlen($haslo) < 8) {
         return 'Hasło musi mieć co najmniej 8 znaków.';
     }
-    if (strlen($haslo) > 72) {            // bcrypt bierze pod uwagę tylko 72 bajty
-        return 'Hasło może mieć maksymalnie 72 znaki.';
+    if (strlen($haslo) > 72) {                                                      
+        return 'Hasło może mieć maksymalnie 72 bajty (polskie znaki mogą zajmować więcej niż jeden bajt).';
     }
     if (!preg_match('/[A-Za-z]/', $haslo) || !preg_match('/[0-9]/', $haslo)) {
         return 'Hasło musi zawierać co najmniej jedną literę i jedną cyfrę.';
@@ -76,7 +81,7 @@ function sprawdz_haslo($haslo)
     return '';
 }
 
-// Sprawdza imię, nazwisko i telefon. Zwraca tablicę błędów (pustą, gdy wszystko jest OK)
+                                                                                               
 function sprawdz_dane_osobowe($imie, $nazwisko, $telefon)
 {
     $bledy = [];
@@ -93,7 +98,7 @@ function sprawdz_dane_osobowe($imie, $nazwisko, $telefon)
     return $bledy;
 }
 
-// ---------- CSRF (ochrona formularzy przed fałszywymi żądaniami z obcych stron) ----------
+                                                                                               
 function csrf_token()
 {
     if (empty($_SESSION['csrf_token'])) {
@@ -102,13 +107,13 @@ function csrf_token()
     return $_SESSION['csrf_token'];
 }
 
-// Wstawiasz ją w każdym formularzu POST (w środku znaczników form)
+                                                                       
 function csrf_pole()
 {
     return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
 }
 
-// Wywołujesz na początku obsługi każdego formularza POST
+                                                             
 function csrf_sprawdz()
 {
     $wyslany = $_POST['csrf_token'] ?? '';
@@ -118,7 +123,7 @@ function csrf_sprawdz()
     }
 }
 
-// ---------- LOGOWANIE I ROLE ----------
+                                         
 function zalogowany()
 {
     return isset($_SESSION['user_id']);
@@ -128,11 +133,11 @@ function wyloguj_uzytkownika()
 {
     session_unset();
     session_destroy();
-    session_start();               // nowa, pusta sesja (potrzebna choćby na komunikaty)
-    session_regenerate_id(true);   // nowy identyfikator sesji
+    session_start();                                                                     
+    session_regenerate_id(true);                              
 }
 
-// Zwraca adres panelu zależnie od roli
+                                        
 function panel_roli($rola)
 {
     if ($rola === 'admin') {
@@ -144,8 +149,8 @@ function panel_roli($rola)
     return '/public/klient/index.php';
 }
 
-// Strona dostępna tylko dla zalogowanych. Stan konta i rola są odświeżane
-// podczas ładowania auth.php, także dla stron publicznych.
+                                                                              
+                                                             
 function wymagaj_logowania()
 {
     if (!zalogowany()) {
@@ -156,8 +161,8 @@ function wymagaj_logowania()
     }
 }
 
-// Odświeżamy rolę i stan konta także na stronach publicznych. Zablokowany
-// użytkownik nie może widzieć formularza rezerwacji z dawnej sesji.
+                                                                              
+                                                                       
 function odswiez_sesje_uzytkownika()
 {
     global $pdo;
@@ -172,10 +177,10 @@ function odswiez_sesje_uzytkownika()
         ustaw_komunikat('error', 'Twoje konto jest nieaktywne.');
         przekieruj('/public/logowanie.php');
     }
-    $_SESSION['rola'] = $u['Rola'];   // rola zawsze świeża z bazy
+    $_SESSION['rola'] = $u['Rola'];                                 
 }
 
-// Strona dostępna tylko dla podanych ról, np. wymagaj_roli('admin') albo wymagaj_roli('admin', 'pracownik')
+                                                                                                              
 function wymagaj_roli(...$dozwolone)
 {
     wymagaj_logowania();
