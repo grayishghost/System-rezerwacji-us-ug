@@ -6,8 +6,8 @@ if (zalogowany()) {
     przekieruj(panel_roli($_SESSION['rola'] ?? 'klient'));
 }
 
-define('MAX_PROB', 5);
-define('OKNO_PROB', 900);
+define('MAX_PROB', 5);          
+define('OKNO_PROB', 900);       
 
 $blad = '';
 $email = '';
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($haslo === '' || strlen($haslo) > 72 || str_contains($haslo, "\0")) {
         $blad = 'Podaj poprawne hasło (maksymalnie 72 bajty).';
     } else {
-
+        
         $od = date('Y-m-d H:i:s', time() - OKNO_PROB);
         $st = $pdo->prepare('SELECT COUNT(*) FROM Proby_logowania WHERE Email = ? AND Czas > ?');
         $st->execute([$email, $od]);
@@ -31,34 +31,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($st->fetchColumn() >= MAX_PROB) {
             $blad = 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za 15 minut.';
         } else {
-
+            
             $st = $pdo->prepare('SELECT ID_Uzytkownika, Imie, Haslo, Rola, Aktywny FROM Uzytkownicy WHERE Email = ?');
             $st->execute([$email]);
             $u = $st->fetch();
 
-
+            
             if ($u && password_verify($haslo, $u['Haslo'])) {
                 if (!$u['Aktywny']) {
                     $blad = 'To konto zostało zablokowane. Skontaktuj się z recepcją hotelu.';
                 } else {
-
+                    
                     session_regenerate_id(true);
                     $_SESSION['user_id'] = (int)$u['ID_Uzytkownika'];
                     $_SESSION['imie'] = $u['Imie'];
                     $_SESSION['rola'] = $u['Rola'];
                     $_SESSION['ostatnia_aktywnosc'] = time();
 
-
+                    
                     $pdo->prepare('DELETE FROM Proby_logowania WHERE Email = ?')->execute([$email]);
 
                     przekieruj(panel_roli($u['Rola']));
                 }
             } else {
-
-
+                
+                
                 $pdo->prepare('INSERT INTO Proby_logowania (Email, IP, Czas) VALUES (?, ?, ?)')
                     ->execute([$email, $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', date('Y-m-d H:i:s')]);
-
+                
                 $pdo->prepare('DELETE FROM Proby_logowania WHERE Czas < ?')
                     ->execute([date('Y-m-d H:i:s', time() - 86400)]);
 

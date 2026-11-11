@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+
+<svg width="3349pt" height="563pt"
+ viewBox="0.00 0.00 3349.20 562.70" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(21.6 541.1)">
+<title>hotel</title>
+<polygon fill="white" stroke="transparent" points="-21.6,21.6 -21.6,-541.1 3327.6,-541.1 3327.6,21.6 -21.6,21.6"/>
+
+<g id="node1" class="node">
+<title>BlokadyPokoi</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="950,-428 950,-464 1558,-464 1558,-428 950,-428"/>
+<text text-anchor="middle" x="991" y="-443.5" font-family="DejaVu Sans" font-size="10.00">BlokadyPokoi</text>
+<polyline fill="none" stroke="#174d40" points="1032,-428 1032,-464 "/>
+<text text-anchor="middle" x="1079.5" y="-443.5" font-family="DejaVu Sans" font-size="10.00">ID_Blokady [PK]</text>
+<polyline fill="none" stroke="#174d40" points="1127,-428 1127,-464 "/>
+<text text-anchor="middle" x="1171" y="-443.5" font-family="DejaVu Sans" font-size="10.00">ID_Pokoju [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1215,-428 1215,-464 "/>
+<text text-anchor="middle" x="1241.5" y="-443.5" font-family="DejaVu Sans" font-size="10.00">DataOd</text>
+<polyline fill="none" stroke="#174d40" points="1268,-428 1268,-464 "/>
+<text text-anchor="middle" x="1294.5" y="-443.5" font-family="DejaVu Sans" font-size="10.00">DataDo</text>
+<polyline fill="none" stroke="#174d40" points="1321,-428 1321,-464 "/>
+<text text-anchor="middle" x="1345.5" y="-443.5" font-family="DejaVu Sans" font-size="10.00">Powod</text>
+<polyline fill="none" stroke="#174d40" points="1370,-428 1370,-464 "/>
+<text text-anchor="middle" x="1416.5" y="-443.5" font-family="DejaVu Sans" font-size="10.00">ID_Admina [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1463,-428 1463,-464 "/>
+<text text-anchor="middle" x="1510.5" y="-443.5" font-family="DejaVu Sans" font-size="10.00">DataUtworzenia</text>
+</g>
+
+<g id="node7" class="node">
+<title>Pokoje</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="1843,-483 1843,-519 2554,-519 2554,-483 1843,-483"/>
+<text text-anchor="middle" x="1867.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">Pokoje</text>
+<polyline fill="none" stroke="#174d40" points="1892,-483 1892,-519 "/>
+<text text-anchor="middle" x="1936" y="-498.5" font-family="DejaVu Sans" font-size="10.00">ID_Pokoju [PK]</text>
+<polyline fill="none" stroke="#174d40" points="1980,-483 1980,-519 "/>
+<text text-anchor="middle" x="2010" y="-498.5" font-family="DejaVu Sans" font-size="10.00">NrPokoju</text>
+<polyline fill="none" stroke="#174d40" points="2040,-483 2040,-519 "/>
+<text text-anchor="middle" x="2079" y="-498.5" font-family="DejaVu Sans" font-size="10.00">ID_Typu [FK]</text>
+<polyline fill="none" stroke="#174d40" points="2118,-483 2118,-519 "/>
+<text text-anchor="middle" x="2158.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">CenaDobowa</text>
+<polyline fill="none" stroke="#174d40" points="2199,-483 2199,-519 "/>
+<text text-anchor="middle" x="2222.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">Status</text>
+<polyline fill="none" stroke="#174d40" points="2246,-483 2246,-519 "/>
+<text text-anchor="middle" x="2278" y="-498.5" font-family="DejaVu Sans" font-size="10.00">IloscOsob</text>
+<polyline fill="none" stroke="#174d40" points="2310,-483 2310,-519 "/>
+<text text-anchor="middle" x="2332.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">Pietro</text>
+<polyline fill="none" stroke="#174d40" points="2355,-483 2355,-519 "/>
+<text text-anchor="middle" x="2400" y="-498.5" font-family="DejaVu Sans" font-size="10.00">Zdjecie_Pokoju</text>
+<polyline fill="none" stroke="#174d40" points="2445,-483 2445,-519 "/>
+<text text-anchor="middle" x="2474.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">Aktywny</text>
+<polyline fill="none" stroke="#174d40" points="2504,-483 2504,-519 "/>
+<text text-anchor="middle" x="2529" y="-498.5" font-family="DejaVu Sans" font-size="10.00">Wersja</text>
+</g>
+
+<g id="edge2" class="edge">
+<title>BlokadyPokoi&#45;&gt;Pokoje</title>
+<path fill="none" stroke="#627a70" d="M1558.08,-463.69C1660.53,-469.67 1775.19,-476.36 1878.81,-482.41"/>
+<polygon fill="#627a70" stroke="#627a70" points="1878.62,-485.9 1888.81,-482.99 1879.03,-478.91 1878.62,-485.9"/>
+<text text-anchor="middle" x="1784.5" y="-480.6" font-family="DejaVu Sans" font-size="8.00">ID_Pokoju</text>
+<text text-anchor="middle" x="1885.81" y="-476.59" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1561.58" y="-457.29" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node15" class="node">
+<title>Uzytkownicy</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="2676,-304 2676,-340 3306,-340 3306,-304 2676,-304"/>
+<text text-anchor="middle" x="2715.5" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Uzytkownicy</text>
+<polyline fill="none" stroke="#174d40" points="2755,-304 2755,-340 "/>
+<text text-anchor="middle" x="2814" y="-319.5" font-family="DejaVu Sans" font-size="10.00">ID_Uzytkownika [PK]</text>
+<polyline fill="none" stroke="#174d40" points="2873,-304 2873,-340 "/>
+<text text-anchor="middle" x="2892" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Imie</text>
+<polyline fill="none" stroke="#174d40" points="2911,-304 2911,-340 "/>
+<text text-anchor="middle" x="2942.5" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Nazwisko</text>
+<polyline fill="none" stroke="#174d40" points="2974,-304 2974,-340 "/>
+<text text-anchor="middle" x="2996" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Email</text>
+<polyline fill="none" stroke="#174d40" points="3018,-304 3018,-340 "/>
+<text text-anchor="middle" x="3044" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Telefon</text>
+<polyline fill="none" stroke="#174d40" points="3070,-304 3070,-340 "/>
+<text text-anchor="middle" x="3092" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Haslo</text>
+<polyline fill="none" stroke="#174d40" points="3114,-304 3114,-340 "/>
+<text text-anchor="middle" x="3133" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Rola</text>
+<polyline fill="none" stroke="#174d40" points="3152,-304 3152,-340 "/>
+<text text-anchor="middle" x="3181.5" y="-319.5" font-family="DejaVu Sans" font-size="10.00">Aktywny</text>
+<polyline fill="none" stroke="#174d40" points="3211,-304 3211,-340 "/>
+<text text-anchor="middle" x="3258.5" y="-319.5" font-family="DejaVu Sans" font-size="10.00">DataUtworzenia</text>
+</g>
+
+<g id="edge1" class="edge">
+<title>BlokadyPokoi&#45;&gt;Uzytkownicy</title>
+<path fill="none" stroke="#627a70" d="M1472.07,-427.99C1583.01,-418.95 1720.18,-408.03 1843,-399 2133.15,-377.67 2464.76,-355.67 2696.54,-340.67"/>
+<polygon fill="#627a70" stroke="#627a70" points="2697.06,-344.15 2706.81,-340.01 2696.61,-337.16 2697.06,-344.15"/>
+<text text-anchor="middle" x="2198.5" y="-401.6" font-family="DejaVu Sans" font-size="8.00">ID_Admina</text>
+<text text-anchor="middle" x="2703.81" y="-342.61" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1468.57" y="-421.59" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node2" class="node">
+<title>GrafikPracownikow</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="982.5,-238 982.5,-274 1525.5,-274 1525.5,-238 982.5,-238"/>
+<text text-anchor="middle" x="1037.5" y="-253.5" font-family="DejaVu Sans" font-size="10.00">GrafikPracownikow</text>
+<polyline fill="none" stroke="#174d40" points="1092.5,-238 1092.5,-274 "/>
+<text text-anchor="middle" x="1135.5" y="-253.5" font-family="DejaVu Sans" font-size="10.00">ID_Wpisu [PK]</text>
+<polyline fill="none" stroke="#174d40" points="1178.5,-238 1178.5,-274 "/>
+<text text-anchor="middle" x="1234" y="-253.5" font-family="DejaVu Sans" font-size="10.00">ID_Pracownika [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1289.5,-238 1289.5,-274 "/>
+<text text-anchor="middle" x="1309.5" y="-253.5" font-family="DejaVu Sans" font-size="10.00">Data</text>
+<polyline fill="none" stroke="#174d40" points="1329.5,-238 1329.5,-274 "/>
+<text text-anchor="middle" x="1357.5" y="-253.5" font-family="DejaVu Sans" font-size="10.00">TypDnia</text>
+<polyline fill="none" stroke="#174d40" points="1385.5,-238 1385.5,-274 "/>
+<text text-anchor="middle" x="1420.5" y="-253.5" font-family="DejaVu Sans" font-size="10.00">GodzinaOd</text>
+<polyline fill="none" stroke="#174d40" points="1455.5,-238 1455.5,-274 "/>
+<text text-anchor="middle" x="1490.5" y="-253.5" font-family="DejaVu Sans" font-size="10.00">GodzinaDo</text>
+</g>
+
+<g id="node8" class="node">
+<title>Pracownicy</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="1944,-235 1944,-271 2453,-271 2453,-235 1944,-235"/>
+<text text-anchor="middle" x="1980" y="-250.5" font-family="DejaVu Sans" font-size="10.00">Pracownicy</text>
+<polyline fill="none" stroke="#174d40" points="2016,-235 2016,-271 "/>
+<text text-anchor="middle" x="2071.5" y="-250.5" font-family="DejaVu Sans" font-size="10.00">ID_Pracownika [PK]</text>
+<polyline fill="none" stroke="#174d40" points="2127,-235 2127,-271 "/>
+<text text-anchor="middle" x="2186" y="-250.5" font-family="DejaVu Sans" font-size="10.00">ID_Uzytkownika [FK]</text>
+<polyline fill="none" stroke="#174d40" points="2245,-235 2245,-271 "/>
+<text text-anchor="middle" x="2300.5" y="-250.5" font-family="DejaVu Sans" font-size="10.00">ID_Stanowiska [FK]</text>
+<polyline fill="none" stroke="#174d40" points="2356,-235 2356,-271 "/>
+<text text-anchor="middle" x="2385.5" y="-250.5" font-family="DejaVu Sans" font-size="10.00">Aktywny</text>
+<polyline fill="none" stroke="#174d40" points="2415,-235 2415,-271 "/>
+<text text-anchor="middle" x="2434" y="-250.5" font-family="DejaVu Sans" font-size="10.00">Opis</text>
+</g>
+
+<g id="edge3" class="edge">
+<title>GrafikPracownikow&#45;&gt;Pracownicy</title>
+<path fill="none" stroke="#627a70" d="M1525.71,-255.14C1653.86,-254.73 1806.34,-254.25 1933.61,-253.84"/>
+<polygon fill="#627a70" stroke="#627a70" points="1933.9,-257.34 1943.89,-253.81 1933.88,-250.34 1933.9,-257.34"/>
+<text text-anchor="middle" x="1784.5" y="-257.6" font-family="DejaVu Sans" font-size="8.00">ID_Pracownika</text>
+<text text-anchor="middle" x="1940.89" y="-247.41" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1529.21" y="-248.74" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node3" class="node">
+<title>KategorieUslug</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="2851,-9 2851,-45 3131,-45 3131,-9 2851,-9"/>
+<text text-anchor="middle" x="2897" y="-24.5" font-family="DejaVu Sans" font-size="10.00">KategorieUslug</text>
+<polyline fill="none" stroke="#174d40" points="2943,-9 2943,-45 "/>
+<text text-anchor="middle" x="2993" y="-24.5" font-family="DejaVu Sans" font-size="10.00">ID_Kategorii [PK]</text>
+<polyline fill="none" stroke="#174d40" points="3043,-9 3043,-45 "/>
+<text text-anchor="middle" x="3068" y="-24.5" font-family="DejaVu Sans" font-size="10.00">Nazwa</text>
+<polyline fill="none" stroke="#174d40" points="3093,-9 3093,-45 "/>
+<text text-anchor="middle" x="3112" y="-24.5" font-family="DejaVu Sans" font-size="10.00">Opis</text>
+</g>
+
+<g id="node4" class="node">
+<title>LogAdministratora</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="1920.5,-421 1920.5,-457 2476.5,-457 2476.5,-421 1920.5,-421"/>
+<text text-anchor="middle" x="1974" y="-436.5" font-family="DejaVu Sans" font-size="10.00">LogAdministratora</text>
+<polyline fill="none" stroke="#174d40" points="2027.5,-421 2027.5,-457 "/>
+<text text-anchor="middle" x="2067" y="-436.5" font-family="DejaVu Sans" font-size="10.00">ID_Logu [PK]</text>
+<polyline fill="none" stroke="#174d40" points="2106.5,-421 2106.5,-457 "/>
+<text text-anchor="middle" x="2153" y="-436.5" font-family="DejaVu Sans" font-size="10.00">ID_Admina [FK]</text>
+<polyline fill="none" stroke="#174d40" points="2199.5,-421 2199.5,-457 "/>
+<text text-anchor="middle" x="2221.5" y="-436.5" font-family="DejaVu Sans" font-size="10.00">Akcja</text>
+<polyline fill="none" stroke="#174d40" points="2243.5,-421 2243.5,-457 "/>
+<text text-anchor="middle" x="2268" y="-436.5" font-family="DejaVu Sans" font-size="10.00">Obiekt</text>
+<polyline fill="none" stroke="#174d40" points="2292.5,-421 2292.5,-457 "/>
+<text text-anchor="middle" x="2328" y="-436.5" font-family="DejaVu Sans" font-size="10.00">ID_Obiektu</text>
+<polyline fill="none" stroke="#174d40" points="2363.5,-421 2363.5,-457 "/>
+<text text-anchor="middle" x="2385.5" y="-436.5" font-family="DejaVu Sans" font-size="10.00">Przed</text>
+<polyline fill="none" stroke="#174d40" points="2407.5,-421 2407.5,-457 "/>
+<text text-anchor="middle" x="2422" y="-436.5" font-family="DejaVu Sans" font-size="10.00">Po</text>
+<polyline fill="none" stroke="#174d40" points="2436.5,-421 2436.5,-457 "/>
+<text text-anchor="middle" x="2456.5" y="-436.5" font-family="DejaVu Sans" font-size="10.00">Czas</text>
+</g>
+
+<g id="edge4" class="edge">
+<title>LogAdministratora&#45;&gt;Uzytkownicy</title>
+<path fill="none" stroke="#627a70" d="M2476.63,-424.97C2533.19,-420.14 2592.17,-413.66 2647,-405 2742.17,-389.97 2849.86,-362.09 2918.76,-342.81"/>
+<polygon fill="#627a70" stroke="#627a70" points="2919.96,-346.11 2928.64,-340.03 2918.07,-339.37 2919.96,-346.11"/>
+<text text-anchor="middle" x="2615" y="-415.6" font-family="DejaVu Sans" font-size="8.00">ID_Admina</text>
+<text text-anchor="middle" x="2925.64" y="-342.63" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="2480.13" y="-418.57" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node5" class="node">
+<title>Migracje</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="247.5,-364 247.5,-400 419.5,-400 419.5,-364 247.5,-364"/>
+<text text-anchor="middle" x="277" y="-379.5" font-family="DejaVu Sans" font-size="10.00">Migracje</text>
+<polyline fill="none" stroke="#174d40" points="306.5,-364 306.5,-400 "/>
+<text text-anchor="middle" x="343" y="-379.5" font-family="DejaVu Sans" font-size="10.00">Nazwa [PK]</text>
+<polyline fill="none" stroke="#174d40" points="379.5,-364 379.5,-400 "/>
+<text text-anchor="middle" x="399.5" y="-379.5" font-family="DejaVu Sans" font-size="10.00">Czas</text>
+</g>
+
+<g id="node6" class="node">
+<title>Platnosci</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="41.5,-302 41.5,-338 625.5,-338 625.5,-302 41.5,-302"/>
+<text text-anchor="middle" x="72" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Platnosci</text>
+<polyline fill="none" stroke="#174d40" points="102.5,-302 102.5,-338 "/>
+<text text-anchor="middle" x="152.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">ID_Platnosci [PK]</text>
+<polyline fill="none" stroke="#174d40" points="202.5,-302 202.5,-338 "/>
+<text text-anchor="middle" x="257" y="-317.5" font-family="DejaVu Sans" font-size="10.00">ID_Rezerwacji [FK]</text>
+<polyline fill="none" stroke="#174d40" points="311.5,-302 311.5,-338 "/>
+<text text-anchor="middle" x="353.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">DataPlatnosci</text>
+<polyline fill="none" stroke="#174d40" points="395.5,-302 395.5,-338 "/>
+<text text-anchor="middle" x="419" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Kwota</text>
+<polyline fill="none" stroke="#174d40" points="442.5,-302 442.5,-338 "/>
+<text text-anchor="middle" x="469" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Metoda</text>
+<polyline fill="none" stroke="#174d40" points="495.5,-302 495.5,-338 "/>
+<text text-anchor="middle" x="519" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Status</text>
+<polyline fill="none" stroke="#174d40" points="542.5,-302 542.5,-338 "/>
+<text text-anchor="middle" x="584" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Typ_platnosci</text>
+</g>
+
+<g id="node11" class="node">
+<title>Rezerwacje</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="782,-302 782,-338 1726,-338 1726,-302 782,-302"/>
+<text text-anchor="middle" x="818.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Rezerwacje</text>
+<polyline fill="none" stroke="#174d40" points="855,-302 855,-338 "/>
+<text text-anchor="middle" x="909.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">ID_Rezerwacji [PK]</text>
+<polyline fill="none" stroke="#174d40" points="964,-302 964,-338 "/>
+<text text-anchor="middle" x="1008" y="-317.5" font-family="DejaVu Sans" font-size="10.00">ID_Pokoju [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1052,-302 1052,-338 "/>
+<text text-anchor="middle" x="1097" y="-317.5" font-family="DejaVu Sans" font-size="10.00">ID_Klienta [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1142,-302 1142,-338 "/>
+<text text-anchor="middle" x="1197.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">ID_Pracownika [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1253,-302 1253,-338 "/>
+<text text-anchor="middle" x="1279.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">DataOd</text>
+<polyline fill="none" stroke="#174d40" points="1306,-302 1306,-338 "/>
+<text text-anchor="middle" x="1332.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">DataDo</text>
+<polyline fill="none" stroke="#174d40" points="1359,-302 1359,-338 "/>
+<text text-anchor="middle" x="1382.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Kwota</text>
+<polyline fill="none" stroke="#174d40" points="1406,-302 1406,-338 "/>
+<text text-anchor="middle" x="1429.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Status</text>
+<polyline fill="none" stroke="#174d40" points="1453,-302 1453,-338 "/>
+<text text-anchor="middle" x="1505" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Zrodlo_rezerwacji</text>
+<polyline fill="none" stroke="#174d40" points="1557,-302 1557,-338 "/>
+<text text-anchor="middle" x="1580.5" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Uwagi</text>
+<polyline fill="none" stroke="#174d40" points="1604,-302 1604,-338 "/>
+<text text-anchor="middle" x="1640" y="-317.5" font-family="DejaVu Sans" font-size="10.00">LiczbaOsob</text>
+<polyline fill="none" stroke="#174d40" points="1676,-302 1676,-338 "/>
+<text text-anchor="middle" x="1701" y="-317.5" font-family="DejaVu Sans" font-size="10.00">Wersja</text>
+</g>
+
+<g id="edge5" class="edge">
+<title>Platnosci&#45;&gt;Rezerwacje</title>
+<path fill="none" stroke="#627a70" d="M625.75,-320C672.45,-320 721.84,-320 771.57,-320"/>
+<polygon fill="#627a70" stroke="#627a70" points="771.85,-323.5 781.85,-320 771.85,-316.5 771.85,-323.5"/>
+<text text-anchor="middle" x="724.5" y="-322.6" font-family="DejaVu Sans" font-size="8.00">ID_Rezerwacji</text>
+<text text-anchor="middle" x="778.85" y="-313.6" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="629.25" y="-313.6" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node13" class="node">
+<title>TypyPokoi</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="2864.5,-483 2864.5,-519 3117.5,-519 3117.5,-483 2864.5,-483"/>
+<text text-anchor="middle" x="2897" y="-498.5" font-family="DejaVu Sans" font-size="10.00">TypyPokoi</text>
+<polyline fill="none" stroke="#174d40" points="2929.5,-483 2929.5,-519 "/>
+<text text-anchor="middle" x="2968.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">ID_Typu [PK]</text>
+<polyline fill="none" stroke="#174d40" points="3007.5,-483 3007.5,-519 "/>
+<text text-anchor="middle" x="3043.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">NazwaTypu</text>
+<polyline fill="none" stroke="#174d40" points="3079.5,-483 3079.5,-519 "/>
+<text text-anchor="middle" x="3098.5" y="-498.5" font-family="DejaVu Sans" font-size="10.00">Opis</text>
+</g>
+
+<g id="edge6" class="edge">
+<title>Pokoje&#45;&gt;TypyPokoi</title>
+<path fill="none" stroke="#627a70" d="M2554.28,-501C2660.67,-501 2771,-501 2854.02,-501"/>
+<polygon fill="#627a70" stroke="#627a70" points="2854.27,-504.5 2864.27,-501 2854.27,-497.5 2854.27,-504.5"/>
+<text text-anchor="middle" x="2615" y="-503.6" font-family="DejaVu Sans" font-size="8.00">ID_Typu</text>
+<text text-anchor="middle" x="2861.27" y="-494.6" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="2557.78" y="-494.6" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node12" class="node">
+<title>Stanowiska</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="2806,-235 2806,-271 3176,-271 3176,-235 2806,-235"/>
+<text text-anchor="middle" x="2842" y="-250.5" font-family="DejaVu Sans" font-size="10.00">Stanowiska</text>
+<polyline fill="none" stroke="#174d40" points="2878,-235 2878,-271 "/>
+<text text-anchor="middle" x="2933.5" y="-250.5" font-family="DejaVu Sans" font-size="10.00">ID_Stanowiska [PK]</text>
+<polyline fill="none" stroke="#174d40" points="2989,-235 2989,-271 "/>
+<text text-anchor="middle" x="3044" y="-250.5" font-family="DejaVu Sans" font-size="10.00">Nazwa_stanowiska</text>
+<polyline fill="none" stroke="#174d40" points="3099,-235 3099,-271 "/>
+<text text-anchor="middle" x="3137.5" y="-250.5" font-family="DejaVu Sans" font-size="10.00">Placa_brutto</text>
+</g>
+
+<g id="edge7" class="edge">
+<title>Pracownicy&#45;&gt;Stanowiska</title>
+<path fill="none" stroke="#627a70" d="M2453.15,-253C2564.15,-253 2692.31,-253 2795.57,-253"/>
+<polygon fill="#627a70" stroke="#627a70" points="2795.8,-256.5 2805.8,-253 2795.8,-249.5 2795.8,-256.5"/>
+<text text-anchor="middle" x="2615" y="-255.6" font-family="DejaVu Sans" font-size="8.00">ID_Stanowiska</text>
+<text text-anchor="middle" x="2802.8" y="-246.6" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="2456.65" y="-246.6" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="edge8" class="edge">
+<title>Pracownicy&#45;&gt;Uzytkownicy</title>
+<path fill="none" stroke="#627a70" d="M2405.9,-271.02C2518.92,-280.88 2658.86,-293.1 2773.43,-303.1"/>
+<polygon fill="#627a70" stroke="#627a70" points="2773.46,-306.62 2783.73,-304 2774.07,-299.64 2773.46,-306.62"/>
+<text text-anchor="middle" x="2615" y="-294.6" font-family="DejaVu Sans" font-size="8.00">ID_Uzytkownika</text>
+<text text-anchor="middle" x="2780.73" y="-297.6" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="2402.4" y="-273.62" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node9" class="node">
+<title>Pracownicy_Uslugi</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="1078,-168 1078,-204 1430,-204 1430,-168 1078,-168"/>
+<text text-anchor="middle" x="1132" y="-183.5" font-family="DejaVu Sans" font-size="10.00">Pracownicy_Uslugi</text>
+<polyline fill="none" stroke="#174d40" points="1186,-168 1186,-204 "/>
+<text text-anchor="middle" x="1253" y="-183.5" font-family="DejaVu Sans" font-size="10.00">ID_Pracownika [PK] [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1320,-168 1320,-204 "/>
+<text text-anchor="middle" x="1375" y="-183.5" font-family="DejaVu Sans" font-size="10.00">ID_Uslugi [PK] [FK]</text>
+</g>
+
+<g id="edge9" class="edge">
+<title>Pracownicy_Uslugi&#45;&gt;Pracownicy</title>
+<path fill="none" stroke="#627a70" d="M1430.07,-198.45C1571.64,-208.51 1773.18,-222.84 1934.2,-234.29"/>
+<polygon fill="#627a70" stroke="#627a70" points="1934.04,-237.78 1944.26,-235 1934.53,-230.8 1934.04,-237.78"/>
+<text text-anchor="middle" x="1784.5" y="-228.6" font-family="DejaVu Sans" font-size="8.00">ID_Pracownika</text>
+<text text-anchor="middle" x="1941.26" y="-228.6" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1433.57" y="-201.05" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node14" class="node">
+<title>Uslugi_dodatkowe</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="1891.5,-9 1891.5,-45 2505.5,-45 2505.5,-9 1891.5,-9"/>
+<text text-anchor="middle" x="1944.5" y="-24.5" font-family="DejaVu Sans" font-size="10.00">Uslugi_dodatkowe</text>
+<polyline fill="none" stroke="#174d40" points="1997.5,-9 1997.5,-45 "/>
+<text text-anchor="middle" x="2040.5" y="-24.5" font-family="DejaVu Sans" font-size="10.00">ID_Uslugi [PK]</text>
+<polyline fill="none" stroke="#174d40" points="2083.5,-9 2083.5,-45 "/>
+<text text-anchor="middle" x="2126.5" y="-24.5" font-family="DejaVu Sans" font-size="10.00">Nazwa_Uslugi</text>
+<polyline fill="none" stroke="#174d40" points="2169.5,-9 2169.5,-45 "/>
+<text text-anchor="middle" x="2188.5" y="-24.5" font-family="DejaVu Sans" font-size="10.00">Opis</text>
+<polyline fill="none" stroke="#174d40" points="2207.5,-9 2207.5,-45 "/>
+<text text-anchor="middle" x="2228" y="-24.5" font-family="DejaVu Sans" font-size="10.00">Cena</text>
+<polyline fill="none" stroke="#174d40" points="2248.5,-9 2248.5,-45 "/>
+<text text-anchor="middle" x="2288.5" y="-24.5" font-family="DejaVu Sans" font-size="10.00">Czydostepna</text>
+<polyline fill="none" stroke="#174d40" points="2328.5,-9 2328.5,-45 "/>
+<text text-anchor="middle" x="2378.5" y="-24.5" font-family="DejaVu Sans" font-size="10.00">ID_Kategorii [FK]</text>
+<polyline fill="none" stroke="#174d40" points="2428.5,-9 2428.5,-45 "/>
+<text text-anchor="middle" x="2467" y="-24.5" font-family="DejaVu Sans" font-size="10.00">CzasTrwania</text>
+</g>
+
+<g id="edge10" class="edge">
+<title>Pracownicy_Uslugi&#45;&gt;Uslugi_dodatkowe</title>
+<path fill="none" stroke="#627a70" d="M1430.17,-194.92C1571.34,-198.45 1755.59,-193.61 1814,-149 1845.39,-125.03 1812.11,-89.61 1843,-65 1902.18,-17.87 1985.67,-7.08 2056.76,-8.68"/>
+<polygon fill="#627a70" stroke="#627a70" points="2057.06,-12.19 2067.16,-9 2057.27,-5.19 2057.06,-12.19"/>
+<text text-anchor="middle" x="1784.5" y="-174.6" font-family="DejaVu Sans" font-size="8.00">ID_Uslugi</text>
+<text text-anchor="middle" x="2064.16" y="-2.6" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1433.67" y="-188.52" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node10" class="node">
+<title>Proby_logowania</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="187,-426 187,-462 480,-462 480,-426 187,-426"/>
+<text text-anchor="middle" x="237" y="-441.5" font-family="DejaVu Sans" font-size="10.00">Proby_logowania</text>
+<polyline fill="none" stroke="#174d40" points="287,-426 287,-462 "/>
+<text text-anchor="middle" x="328.5" y="-441.5" font-family="DejaVu Sans" font-size="10.00">ID_Proby [PK]</text>
+<polyline fill="none" stroke="#174d40" points="370,-426 370,-462 "/>
+<text text-anchor="middle" x="392" y="-441.5" font-family="DejaVu Sans" font-size="10.00">Email</text>
+<polyline fill="none" stroke="#174d40" points="414,-426 414,-462 "/>
+<text text-anchor="middle" x="427" y="-441.5" font-family="DejaVu Sans" font-size="10.00">IP</text>
+<polyline fill="none" stroke="#174d40" points="440,-426 440,-462 "/>
+<text text-anchor="middle" x="460" y="-441.5" font-family="DejaVu Sans" font-size="10.00">Czas</text>
+</g>
+
+<g id="edge12" class="edge">
+<title>Rezerwacje&#45;&gt;Pokoje</title>
+<path fill="none" stroke="#627a70" d="M1387.65,-338.03C1483.25,-353.11 1614.52,-378.16 1726,-415 1780.56,-433.04 1787.52,-455.05 1843,-470 1858.56,-474.2 1874.63,-477.86 1890.94,-481.05"/>
+<polygon fill="#627a70" stroke="#627a70" points="1890.66,-484.56 1901.13,-482.98 1891.96,-477.68 1890.66,-484.56"/>
+<text text-anchor="middle" x="1784.5" y="-461.6" font-family="DejaVu Sans" font-size="8.00">ID_Pokoju</text>
+<text text-anchor="middle" x="1898.13" y="-476.58" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1384.15" y="-340.63" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="edge13" class="edge">
+<title>Rezerwacje&#45;&gt;Pracownicy</title>
+<path fill="none" stroke="#627a70" d="M1513.52,-301.99C1582.55,-297.15 1657.11,-291.9 1726,-287 1795.05,-282.09 1869.79,-276.73 1938.97,-271.74"/>
+<polygon fill="#627a70" stroke="#627a70" points="1939.41,-275.22 1949.14,-271.01 1938.91,-268.24 1939.41,-275.22"/>
+<text text-anchor="middle" x="1784.5" y="-287.6" font-family="DejaVu Sans" font-size="8.00">ID_Pracownika</text>
+<text text-anchor="middle" x="1946.14" y="-273.61" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1510.02" y="-295.59" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="edge11" class="edge">
+<title>Rezerwacje&#45;&gt;Uzytkownicy</title>
+<path fill="none" stroke="#627a70" d="M1726.23,-320.55C2024.07,-320.89 2401.29,-321.32 2665.77,-321.63"/>
+<polygon fill="#627a70" stroke="#627a70" points="2665.91,-325.13 2675.91,-321.64 2665.92,-318.13 2665.91,-325.13"/>
+<text text-anchor="middle" x="2198.5" y="-324.6" font-family="DejaVu Sans" font-size="8.00">ID_Klienta</text>
+<text text-anchor="middle" x="2672.91" y="-315.24" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1729.73" y="-314.15" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="edge14" class="edge">
+<title>Uslugi_dodatkowe&#45;&gt;KategorieUslug</title>
+<path fill="none" stroke="#627a70" d="M2505.69,-27C2620.7,-27 2746.32,-27 2840.79,-27"/>
+<polygon fill="#627a70" stroke="#627a70" points="2840.99,-30.5 2850.99,-27 2840.99,-23.5 2840.99,-30.5"/>
+<text text-anchor="middle" x="2615" y="-29.6" font-family="DejaVu Sans" font-size="8.00">ID_Kategorii</text>
+<text text-anchor="middle" x="2847.99" y="-20.6" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="2509.19" y="-20.6" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node16" class="node">
+<title>WizytyUslug</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="834,-78 834,-114 1674,-114 1674,-78 834,-78"/>
+<text text-anchor="middle" x="873" y="-93.5" font-family="DejaVu Sans" font-size="10.00">WizytyUslug</text>
+<polyline fill="none" stroke="#174d40" points="912,-78 912,-114 "/>
+<text text-anchor="middle" x="956.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">ID_Wizyty [PK]</text>
+<polyline fill="none" stroke="#174d40" points="1001,-78 1001,-114 "/>
+<text text-anchor="middle" x="1046" y="-93.5" font-family="DejaVu Sans" font-size="10.00">ID_Klienta [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1091,-78 1091,-114 "/>
+<text text-anchor="middle" x="1146.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">ID_Pracownika [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1202,-78 1202,-114 "/>
+<text text-anchor="middle" x="1245" y="-93.5" font-family="DejaVu Sans" font-size="10.00">ID_Uslugi [FK]</text>
+<polyline fill="none" stroke="#174d40" points="1288,-78 1288,-114 "/>
+<text text-anchor="middle" x="1314.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">DataOd</text>
+<polyline fill="none" stroke="#174d40" points="1341,-78 1341,-114 "/>
+<text text-anchor="middle" x="1367.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">DataDo</text>
+<polyline fill="none" stroke="#174d40" points="1394,-78 1394,-114 "/>
+<text text-anchor="middle" x="1414.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">Cena</text>
+<polyline fill="none" stroke="#174d40" points="1435,-78 1435,-114 "/>
+<text text-anchor="middle" x="1458.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">Status</text>
+<polyline fill="none" stroke="#174d40" points="1482,-78 1482,-114 "/>
+<text text-anchor="middle" x="1505.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">Uwagi</text>
+<polyline fill="none" stroke="#174d40" points="1529,-78 1529,-114 "/>
+<text text-anchor="middle" x="1554" y="-93.5" font-family="DejaVu Sans" font-size="10.00">Wersja</text>
+<polyline fill="none" stroke="#174d40" points="1579,-78 1579,-114 "/>
+<text text-anchor="middle" x="1626.5" y="-93.5" font-family="DejaVu Sans" font-size="10.00">DataUtworzenia</text>
+</g>
+
+<g id="edge16" class="edge">
+<title>WizytyUslug&#45;&gt;Pracownicy</title>
+<path fill="none" stroke="#627a70" d="M1622.89,-114.01C1686.9,-120.26 1752.61,-128.67 1814,-140 1931.42,-161.68 2064.2,-205.25 2138.68,-231.5"/>
+<polygon fill="#627a70" stroke="#627a70" points="2137.76,-234.89 2148.35,-234.93 2140.1,-228.29 2137.76,-234.89"/>
+<text text-anchor="middle" x="1784.5" y="-142.6" font-family="DejaVu Sans" font-size="8.00">ID_Pracownika</text>
+<text text-anchor="middle" x="2145.35" y="-228.53" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1619.39" y="-116.61" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="edge17" class="edge">
+<title>WizytyUslug&#45;&gt;Uslugi_dodatkowe</title>
+<path fill="none" stroke="#627a70" d="M1501.09,-77.99C1636.51,-68.07 1804.36,-55.78 1941.34,-45.76"/>
+<polygon fill="#627a70" stroke="#627a70" points="1941.85,-49.23 1951.57,-45.01 1941.34,-42.25 1941.85,-49.23"/>
+<text text-anchor="middle" x="1784.5" y="-60.6" font-family="DejaVu Sans" font-size="8.00">ID_Uslugi</text>
+<text text-anchor="middle" x="1948.57" y="-47.61" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1497.59" y="-71.59" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="edge15" class="edge">
+<title>WizytyUslug&#45;&gt;Uzytkownicy</title>
+<path fill="none" stroke="#627a70" d="M1635.6,-114.02C1695.35,-117.74 1756.38,-122.06 1814,-127 2143.89,-155.29 2231.85,-136.52 2554,-213 2596.82,-223.17 2611.39,-221.14 2647,-247 2663.9,-259.28 2657.8,-273.74 2676,-284 2687.04,-290.23 2698.64,-295.64 2710.62,-300.33"/>
+<polygon fill="#627a70" stroke="#627a70" points="2709.7,-303.72 2720.29,-303.94 2712.15,-297.16 2709.7,-303.72"/>
+<text text-anchor="middle" x="2198.5" y="-215.6" font-family="DejaVu Sans" font-size="8.00">ID_Klienta</text>
+<text text-anchor="middle" x="2717.29" y="-297.54" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="1632.1" y="-116.62" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="node17" class="node">
+<title>ZamowieniaUslugi</title>
+<polygon fill="#f1f5ee" stroke="#174d40" points="0,-125 0,-161 667,-161 667,-125 0,-125"/>
+<text text-anchor="middle" x="54" y="-140.5" font-family="DejaVu Sans" font-size="10.00">ZamowieniaUslugi</text>
+<polyline fill="none" stroke="#174d40" points="108,-125 108,-161 "/>
+<text text-anchor="middle" x="166" y="-140.5" font-family="DejaVu Sans" font-size="10.00">ID_Zamowienia [PK]</text>
+<polyline fill="none" stroke="#174d40" points="224,-125 224,-161 "/>
+<text text-anchor="middle" x="278.5" y="-140.5" font-family="DejaVu Sans" font-size="10.00">ID_Rezerwacji [FK]</text>
+<polyline fill="none" stroke="#174d40" points="333,-125 333,-161 "/>
+<text text-anchor="middle" x="376" y="-140.5" font-family="DejaVu Sans" font-size="10.00">ID_Uslugi [FK]</text>
+<polyline fill="none" stroke="#174d40" points="419,-125 419,-161 "/>
+<text text-anchor="middle" x="469.5" y="-140.5" font-family="DejaVu Sans" font-size="10.00">DataZamowienia</text>
+<polyline fill="none" stroke="#174d40" points="520,-125 520,-161 "/>
+<text text-anchor="middle" x="539.5" y="-140.5" font-family="DejaVu Sans" font-size="10.00">Ilosc</text>
+<polyline fill="none" stroke="#174d40" points="559,-125 559,-161 "/>
+<text text-anchor="middle" x="613" y="-140.5" font-family="DejaVu Sans" font-size="10.00">Cena_jednostkowa</text>
+</g>
+
+<g id="edge18" class="edge">
+<title>ZamowieniaUslugi&#45;&gt;Rezerwacje</title>
+<path fill="none" stroke="#627a70" d="M378.35,-161.05C457.44,-192.7 629.94,-257.66 782,-287 809.72,-292.35 838.5,-296.86 867.57,-300.65"/>
+<polygon fill="#627a70" stroke="#627a70" points="867.49,-304.17 877.86,-301.97 868.38,-297.23 867.49,-304.17"/>
+<text text-anchor="middle" x="724.5" y="-282.6" font-family="DejaVu Sans" font-size="8.00">ID_Rezerwacji</text>
+<text text-anchor="middle" x="874.86" y="-295.57" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="374.85" y="-163.65" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+
+<g id="edge19" class="edge">
+<title>ZamowieniaUslugi&#45;&gt;Uslugi_dodatkowe</title>
+<path fill="none" stroke="#627a70" d="M406.78,-124.98C494.77,-103.96 648.21,-70.27 782,-56 1158.21,-15.88 1593.75,-13.52 1881.27,-18.02"/>
+<polygon fill="#627a70" stroke="#627a70" points="1881.38,-21.52 1891.43,-18.18 1881.49,-14.52 1881.38,-21.52"/>
+<text text-anchor="middle" x="1254" y="-58.6" font-family="DejaVu Sans" font-size="8.00">ID_Uslugi</text>
+<text text-anchor="middle" x="1888.43" y="-11.78" font-family="DejaVu Sans" font-size="8.00">1</text>
+<text text-anchor="middle" x="403.28" y="-118.58" font-family="DejaVu Sans" font-size="8.00">N</text>
+</g>
+</g>
+</svg>

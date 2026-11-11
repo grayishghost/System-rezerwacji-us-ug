@@ -1,12 +1,15 @@
-<?php                                                                          
+<?php
+
+
+
 require_once __DIR__ . '/db.php';
 
 date_default_timezone_set('Europe/Warsaw');
 
-                              
+
 if (session_status() === PHP_SESSION_NONE) {
-                                                                                                     
-                                                                                                   
+    
+    
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
     $https = !empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off';
@@ -15,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-                                                        
+
 define('CZAS_SESJI', 1800);
 if (isset($_SESSION['user_id'])) {
     if (time() - ($_SESSION['ostatnia_aktywnosc'] ?? time()) > CZAS_SESJI) {
@@ -26,12 +29,12 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-                                           
 
-                                                                                  
+
+
 function e($tekst)
 {
-    return htmlspecialchars((string)$tekst, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)$tekst, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
 function pole_tekstowe($nazwa)
@@ -39,15 +42,15 @@ function pole_tekstowe($nazwa)
     return isset($_POST[$nazwa]) && is_string($_POST[$nazwa]) ? $_POST[$nazwa] : '';
 }
 
-                                                                                    
+
 function przekieruj($sciezka)
 {
     header('Location: ' . BASE_URL . $sciezka);
     exit;
 }
 
-                                                                                                 
-function ustaw_komunikat($typ, $tekst)                                          
+
+function ustaw_komunikat($typ, $tekst)   
 {
     $_SESSION['komunikat'] = [$typ, $tekst];
 }
@@ -61,9 +64,9 @@ function pokaz_komunikat()
     }
 }
 
-                                                                                                          
 
-                                                        
+
+
 function sprawdz_haslo($haslo)
 {
     if (str_contains($haslo, "\0")) {
@@ -72,7 +75,7 @@ function sprawdz_haslo($haslo)
     if (strlen($haslo) < 8) {
         return 'Hasło musi mieć co najmniej 8 znaków.';
     }
-    if (strlen($haslo) > 72) {                                                      
+    if (strlen($haslo) > 72) {            
         return 'Hasło może mieć maksymalnie 72 bajty (polskie znaki mogą zajmować więcej niż jeden bajt).';
     }
     if (!preg_match('/[A-Za-z]/', $haslo) || !preg_match('/[0-9]/', $haslo)) {
@@ -81,7 +84,7 @@ function sprawdz_haslo($haslo)
     return '';
 }
 
-                                                                                               
+
 function sprawdz_dane_osobowe($imie, $nazwisko, $telefon)
 {
     $bledy = [];
@@ -98,7 +101,7 @@ function sprawdz_dane_osobowe($imie, $nazwisko, $telefon)
     return $bledy;
 }
 
-                                                                                               
+
 function csrf_token()
 {
     if (empty($_SESSION['csrf_token'])) {
@@ -107,13 +110,13 @@ function csrf_token()
     return $_SESSION['csrf_token'];
 }
 
-                                                                       
+
 function csrf_pole()
 {
     return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
 }
 
-                                                             
+
 function csrf_sprawdz()
 {
     $wyslany = $_POST['csrf_token'] ?? '';
@@ -123,7 +126,7 @@ function csrf_sprawdz()
     }
 }
 
-                                         
+
 function zalogowany()
 {
     return isset($_SESSION['user_id']);
@@ -133,11 +136,11 @@ function wyloguj_uzytkownika()
 {
     session_unset();
     session_destroy();
-    session_start();                                                                     
-    session_regenerate_id(true);                              
+    session_start();               
+    session_regenerate_id(true);   
 }
 
-                                        
+
 function panel_roli($rola)
 {
     if ($rola === 'admin') {
@@ -149,8 +152,8 @@ function panel_roli($rola)
     return '/public/klient/index.php';
 }
 
-                                                                              
-                                                             
+
+
 function wymagaj_logowania()
 {
     if (!zalogowany()) {
@@ -161,15 +164,15 @@ function wymagaj_logowania()
     }
 }
 
-                                                                              
-                                                                       
+
+
 function odswiez_sesje_uzytkownika()
 {
     global $pdo;
     if (!zalogowany()) {
         return;
     }
-    $st = $pdo->prepare('SELECT Rola, Aktywny FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
+    $st = $pdo->prepare('SELECT Rola, Aktywny, Imie FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
     $st->execute([$_SESSION['user_id']]);
     $u = $st->fetch();
     if (!$u || !$u['Aktywny']) {
@@ -177,10 +180,11 @@ function odswiez_sesje_uzytkownika()
         ustaw_komunikat('error', 'Twoje konto jest nieaktywne.');
         przekieruj('/public/logowanie.php');
     }
-    $_SESSION['rola'] = $u['Rola'];                                 
+    $_SESSION['imie'] = $u['Imie'];
+    $_SESSION['rola'] = $u['Rola'];   
 }
 
-                                                                                                              
+
 function wymagaj_roli(...$dozwolone)
 {
     wymagaj_logowania();

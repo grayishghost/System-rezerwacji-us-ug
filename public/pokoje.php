@@ -16,7 +16,7 @@ require __DIR__ . '/../includes/header.php';
     <section class="rooms-grid" aria-label="Lista dostępnych pokoi">
         <?php foreach ($pokoje as $pokoj): ?>
             <article class="room-card">
-                <div class="room-card-image" aria-hidden="true"></div>
+                <img src="<?= e(gah_asset_url(gah_room_image($pokoj))) ?>" alt="Ilustracja oferty hotelowej — <?= e($pokoj['NazwaTypu']) ?>" width="640" height="400" loading="lazy" decoding="async">
                 <div class="room-card-content">
                     <p class="room-number">Pokój <?= e($pokoj['NrPokoju']) ?></p>
                     <h2><?= e($pokoj['NazwaTypu']) ?></h2>

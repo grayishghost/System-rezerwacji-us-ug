@@ -11,12 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nowe  = pole_tekstowe('nowe_haslo');
     $nowe2 = pole_tekstowe('nowe_haslo2');
 
-    // 1. Pobieramy aktualny hash hasła zalogowanego użytkownika
+    
     $st = $pdo->prepare('SELECT Haslo FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
     $st->execute([$_SESSION['user_id']]);
     $hash = $st->fetchColumn();
 
-    // 2. Walidacja
+    
     if (!$hash || !password_verify($stare, $hash)) {
         $bledy[] = 'Aktualne hasło jest nieprawidłowe.';
     }
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bledy[] = 'Nowe hasło musi się różnić od aktualnego.';
     }
 
-    // 3. Zapis nowego hasła (jako hash) i odświeżenie identyfikatora sesji
+    
     if (empty($bledy)) {
         $st = $pdo->prepare('UPDATE Uzytkownicy SET Haslo = ? WHERE ID_Uzytkownika = ?');
         $st->execute([password_hash($nowe, PASSWORD_DEFAULT), $_SESSION['user_id']]);

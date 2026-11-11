@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-wymagaj_logowania();          // każda rola może edytować swój profil
+wymagaj_logowania();          
 
 $bledy = [];
 
-// Dane zalogowanego użytkownika (id bierzemy Z SESJI, nigdy z formularza ani z adresu URL)
+
 $st = $pdo->prepare('SELECT Imie, Nazwisko, Email, Telefon, Rola, DataUtworzenia FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
 $st->execute([$_SESSION['user_id']]);
 $u = $st->fetch();
@@ -23,10 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $st->execute([$imie, $nazwisko, $telefon, $_SESSION['user_id']]);
         $_SESSION['imie'] = $imie;
         ustaw_komunikat('success', 'Dane zostały zapisane.');
-        przekieruj('/public/profil.php');    // przekierowanie, żeby F5 nie wysyłało formularza drugi raz
+        przekieruj('/public/profil.php');    
     }
 
-    // przy błędzie pokazujemy to, co wpisał użytkownik
+    
     $u['Imie'] = $imie;
     $u['Nazwisko'] = $nazwisko;
     $u['Telefon'] = $telefon;

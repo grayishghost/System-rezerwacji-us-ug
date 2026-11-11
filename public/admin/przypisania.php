@@ -13,6 +13,10 @@ a_post(function () {
         a_record('Uslugi_dodatkowe', 'ID_Uslugi', $sid);
     }
     $old = a_query('SELECT ID_Uslugi FROM Pracownicy_Uslugi WHERE ID_Pracownika=? ORDER BY ID_Uslugi', [$id])->fetchAll(PDO::FETCH_COLUMN);
+    $upcoming = a_query("SELECT DISTINCT ID_Uslugi FROM WizytyUslug WHERE ID_Pracownika=? AND DataDo>NOW() AND Status IN ('Oczekująca','Potwierdzona')", [$id])->fetchAll(PDO::FETCH_COLUMN);
+    if (array_diff($upcoming, $ids)) {
+        throw new DomainException('Nie można odpiąć usługi potrzebnej do aktywnej przyszłej wizyty. Najpierw rozwiąż tę wizytę.');
+    }
     a_query('DELETE FROM Pracownicy_Uslugi WHERE ID_Pracownika=?', [$id]);
     foreach ($ids as $sid) {
         a_query('INSERT INTO Pracownicy_Uslugi(ID_Pracownika,ID_Uslugi) VALUES(?,?)', [$id,$sid]);

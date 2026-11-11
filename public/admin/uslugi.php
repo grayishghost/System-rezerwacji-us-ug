@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/admin.php';
 a_post(function () {
+    a_enum('action', ['', 'save', 'delete']);
     global $pdo;
     $id = pole_tekstowe('id') === '0' ? 0 : a_id(pole_tekstowe('id'));
     $old = $id ? a_record('Uslugi_dodatkowe', 'ID_Uslugi', a_id($id), true) : null;
@@ -73,7 +74,7 @@ a_start('Usługi dodatkowe'); ?>
 a_select('kat', 'Kategoria', ['' => 'Wszystkie'] + $cats, $cat);
 a_select('stan', 'Dostępność', ['' => 'Wszystkie','1' => 'Aktywne','0' => 'Nieaktywne'], $state); ?><button>Filtruj</button><a href="uslugi.php">Wyczyść</a></form>
 <p class="muted">Wyników: <?= (int)$count ?>. Zmiana ceny nie zmienia historycznej ceny zamówień.</p>
-<div class="table-wrap"><table><thead><tr><th>Usługa / kategoria</th><th>Cena</th><th>Czas</th><th>Status</th><th>Operacje</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th scope="col">Usługa / kategoria</th><th scope="col">Cena</th><th scope="col">Czas</th><th scope="col">Status</th><th scope="col">Operacje</th></tr></thead><tbody>
 <?php foreach ($rows as $r): ?><tr><td><strong><?= e($r['Nazwa_Uslugi']) ?></strong><br><?= e($r['NazwaKategorii']) ?></td><td><?= e(number_format((float)$r['Cena'], 2, ',', ' ')) ?> PLN</td><td><?= (int)$r['CzasTrwania'] ?> min</td><td><span class="badge"><?= $r['Czydostepna'] ? 'Aktywna' : 'Nieaktywna' ?></span></td><td><div class="actions"><a href="?edit=<?= (int)$r['ID_Uslugi'] ?>">Edytuj</a><?php a_delete($r['ID_Uslugi']); ?></div></td></tr><?php endforeach; ?>
 <?php if (!$rows): ?><tr><td colspan="5" class="empty">Brak usług.</td></tr><?php endif; ?></tbody></table></div><?php a_pages($page, $pages);
 a_end(); ?>

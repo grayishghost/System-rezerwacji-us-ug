@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
-wymagaj_roli('klient');      // wchodzi tylko klient; reszta dostaje komunikat "Brak dostępu"
+wymagaj_roli('klient');      
 
-// Własne pobyty klienta; identyfikator zawsze pochodzi z sesji.
+
 $st = $pdo->prepare(
     'SELECT r.ID_Rezerwacji, r.DataOd, r.DataDo, r.Kwota, r.Status, p.NrPokoju
      FROM Rezerwacje r JOIN Pokoje p ON p.ID_Pokoju = r.ID_Pokoju

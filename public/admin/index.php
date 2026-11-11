@@ -1,88 +1,36 @@
 <?php
-require_once __DIR__ . '/../../includes/auth.php';
-wymagaj_roli('admin');
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_sprawdz();
-
-    $id = filter_var(pole_tekstowe('id'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-    $nowy_stan = pole_tekstowe('aktywny');
-    $aktywny = $nowy_stan === '1' ? 1 : 0;
-
-    if (!$id || !in_array($nowy_stan, ['0', '1'], true)) {
-        ustaw_komunikat('error', 'Nieprawidłowe dane konta.');
-    } elseif ($id === (int)$_SESSION['user_id']) {
-        ustaw_komunikat('error', 'Nie możesz zablokować własnego konta.');
-    } else {
-        $st = $pdo->prepare('UPDATE Uzytkownicy SET Aktywny = ? WHERE ID_Uzytkownika = ?');
-        $st->execute([$aktywny, $id]);
-        if ($st->rowCount() === 0) {
-            ustaw_komunikat('error', 'Nie znaleziono konta lub jego stan nie wymagał zmiany.');
-        } else {
-            ustaw_komunikat('success', $aktywny ? 'Konto zostało odblokowane.' : 'Konto zostało zablokowane.');
-        }
-    }
-    przekieruj('/public/admin/index.php');
+require_once __DIR__ . '/../../includes/admin.php';
+$stats = [
+ 'Pokoje udostępnione'=>a_query('SELECT COUNT(*) FROM Pokoje WHERE Aktywny=1')->fetchColumn(),
+ 'Pokoje w serwisie'=>a_query("SELECT COUNT(*) FROM Pokoje WHERE Status='Serwis'")->fetchColumn(),
+ 'Wizyty usług (wszystkie)' => a_query('SELECT COUNT(*) FROM WizytyUslug')->fetchColumn(),
+ 'Wizyty usług dziś' => a_query("SELECT COUNT(*) FROM WizytyUslug WHERE DATE(DataOd)=CURDATE() AND Status IN ('Oczekująca','Potwierdzona')")->fetchColumn(),
+ 'Klienci' => a_query("SELECT COUNT(*) FROM Uzytkownicy WHERE Rola='klient'")->fetchColumn(),
+ 'Pracownicy (wszyscy)' => a_query('SELECT COUNT(*) FROM Pracownicy')->fetchColumn(),
+ 'Usługi (wszystkie)' => a_query('SELECT COUNT(*) FROM Uslugi_dodatkowe')->fetchColumn(),
+ 'Pobyty (wszystkie)' => a_query('SELECT COUNT(*) FROM Rezerwacje')->fetchColumn(),
+ 'Pobyty dziś' => a_query("SELECT COUNT(*) FROM Rezerwacje WHERE DataOd < DATE_ADD(CURDATE(),INTERVAL 1 DAY) AND DataDo > CURDATE() AND Status IN ('Oczekująca','Potwierdzona')")->fetchColumn(),
+ 'Przyjazdy dziś' => a_query("SELECT COUNT(*) FROM Rezerwacje WHERE DATE(DataOd)=CURDATE() AND Status IN ('Oczekująca','Potwierdzona')")->fetchColumn()
+];
+$monthly = a_query("SELECT DATE_FORMAT(DataOd,'%Y-%m') AS Miesiac,COUNT(*) AS Ile,SUM(Kwota) AS Wartosc FROM Rezerwacje WHERE Status<>'Anulowana' AND DataOd>=DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 5 MONTH),'%Y-%m-01') AND DataOd<DATE_FORMAT(DATE_ADD(CURDATE(),INTERVAL 1 MONTH),'%Y-%m-01') GROUP BY Miesiac ORDER BY Miesiac")->fetchAll();
+$map = [];
+foreach ($monthly as $r) {
+    $map[$r['Miesiac']] = $r;
+}$months = [];
+for ($n = 5;$n >= 0;$n--) {
+    $m = (new DateTimeImmutable('first day of this month'))->modify("-$n months")->format('Y-m');
+    $months[] = $map[$m] ?? ['Miesiac' => $m,'Ile' => 0,'Wartosc' => 0];
 }
-
-$uzytkownicy = $pdo->query(
-    'SELECT ID_Uzytkownika, Imie, Nazwisko, Email, Telefon, Rola, Aktywny, DataUtworzenia
-     FROM Uzytkownicy ORDER BY ID_Uzytkownika'
-)->fetchAll();
-
-$tytul = 'Panel administratora';
-require __DIR__ . '/../../includes/header.php';
-?>
-
-<main class="panel-page">
-    <h1>Panel administratora</h1>
-    <?php pokaz_komunikat(); ?>
-
-    <section class="panel-box">
-        <h2>Użytkownicy</h2>
-        <div class="table-wrap">
-            <table class="panel-table">
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Imię i nazwisko</th><th>E-mail</th><th>Telefon</th>
-                        <th>Rola</th><th>Status</th><th>Akcja</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($uzytkownicy as $u): ?>
-                    <tr>
-                        <td><?= (int)$u['ID_Uzytkownika'] ?></td>
-                        <td><?= e($u['Imie'] . ' ' . $u['Nazwisko']) ?></td>
-                        <td><?= e($u['Email']) ?></td>
-                        <td><?= e($u['Telefon']) ?></td>
-                        <td><?= e($u['Rola']) ?></td>
-                        <td>
-                            <?php if ($u['Aktywny']): ?>
-                                <span class="badge badge-ok">aktywne</span>
-                            <?php else: ?>
-                                <span class="badge badge-off">zablokowane</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if ((int)$u['ID_Uzytkownika'] !== (int)$_SESSION['user_id']): ?>
-                                <form action="index.php" method="post">
-                                    <?= csrf_pole() ?>
-                                    <input type="hidden" name="id" value="<?= (int)$u['ID_Uzytkownika'] ?>">
-                                    <input type="hidden" name="aktywny" value="<?= $u['Aktywny'] ? '0' : '1' ?>">
-                                    <button class="booking-button small-button" type="submit">
-                                        <?= $u['Aktywny'] ? 'Zablokuj' : 'Odblokuj' ?>
-                                    </button>
-                                </form>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-        <p class="field-hint">Pozostałe moduły panelu (kategorie, usługi, pracownicy, rezerwacje) powstaną w etapie 3.</p>
-    </section>
-</main>
-
-<?php require __DIR__ . '/../../includes/footer.php'; ?>
+$max = max(1, ...array_column($months, 'Ile'));
+$statuses = a_query('SELECT Status,COUNT(*) AS Ile FROM Rezerwacje GROUP BY Status')->fetchAll();
+$upcoming = a_query("SELECT r.ID_Rezerwacji,r.DataOd,p.NrPokoju FROM Rezerwacje r JOIN Pokoje p ON p.ID_Pokoju=r.ID_Pokoju WHERE r.Status IN ('Oczekująca','Potwierdzona') AND r.DataOd >= CURDATE() ORDER BY r.DataOd LIMIT 5")->fetchAll();
+a_start('Pulpit administratora'); ?>
+<section><h2>Szybkie działania</h2><div class="toolbar"><a class="button" href="rezerwacje.php">Dodaj / obsłuż pobyt</a><a class="button" href="pokoje.php">Udostępnij pokój</a><a class="button" href="dostepnosc.php">Sprawdź dostępność</a><a class="button" href="pracownicy.php">Pracownicy</a></div></section>
+<div class="cards"><?php foreach ($stats as $label => $value): ?><div class="card"><span class="muted"><?= e($label) ?></span><strong><?= (int)$value ?></strong></div><?php endforeach; ?></div>
+<section><h2>Ostatnie 6 miesięcy · rezerwacje według daty przyjazdu</h2><p class="hint">Bez anulowanych. Wartość oznacza kwotę pobytów, a nie faktycznie otrzymane płatności. Zero oznacza brak rezerwacji w danym miesiącu.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Miesiąc</th><th scope="col">Liczba pobytów</th><th scope="col">Wykres</th><th scope="col">Wartość pobytów</th></tr></thead><tbody>
+<?php foreach ($months as $m): ?><tr><td><?= e($m['Miesiac']) ?></td><td><?= (int)$m['Ile'] ?></td><td style="width:40%"><div class="bar" role="img" aria-label="<?= (int)$m['Ile'] ?> rezerwacji"><span style="width:<?= round(100 * $m['Ile'] / $max, 2) ?>%"></span></div></td><td><?= e(number_format((float)$m['Wartosc'], 2, ',', ' ')) ?> PLN</td></tr><?php endforeach; ?></tbody></table></div></section>
+<div class="cards"><section><h2>Statusy wszystkich pobytów</h2><?php foreach ($statuses as $s): ?><p><a href="rezerwacje.php?status=<?= e(urlencode($s['Status'])) ?>"><?= e($s['Status']) ?></a> <strong><?= (int)$s['Ile'] ?></strong></p><?php endforeach; ?><?php if (!$statuses): ?><p>Brak rezerwacji.</p><?php endif; ?></section>
+<section><h2>Najbliższe przyjazdy</h2><?php foreach ($upcoming as $r): ?><p><a href="rezerwacje.php?szczegoly=<?= (int)$r['ID_Rezerwacji'] ?>">#<?= (int)$r['ID_Rezerwacji'] ?></a> · <?= e(substr($r['DataOd'], 0, 10)) ?> · pokój <?= (int)$r['NrPokoju'] ?></p><?php endforeach; ?><?php if (!$upcoming): ?><p>Brak zaplanowanych przyjazdów.</p><?php endif; ?></section></div>
+<section><h2>Ostatnie operacje administracyjne</h2><ul><?php foreach (a_query('SELECT Czas,Akcja,Obiekt,ID_Obiektu FROM LogAdministratora ORDER BY ID_Logu DESC LIMIT 5')->fetchAll() as $op): ?><li><?= e($op['Czas'].' · '.$op['Akcja'].' · '.$op['Obiekt'].' #'.$op['ID_Obiektu']) ?></li><?php endforeach; ?></ul><a href="logi.php">Pełna historia zmian</a></section>
+<?php a_end(); ?>

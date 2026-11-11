@@ -1,0 +1,6 @@
+DirectoryIndex index.php
+Options -Indexes
+<FilesMatch "(?i)(^\.|\.(sql|log|bak|old|zip|7z|tar|gz|md|py|env|ini|phar|dist)$|^router\.php$)">
+    Require all denied
+</FilesMatch>
+RedirectMatch 404 "(?i)/\.git(?:/|$)"

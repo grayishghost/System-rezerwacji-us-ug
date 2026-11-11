@@ -1,8 +1,11 @@
 <?php
 require_once __DIR__ . '/../../includes/admin_rezerwacje.php';
 a_post(function () {
+    $action=a_enum('action',['','update','create','reschedule']);
+    if ($action==='create') { ar_create_booking(); return; }
+    if ($action==='reschedule') { ar_reschedule(); return; }
     $id = a_id(pole_tekstowe('id'));
-
+    
     $peek = a_record('Rezerwacje', 'ID_Rezerwacji', $id);
     a_record('Pokoje', 'ID_Pokoju', $peek['ID_Pokoju'], true);
     $old = a_record('Rezerwacje', 'ID_Rezerwacji', $id, true);
@@ -30,7 +33,7 @@ a_post(function () {
             }
         }
     }
-    a_query('UPDATE Rezerwacje SET Status=?,ID_Pracownika=? WHERE ID_Rezerwacji=?', [$status,$employee,$id]);
+    a_query('UPDATE Rezerwacje SET Status=?,ID_Pracownika=?,Wersja=Wersja+1 WHERE ID_Rezerwacji=?', [$status,$employee,$id]);
     a_log('Status / opiekun pobytu', 'rezerwacja', $id, ['Status' => $old['Status'],'ID_Pracownika' => $oldEmployee], ['Status' => $status,'ID_Pracownika' => $employee]);
 });
 $f = ar_filter();
@@ -48,6 +51,7 @@ if (ctype_digit(a_get('szczegoly'))) {
     }
 }
 a_start('Rezerwacje pobytów');
+ar_booking_form();
 if ($f['error']) {
     echo '<p class="form-message form-message-error">'.e($f['error']).'</p>';
 }
@@ -62,8 +66,8 @@ a_select('pracownik', 'Opiekun', ['' => 'Wszyscy','brak' => 'Bez opiekuna'] + $e
 <div class="toolbar"><span>Wyników: <?= (int)$count ?></span><a class="button" href="eksport.php?<?= e(http_build_query(array_diff_key($_GET, ['page' => 1,'szczegoly' => 1]))) ?>">Eksport wyników CSV</a></div>
 <?php if ($details): ?><section><h2>Rezerwacja #<?= (int)$details['ID_Rezerwacji'] ?></h2><p><?= e($details['Klient']) ?> · <?= e($details['Email']) ?> · <?= e($details['Telefon']) ?></p><p>Pokój <?= (int)$details['NrPokoju'] ?> · <?= e($details['DataOd']) ?> — <?= e($details['DataDo']) ?></p><p>Kwota pobytu: <?= e($details['Kwota']) ?> PLN · Źródło: <?= e($details['Zrodlo_rezerwacji']) ?></p><p>Uwagi: <?= e($details['Uwagi']) ?></p><h3>Zamówienia usług dodatkowych</h3>
 <?php if (!$orders): ?><p>Brak zamówień usług dla tego pobytu.</p><?php else: ?><ul><?php foreach ($orders as $o): ?><li><?= e($o['Nazwa_Uslugi']) ?> · <?= (int)$o['Ilosc'] ?> × <?= e($o['Cena_jednostkowa']) ?> PLN · <?= e($o['DataZamowienia']) ?></li><?php endforeach; ?></ul><?php endif; ?></section><?php endif; ?>
-<div class="table-wrap"><table><thead><tr><th>Rezerwacja / klient</th><th>Pobyt / pokój</th><th>Kwota</th><th>Status i opiekun</th></tr></thead><tbody>
-<?php foreach ($rows as $r): ?><tr><td><a href="?<?= e(http_build_query(array_merge($_GET, ['szczegoly' => $r['ID_Rezerwacji']]))) ?>">#<?= (int)$r['ID_Rezerwacji'] ?></a><br><?= e($r['Klient']) ?></td><td><?= e(substr($r['DataOd'], 0, 10)) ?><br><?= e(substr($r['DataDo'], 0, 10)) ?><br>Pokój <?= (int)$r['NrPokoju'] ?></td><td><?= e(number_format((float)$r['Kwota'], 2, ',', ' ')) ?> PLN</td><td>
+<div class="table-wrap"><table><thead><tr><th scope="col">Rezerwacja / klient</th><th scope="col">Pobyt / pokój</th><th scope="col">Kwota</th><th scope="col">Status i opiekun</th></tr></thead><tbody>
+<?php foreach ($rows as $r): ?><tr><td><a href="?<?= e(http_build_query(array_merge($_GET, ['szczegoly' => $r['ID_Rezerwacji']]))) ?>">#<?= (int)$r['ID_Rezerwacji'] ?></a><br><?= e($r['Klient']) ?></td><td><?= e(substr($r['DataOd'], 0, 10)) ?><br><?= e(substr($r['DataDo'], 0, 10)) ?><br>Pokój <?= (int)$r['NrPokoju'] ?><br><a href="?edit=<?= (int)$r['ID_Rezerwacji'] ?>">Edytuj termin i pokój</a></td><td><?= e(number_format((float)$r['Kwota'], 2, ',', ' ')) ?> PLN</td><td>
 <form method="post" class="toolbar" data-confirm="Zapisać status i opiekuna? Anulowanie lub ukończenie jest nieodwracalne."><?php a_hidden($r['ID_Rezerwacji']); ?><input type="hidden" name="wersja" value="<?= e(ar_version($r)) ?>">
 <?php a_select('status', 'Status', array_combine(ar_transitions($r['Status']), ar_transitions($r['Status'])), $r['Status']);
     $opts = ['' => 'Bez opiekuna'] + $activeEmployees;

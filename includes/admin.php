@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/assets.php';
+require_once __DIR__ . '/instalacja.php';
 wymagaj_roli('admin');
 
 
@@ -16,15 +18,14 @@ set_exception_handler(function (Throwable $ex) {
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
-try {
-    $gotowe = $pdo->query("SELECT COUNT(*) FROM Migracje WHERE Nazwa = '004_uzupelnienia'")->fetchColumn();
-} catch (PDOException $ex) {
-    $gotowe = false;
-}
-if (!$gotowe) {
+$installation=gah_installation($pdo);
+if (!$installation['ready']) {
     http_response_code(503);
-    exit('Panel wymaga migracji bazy. W katalogu projektu uruchom: php scripts/migrate_etap3.php');
+    echo 'Panel wymaga aktualizacji schematu bazy. ';
+    echo '<a href="'.e(BASE_URL.'/public/admin/instalacja.php').'">Sprawdź instalację i brakujące migracje</a>';
+    exit;
 }
+
 function a_query($sql, $params = [])
 {
     global $pdo;
@@ -62,7 +63,7 @@ function a_date($v)
         throw new DomainException('Niepoprawna data.');
     }
     $d = DateTimeImmutable::createFromFormat('!Y-m-d', $v);
-    if (!$d || $d->format('Y-m-d') !== $v) {
+    if (!$d || $d->format('Y-m-d') !== $v || $d->format('Y') < '1000' || $d->format('Y') > '9998') {
         throw new DomainException('Niepoprawna data.');
     }
     return $v;
@@ -73,7 +74,7 @@ function a_get($name, $default = '')
 }
 function a_record($table, $pk, $id, $lock = false)
 {
-
+    
     $row = a_query("SELECT * FROM $table WHERE $pk = ?" . ($lock ? ' FOR UPDATE' : ''), [$id])->fetch();
     if (!$row) {
         throw new DomainException('Nie znaleziono rekordu. Odśwież listę.');
@@ -82,7 +83,7 @@ function a_record($table, $pk, $id, $lock = false)
 }
 function a_log($action, $object, $id, $before, $after)
 {
-
+    
     a_query(
         'INSERT INTO LogAdministratora(ID_Admina,Akcja,Obiekt,ID_Obiektu,Przed,Po) VALUES(?,?,?,?,?,?)',
         [$_SESSION['user_id'], $action, $object, $id,
@@ -114,7 +115,7 @@ function a_post(callable $action)
         error_log('Panel admina: ' . $ex->getMessage());
         ustaw_komunikat('error', 'Nie udało się zapisać. Sprawdź, czy dane nie są powtórzone lub powiązane z innymi rekordami.');
     }
-
+    
     $file = basename($_SERVER['SCRIPT_NAME']);
     $query = $_SERVER['QUERY_STRING'] ?? '';
     przekieruj('/public/admin/' . $file . ($query ? '?' . $query : ''));
@@ -137,22 +138,23 @@ function a_pages($page, $pages)
 }
 function a_start($title)
 {
-    $links = ['index.php' => 'Pulpit', 'uzytkownicy.php' => 'Konta', 'pracownicy.php' => 'Pracownicy',
+    $links = ['index.php' => 'Pulpit', 'pokoje.php'=>'Pokoje i oferta', 'dostepnosc.php'=>'Dostępność', 'uzytkownicy.php' => 'Konta', 'pracownicy.php' => 'Pracownicy',
         'przypisania.php' => 'Kompetencje', 'grafik.php' => 'Grafik i urlopy', 'kategorie.php' => 'Kategorie',
-        'uslugi.php' => 'Usługi', 'rezerwacje.php' => 'Rezerwacje', 'wizyty.php' => 'Wizyty usług', 'kalendarz.php' => 'Kalendarz', 'logi.php' => 'Historia'];
+        'uslugi.php' => 'Usługi', 'rezerwacje.php' => 'Pobyty', 'wizyty.php' => 'Wizyty usług', 'kalendarz.php' => 'Kalendarz', 'logi.php' => 'Historia', 'instalacja.php'=>'Kontrola instalacji'];
     ?><!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title><?= e($title) ?> | GAH</title><link rel="stylesheet" href="<?= e(BASE_URL) ?>/css/admin.css"></head><body>
+    <title><?= e($title) ?> | GAH</title><link rel="stylesheet" href="<?= e(gah_asset_url('css/admin.css')) ?>"></head><body>
+    <a class="skip-link" href="#tresc">Przejdź do treści</a>
     <header class="top"><a href="index.php" class="brand">GAH <small>Grand Access Hotel</small></a>
     <a href="<?= e(BASE_URL) ?>/public/index.php">Strona hotelu</a><a href="<?= e(BASE_URL) ?>/public/profil.php">Profil</a>
     <form method="post" action="<?= e(BASE_URL) ?>/public/wyloguj.php"><?= csrf_pole() ?><button>Wyloguj</button></form></header>
-    <div class="layout"><aside><p class="eyebrow">ADMINISTRACJA</p><nav>
+    <div class="layout"><aside><p class="eyebrow">ADMINISTRACJA</p><nav aria-label="Moduły administracji">
     <?php foreach ($links as $url => $label): ?><a <?= basename($_SERVER['SCRIPT_NAME']) === $url ? 'aria-current="page"' : '' ?> href="<?= e($url) ?>"><?= e($label) ?></a><?php endforeach; ?>
-    </nav><p class="muted">Etap 3 · panel hotelu</p></aside><main><p class="eyebrow">GRAND ACCESS / ZARZĄDZANIE</p><h1><?= e($title) ?></h1>
+    </nav><p class="muted">Etap 3 · panel hotelu</p></aside><main id="tresc"><p class="eyebrow">GRAND ACCESS / ZARZĄDZANIE</p><h1><?= e($title) ?></h1>
     <?php pokaz_komunikat();
 }
 function a_end()
 {
-    echo '</main></div><script src="' . e(BASE_URL) . '/js/admin.js"></script></body></html>';
+    echo '</main></div><script src="' . e(gah_asset_url('js/admin.js')) . '"></script></body></html>';
 }
 function a_input($name, $label, $value = '', $type = 'text', $extra = '')
 {
@@ -173,4 +175,16 @@ function a_hidden($id)
 function a_delete($id, $label = 'Usuń')
 {
     ?><form method="post" data-confirm="Czy na pewno wykonać operację? Powiązane dane mogą uniemożliwić usunięcie."><?= csrf_pole() ?><input type="hidden" name="id" value="<?= (int)$id ?>"><button class="danger" name="action" value="delete"><?= e($label) ?></button></form><?php
+}
+
+function a_csv_row($output, array $row)
+{
+    foreach ($row as &$cell) {
+        $cell = (string)$cell;
+        if (preg_match('/^[\x00-\x20]*[=+@\-]/u', $cell) || preg_match('/^[\t\r\n]/', $cell)) {
+            $cell = "'" . $cell;
+        }
+    }
+    unset($cell);
+    fputcsv($output, $row, ';', '"', '');
 }

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
 
-// Zalogowany użytkownik nie potrzebuje rejestracji
+
 if (zalogowany()) {
     przekieruj(panel_roli($_SESSION['rola'] ?? 'klient'));
 }
@@ -12,7 +12,7 @@ $dane = ['imie' => '', 'nazwisko' => '', 'email' => '', 'telefon' => ''];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_sprawdz();
 
-    // 1. Pobieramy dane z formularza (trim usuwa spacje z początku i końca)
+    
     $dane['imie']     = trim(pole_tekstowe('imie'));
     $dane['nazwisko'] = trim(pole_tekstowe('nazwisko'));
     $dane['email']    = mb_strtolower(trim(pole_tekstowe('email')));
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $haslo  = pole_tekstowe('haslo');
     $haslo2 = pole_tekstowe('haslo2');
 
-    // 2. Walidacja po stronie serwera
+    
     $bledy = sprawdz_dane_osobowe($dane['imie'], $dane['nazwisko'], $dane['telefon']);
 
     if ($dane['email'] === '' || mb_strlen($dane['email']) > 100 || !filter_var($dane['email'], FILTER_VALIDATE_EMAIL)) {
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bledy[] = 'Hasła nie są takie same.';
     }
 
-    // 3. Czy e-mail jest wolny? (zapytanie przygotowane - bezpieczne przed SQL injection)
+    
     if (empty($bledy)) {
         $st = $pdo->prepare('SELECT COUNT(*) FROM Uzytkownicy WHERE Email = ?');
         $st->execute([$dane['email']]);
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 4. Zapis do bazy - hasło zapisujemy jako hash, rola zawsze "klient"
+    
     if (empty($bledy)) {
         try {
             $st = $pdo->prepare(
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ustaw_komunikat('success', 'Konto zostało utworzone. Możesz się teraz zalogować.');
             przekieruj('/public/logowanie.php');
         } catch (PDOException $ex) {
-            if ($ex->getCode() === '23000') {   // naruszenie UNIQUE (ktoś zajął e-mail chwilę wcześniej)
+            if ($ex->getCode() === '23000') {   
                 $bledy[] = 'Konto z takim adresem e-mail już istnieje.';
             } else {
                 error_log('Błąd rejestracji: ' . $ex->getMessage());
@@ -130,5 +130,5 @@ require __DIR__ . '/../includes/header.php';
     </section>
 </main>
 
-<script src="<?= e(BASE_URL) ?>/js/formularze.js"></script>
+<script src="<?= e(gah_asset_url('js/formularze.js')) ?>"></script>
 <?php require __DIR__ . '/../includes/footer.php'; ?>

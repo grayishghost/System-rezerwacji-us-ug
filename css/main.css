@@ -1,3 +1,5 @@
+@font-face{font-family:'Faculty Glyphic';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/faculty-glyphic-latin-ext.woff2?v=6a09cba53820') format('woff2');unicode-range:U+0100-024F,U+1E00-1EFF,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Faculty Glyphic';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/faculty-glyphic-latin.woff2?v=021b4252e5fb') format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+2122}
 * {
   box-sizing: border-box;
 }
@@ -569,3 +571,22 @@ body {
     margin-top: 16px;
   }
 }
+
+
+body{display:flex;flex-direction:column;min-height:100vh}
+body>main{flex:1;min-width:0}
+.logo a{display:flex;align-items:center;gap:12px}
+.brand-logo{display:block;width:52px;height:52px;object-fit:contain;border-radius:8px;flex:none}
+.hero-content{width:min(900px,100%)}
+.hero h1{white-space:normal;max-width:18ch}
+.footer{position:static;margin-top:auto}
+@media(max-width:640px){
+ .header{flex-direction:column;align-items:flex-start;gap:14px}
+ .logo a{font-size:18px}.brand-logo{width:46px;height:46px}
+ .nav{width:100%;gap:10px 14px;flex-wrap:wrap}
+ .hero h1{font-size:clamp(28px,7vw,38px)}
+ .rezerwacja{width:calc(100% - 36px);padding:18px}
+ .hero-content{padding:36px 24px 52px}
+ .footer{text-align:center}.footer p{white-space:normal}
+}
+@media(prefers-reduced-motion:reduce){.hero-slides,.hero-content{animation:none}}

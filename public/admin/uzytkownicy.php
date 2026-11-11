@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/admin.php';
 a_post(function () {
-
+    
     a_query("SELECT ID_Uzytkownika FROM Uzytkownicy WHERE Rola='admin' ORDER BY ID_Uzytkownika FOR UPDATE")->fetchAll();
     $id = a_id(pole_tekstowe('id'));
     $old = a_record('Uzytkownicy', 'ID_Uzytkownika', $id, true);
@@ -46,7 +46,7 @@ a_start('Konta użytkowników'); ?>
 <p class="hint">Nowego pracownika dodasz w module Pracownicy. Zablokowanie konta odbiera dostęp przy następnym żądaniu — także z istniejącej sesji.</p>
 <form method="get" class="toolbar"><?php a_input('q', 'Imię, nazwisko lub e-mail', $q);
 a_select('rola', 'Rola', ['' => 'Wszystkie','klient' => 'Klient','pracownik' => 'Pracownik','admin' => 'Administrator'], $role); ?><button>Szukaj</button><a href="uzytkownicy.php">Wyczyść</a></form>
-<p class="muted">Wyników: <?= (int)$count ?></p><div class="table-wrap"><table><thead><tr><th>Użytkownik</th><th>E-mail</th><th>Uprawnienia i blokada</th></tr></thead><tbody>
+<p class="muted">Wyników: <?= (int)$count ?></p><div class="table-wrap"><table><thead><tr><th scope="col">Użytkownik</th><th scope="col">E-mail</th><th scope="col">Uprawnienia i blokada</th></tr></thead><tbody>
 <?php foreach ($rows as $u): ?><tr><td>#<?= (int)$u['ID_Uzytkownika'] ?> <?= e($u['Imie'].' '.$u['Nazwisko']) ?></td><td><?= e($u['Email']) ?></td><td><form method="post" class="toolbar" data-confirm="Zmienić rolę lub dostęp tego konta?"><?php a_hidden($u['ID_Uzytkownika']);
     a_select('rola', 'Rola', ['klient' => 'Klient','pracownik' => 'Pracownik','admin' => 'Administrator'], $u['Rola']);
     a_select('aktywny', 'Konto', ['1' => 'Aktywne','0' => 'Zablokowane'], $u['Aktywny']); ?><button>Zapisz</button></form></td></tr><?php endforeach; ?>

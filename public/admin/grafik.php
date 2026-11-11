@@ -1,10 +1,13 @@
 <?php
 require_once __DIR__ . '/../../includes/admin.php';
 a_post(function () {
+    a_enum('action', ['', 'save', 'delete']);
     if (pole_tekstowe('action') === 'delete') {
         $id = a_id(pole_tekstowe('id'));
+        $peek = a_record('GrafikPracownikow', 'ID_Wpisu', $id);
+        a_record('Pracownicy', 'ID_Pracownika', $peek['ID_Pracownika'], true);
         $old = a_record('GrafikPracownikow', 'ID_Wpisu', $id, true);
-        if (a_query("SELECT COUNT(*) FROM WizytyUslug WHERE ID_Pracownika=? AND DATE(DataOd)=? AND Status IN ('Oczekująca','Potwierdzona')", [$old['ID_Pracownika'],$old['Data']])->fetchColumn()) {
+        if (a_query("SELECT ID_Wizyty FROM WizytyUslug WHERE ID_Pracownika=? AND DATE(DataOd)=? AND Status IN ('Oczekująca','Potwierdzona') LIMIT 1 FOR UPDATE", [$old['ID_Pracownika'],$old['Data']])->fetchColumn()) {
             throw new DomainException('Ten dzień ma aktywne wizyty usług. Najpierw anuluj wizyty.');
         }
         a_query('DELETE FROM GrafikPracownikow WHERE ID_Wpisu=?', [$id]);
@@ -90,7 +93,7 @@ a_start('Grafik, urlopy i dni wolne'); ?>
 <form method="get" class="toolbar"><?php a_input('miesiac', 'Miesiąc', $month, 'month');
 a_select('pracownik', 'Pracownik', ['' => 'Wszyscy'] + $employees, $employee);
 a_select('typ', 'Rodzaj', ['' => 'Wszystkie','Praca' => 'Praca','Urlop' => 'Urlop','Wolne' => 'Wolne','Zwolnienie' => 'Zwolnienie'], $type); ?><button>Filtruj</button></form>
-<div class="table-wrap"><table><thead><tr><th>Data</th><th>Pracownik</th><th>Rodzaj</th><th>Godziny</th><th>Operacje</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th scope="col">Data</th><th scope="col">Pracownik</th><th scope="col">Rodzaj</th><th scope="col">Godziny</th><th scope="col">Operacje</th></tr></thead><tbody>
 <?php foreach ($rows as $r): ?><tr><td><?= e($r['Data']) ?></td><td><?= e($r['Imie'].' '.$r['Nazwisko']) ?></td><td><?= e($r['TypDnia']) ?></td><td><?= $r['TypDnia'] === 'Praca' ? e(substr($r['GodzinaOd'], 0, 5).'–'.substr($r['GodzinaDo'], 0, 5)) : '—' ?></td><td><?php a_delete($r['ID_Wpisu']); ?></td></tr><?php endforeach; ?>
 <?php if (!$rows): ?><tr><td colspan="5" class="empty">Brak wpisów w wybranym miesiącu.</td></tr><?php endif; ?></tbody></table></div><?php a_pages($page, $pages);
 a_end(); ?>

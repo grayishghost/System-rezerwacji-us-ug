@@ -1,5 +1,3 @@
-// Wygodna kontrola po stronie przeglądarki: zgodność haseł w formularzu rejestracji.
-// To tylko ułatwienie - prawdziwa walidacja jest zawsze w PHP (public/rejestracja.php).
 document.addEventListener("DOMContentLoaded", function () {
   var haslo = document.getElementById("haslo");
   var haslo2 = document.getElementById("haslo2");

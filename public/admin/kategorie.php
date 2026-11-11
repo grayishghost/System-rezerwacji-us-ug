@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/admin.php';
 a_post(function () {
+    a_enum('action', ['', 'save', 'delete']);
     $id = pole_tekstowe('id') === '0' ? 0 : a_id(pole_tekstowe('id'));
     if (pole_tekstowe('action') === 'delete') {
         $old = a_record('KategorieUslug', 'ID_Kategorii', a_id($id), true);
@@ -42,7 +43,7 @@ a_input('nazwa', 'Nazwa', $edit['Nazwa'] ?? '', 'text', 'required maxlength="50"
 <button name="action" value="save">Zapisz kategorię</button><a href="kategorie.php">Nowy formularz</a></form></section>
 <form method="get" class="toolbar"><?php a_input('q', 'Szukaj kategorii', $q); ?><button>Szukaj</button><a href="kategorie.php">Wyczyść</a></form>
 <p class="muted">Wyników: <?= (int)$count ?>. Usunięcie kategorii nie usuwa usług.</p>
-<div class="table-wrap"><table><thead><tr><th>Nazwa</th><th>Opis</th><th>Usługi</th><th>Operacje</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th scope="col">Nazwa</th><th scope="col">Opis</th><th scope="col">Usługi</th><th scope="col">Operacje</th></tr></thead><tbody>
 <?php foreach ($rows as $r): ?><tr><td><?= e($r['Nazwa']) ?></td><td><?= e($r['Opis']) ?></td><td><?= (int)$r['Ile'] ?></td><td><div class="actions"><a href="?edit=<?= (int)$r['ID_Kategorii'] ?>">Edytuj</a><?php a_delete($r['ID_Kategorii']); ?></div></td></tr><?php endforeach; ?>
 <?php if (!$rows): ?><tr><td colspan="4" class="empty">Brak kategorii spełniających kryteria.</td></tr><?php endif; ?>
 </tbody></table></div><?php a_pages($page, $pages);

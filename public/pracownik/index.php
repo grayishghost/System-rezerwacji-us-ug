@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
-wymagaj_roli('pracownik');   // tylko pracownik (admin ma własny panel)
+wymagaj_roli('pracownik');   
 
-// Stanowisko pracownika - JOIN łączy tabele Pracownicy i Stanowiska
+
 $st = $pdo->prepare(
     'SELECT s.Nazwa_stanowiska
      FROM Pracownicy p

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/admin.php';
 a_post(function () {
+    a_enum('action', ['', 'save', 'delete']);
     global $pdo;
     $id = pole_tekstowe('id') === '0' ? 0 : a_id(pole_tekstowe('id'));
     $old = $id ? a_record('Pracownicy', 'ID_Pracownika', a_id($id), true) : null;
@@ -103,7 +104,7 @@ a_select('aktywny', 'Profil pracownika', ['1' => 'Aktywny','0' => 'Nieaktywny'],
 <label class="wide">Opis kompetencji<textarea name="opis" maxlength="3000"><?= e($edit['Opis'] ?? '') ?></textarea></label>
 <button name="action" value="save">Zapisz pracownika</button><a href="pracownicy.php">Nowy formularz</a></form></section>
 <form method="get" class="toolbar"><?php a_input('q', 'Imię lub nazwisko', $q); ?><button>Szukaj</button></form>
-<div class="table-wrap"><table><thead><tr><th>Pracownik</th><th>Stanowisko</th><th>Profil / konto</th><th>Operacje</th></tr></thead><tbody>
+<div class="table-wrap"><table><thead><tr><th scope="col">Pracownik</th><th scope="col">Stanowisko</th><th scope="col">Profil / konto</th><th scope="col">Operacje</th></tr></thead><tbody>
 <?php foreach ($rows as $r): ?><tr><td><?= e($r['Imie'].' '.$r['Nazwisko']) ?><br><small><?= e($r['Opis']) ?></small></td><td><?= e($r['Nazwa_stanowiska'] ?? '—') ?></td><td><?= $r['Aktywny'] ? 'Aktywny profil' : 'Nieaktywny profil' ?><br><?= $r['KontoAktywne'] ? 'Logowanie dostępne' : 'Konto zablokowane' ?></td><td><div class="actions"><a href="?edit=<?= (int)$r['ID_Pracownika'] ?>">Edytuj</a><a href="przypisania.php?pracownik=<?= (int)$r['ID_Pracownika'] ?>">Usługi</a><a href="grafik.php?pracownik=<?= (int)$r['ID_Pracownika'] ?>">Grafik</a><?php a_delete($r['ID_Pracownika'], 'Usuń profil'); ?></div></td></tr><?php endforeach; ?>
 <?php if (!$rows): ?><tr><td colspan="4" class="empty">Brak pracowników.</td></tr><?php endif; ?></tbody></table></div><?php a_pages($page, $pages);
 a_end(); ?>

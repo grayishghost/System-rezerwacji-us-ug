@@ -1,22 +1,20 @@
 <?php
-// Wspólny początek każdej strony. Przed dołączeniem ustaw $tytul = 'Nazwa strony';
-// Zakładamy, że includes/auth.php został już załadowany przez stronę.
+
+
+require_once __DIR__ . '/assets.php';
 ?><!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($tytul ?? 'Strona') ?> | Grand Access Hotel</title>
-    <link rel="stylesheet" type="text/css" href="<?= e(BASE_URL) ?>/css/main.css">
-    <link rel="stylesheet" type="text/css" href="<?= e(BASE_URL) ?>/css/panel.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="<?= e(gah_asset_url('css/main.css')) ?>">
+    <link rel="stylesheet" type="text/css" href="<?= e(gah_asset_url('css/panel.css')) ?>">
 </head>
 <body>
 <header class="header">
     <div class="logo">
-        <a href="<?= e(BASE_URL) ?>/public/index.php">Grand Access Hotel</a>
+        <a href="<?= e(BASE_URL) ?>/public/index.php"><img class="brand-logo" src="<?= e(gah_asset_url('assets/logo.png')) ?>" width="52" height="52" alt="Logo Grand Access Hotel"><span>Grand Access Hotel</span></a>
     </div>
     <nav class="nav">
         <a href="<?= e(BASE_URL) ?>/public/index.php">Strona główna</a>

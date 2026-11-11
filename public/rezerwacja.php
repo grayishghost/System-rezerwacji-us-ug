@@ -60,7 +60,7 @@ if (isset($_GET['wynik'])) {
             $bledy[] = 'Wybierz poprawny pokój.';
         } else {
             $pokoj = pokoj_do_rezerwacji($pdo, $id_pokoju);
-            if (!$pokoj || $pokoj['Status'] === 'Serwis') {
+            if (!$pokoj || !$pokoj['Aktywny'] || $pokoj['Status'] === 'Serwis') {
                 $bledy[] = 'Wybrany pokój nie jest dostępny do rezerwacji.';
             }
         }
@@ -92,9 +92,9 @@ if (isset($_GET['wynik'])) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$bledy) {
         try {
             $pdo->beginTransaction();
-            // Blokada wiersza pokoju serializuje równoczesne próby rezerwacji tego pokoju.
+            
             $pokoj = pokoj_do_rezerwacji($pdo, $id_pokoju, true);
-            if (!$pokoj || $pokoj['Status'] === 'Serwis'
+            if (!$pokoj || !$pokoj['Aktywny'] || $pokoj['Status'] === 'Serwis'
                 || $ilosc_osob > (int)$pokoj['IloscOsob']
                 || pokoj_ma_kolizje($pdo, $id_pokoju, $dane['data_od'], $dane['data_do'])) {
                 $bledy[] = 'Pokój nie jest już dostępny w wybranym terminie. Wybierz inny termin.';
@@ -106,12 +106,12 @@ if (isset($_GET['wynik'])) {
                     $bledy[] = 'Cena pokoju zmieniła się. Sprawdź rezerwację ponownie.';
                 } else {
                     $st = $pdo->prepare(
-                        "INSERT INTO Rezerwacje (ID_Pokoju, ID_Klienta, DataOd, DataDo, Kwota, Status, Zrodlo_rezerwacji)
-                         VALUES (?, ?, ?, ?, ?, 'Potwierdzona', 'Strona internetowa')"
+                        "INSERT INTO Rezerwacje (ID_Pokoju, ID_Klienta, DataOd, DataDo, Kwota, Status, Zrodlo_rezerwacji, LiczbaOsob)
+                         VALUES (?, ?, ?, ?, ?, 'Potwierdzona', 'Strona internetowa', ?)"
                     );
                     $st->execute([
                         $id_pokoju, $_SESSION['user_id'], $dane['data_od'] . ' 00:00:00',
-                        $dane['data_do'] . ' 00:00:00', number_format($kwota, 2, '.', ''),
+                        $dane['data_do'] . ' 00:00:00', number_format($kwota, 2, '.', ''), $ilosc_osob,
                     ]);
                     $id_wyniku = $pdo->lastInsertId();
                 }

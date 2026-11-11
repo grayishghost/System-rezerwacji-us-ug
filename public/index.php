@@ -8,6 +8,11 @@ require __DIR__ . '/../includes/header.php';
 
 <main>
   <section class="hero" aria-label="Witamy w Grand Access Hotel">
+    <div class="hero-slides" aria-hidden="true">
+      <img src="<?= e(gah_asset_url('assets/scroll (1).jpg')) ?>" alt="" class="hero-slide hero-slide-one" width="1920" height="1216" fetchpriority="high">
+      <img src="<?= e(gah_asset_url('assets/scroll (2).jpg')) ?>" alt="" class="hero-slide hero-slide-two" width="1280" height="640">
+      <img src="<?= e(gah_asset_url('assets/scroll (3).png')) ?>" alt="" class="hero-slide hero-slide-three" width="1920" height="1097">
+    </div>
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <p class="hero-eyebrow">Grand Access Hotel</p>

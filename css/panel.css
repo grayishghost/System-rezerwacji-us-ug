@@ -1,4 +1,4 @@
-/* Style dodatkowe dla etapu 2: panele, tabele, komunikaty. Uzupełnia main.css. */
+
 
 .form-message-success {
   color: #1f5130;
@@ -33,7 +33,7 @@
   color: #53636c;
 }
 
-/* Panel (klient / pracownik / admin) */
+
 .panel-page {
   width: min(1120px, calc(100% - 44px));
   margin: 52px auto 110px;
@@ -109,3 +109,4 @@
     padding: 26px 20px;
   }
 }
+.panel-page{min-width:0;overflow-wrap:anywhere}.panel-page code{overflow-wrap:anywhere;word-break:break-word}

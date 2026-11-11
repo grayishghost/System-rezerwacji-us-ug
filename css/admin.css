@@ -2,3 +2,8 @@
 
 main,aside,.cards>*{min-width:0}.layout{grid-template-columns:225px minmax(0,1fr)}
 @media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.top,.brand{min-width:0}.cards>section{grid-column:1/-1}main{overflow-wrap:anywhere}}
+
+.skip-link{position:absolute;left:12px;top:-100px;background:white;color:#174d40;padding:12px;z-index:100}.skip-link:focus{top:12px}
+
+
+.table-wrap table{min-width:640px;overflow-wrap:normal}.table-wrap th{word-break:normal}
