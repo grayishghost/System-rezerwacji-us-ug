@@ -1,6 +1,6 @@
 # Integralność danych i reguły rezerwacji
 
-Wydanie GAH-FULL-006-r1 zawiera ograniczenia bazy oraz reguły transakcyjne w PHP. Nie istnieje jeden uniwersalny zestaw zasad dla wszystkich hoteli. To podstawy odpowiednie dla tego projektu rezerwacji, nie deklaracja kompletnego komercyjnego systemu PMS, księgowości lub obsługi prawnej hotelu.
+Wydanie GAH-FULL-007-r1 zawiera ograniczenia bazy oraz reguły transakcyjne w PHP. Nie istnieje jeden uniwersalny zestaw zasad dla wszystkich hoteli. To podstawy odpowiednie dla tego projektu rezerwacji, nie deklaracja kompletnego komercyjnego systemu PMS, księgowości lub obsługi prawnej hotelu.
 
 ## Warstwa bazy danych
 
@@ -22,7 +22,7 @@ Wydanie GAH-FULL-006-r1 zawiera ograniczenia bazy oraz reguły transakcyjne w PH
 | Godziny grafiku w obrębie doby | CHECK początku od 00:00 i końca przed 24:00 |
 | Zachowanie powiązanych rozliczeń | RESTRICT zamiast CASCADE na powiązaniach płatności i zamówienia usługi z pobytem |
 
-Łącznie w pełnym schemacie są 37 ograniczeń CHECK, w tym 23 nowe w migracji 006. Migracja 006 nie usuwa rekordów i nie podmienia historycznych kwot. Rozpoznaje istniejące nazwy dwóch kluczy obcych przez information_schema, zamiast zakładać ich nazwę na hostingu.
+Łącznie w pełnym schemacie są 42 ograniczenia CHECK: 23 dodała migracja 006, a 5 migracja 007. Migracja 007 dodaje też unikalne nazwy stanowisk i typów pokoi. Migracja 006 nie usuwa rekordów i nie podmienia historycznych kwot. Rozpoznaje istniejące nazwy dwóch kluczy obcych przez information_schema, zamiast zakładać ich nazwę na hostingu.
 
 Płatności i zamówienia nie są dziennikiem księgowym: ich własne rekordy nadal można zmienić/usunąć kontem SQL z odpowiednimi prawami. RESTRICT zapobiega konkretnie ich niezamierzonemu usunięciu razem z rezerwacją. Historia panelu również nie jest niezmiennym audytem kryptograficznym.
 
@@ -38,7 +38,7 @@ Te reguły nie są samodzielnymi CHECK w MySQL, ponieważ porównują wiele wier
 - aktywne konto, prawidłowa rola, kompetencja i godziny pracy pracownika;
 - termin wizyty mieszczący się w grafiku, poza urlopem;
 - dozwolone przejścia statusów i brak przywracania statusów końcowych;
-- kontrola wersji formularza i zakaz zmiany opłaconego pobytu przez edytor;
+- kontrola wersji formularza; przy edycji opłaconego pobytu zachowanie uzgodnionej kwoty z uzasadnieniem, bez zmiany zapisanej płatności;
 - kontrola zmiany pojemności/typu/serwisu pokoju z aktywnymi pobytami.
 
 Zapisy panelu i klienta blokują odpowiedni rekord pokoju albo pracownika w transakcji. Równoczesne próby zapisu są w ten sposób serializowane. Testy obejmują rezerwacja–rezerwacja, rezerwacja–blokada, blokada–blokada i konkurujące wizyty.
@@ -67,3 +67,13 @@ Zapisy panelu i klienta blokują odpowiedni rekord pokoju albo pracownika w tran
 Migrator CLI wykonuje ten sam odczyt przed rozpoczęciem 006 i zatrzymuje się, jeśli znajdzie naruszenie. DDL nie jest atomowe; po błędzie samego ALTER trzeba zbadać częściowy stan i przywrócić spójny backup lub naprawić konkretny problem.
 
 Nie wyłączaj CHECK ani FOREIGN_KEY_CHECKS w celu przepchnięcia błędnej migracji. Ograniczenia nie są zastępstwem dla backupu, kontroli dostępu i testu na rzeczywistym hostingu.
+
+## Rozszerzenie panelu 007
+
+Konta klientów, pracowników i administratorów mają pełne formularze CRUD oraz blokadę konta. Usunięcie siebie, odebranie sobie uprawnień i usunięcie ostatniego aktywnego administratora są blokowane. Konto pracownika automatycznie otrzymuje profil. Zmiana jego roli usuwa wyłącznie pusty profil bez historii; w pozostałych przypadkach używamy dezaktywacji. Hasła są hashowane, reset unieważnia wcześniejsze sesje.
+
+Archiwizacja pobytu nie anuluje go i nie zwalnia pokoju. Trwałe usunięcie w aplikacji dotyczy tylko statusu Anulowana i braku płatności oraz zamówień. Operacja pozostawia wpis w LogAdministratora. Uwagi można edytować także dla historii, bez nadpisywania zakończonych terminów i kwot. Pełne zmiany dat/pokoju są przed rozpoczęciem aktywnego pobytu.
+
+Ilustracje przesyła tylko administrator po CSRF. JPG/PNG/WEBP do 5 MB, 6000 px na bok i 8 mln pikseli są dekodowane przez GD i zapisywane ponownie jako JPEG do 1600 px. Nazwa jest losowa, metadane nie są kopiowane, SVG i pliki wykonywalne są odrzucane. Nowy plik jest usuwany po nieudanym zapisie bazy. Pliki użytkownika nie należą do stałego manifestu i wymagają własnego backupu. Limit serwera PHP może być niższy niż 5 MB.
+
+Przed 007 uruchom PRZED_007_ODCZYT.sql: dwa wyniki zero. Duplikatów nazw nie usuwamy ani nie scalamy automatycznie. Po ustaleniu i poprawieniu właściwych nazw dopiero wykonujemy 007. Nie ponawiaj w ciemno częściowo wykonanego ALTER.

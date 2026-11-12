@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/../../includes/admin_rezerwacje.php';
 a_post(function () {
-    $action=a_enum('action',['','update','create','reschedule']);
+    $action=a_enum('action',['','update','create','reschedule','notes','archive','restore','delete']);
+    if (in_array($action,['notes','archive','restore','delete'],true)) { ar_manage($action); return; }
     if ($action==='create') { ar_create_booking(); return; }
     if ($action==='reschedule') { ar_reschedule(); return; }
     $id = a_id(pole_tekstowe('id'));
@@ -56,9 +57,10 @@ if ($f['error']) {
     echo '<p class="form-message form-message-error">'.e($f['error']).'</p>';
 }
 ?>
-<p class="hint">Pracownik to opiekun pobytu/recepcjonista. Rezerwacje pokoi są dobowe; czas trwania usług dodatkowych jest przechowywany osobno. Zakres dat pokazuje pobyty przecinające wybrane dni (bez dnia wymeldowania).</p>
+<p class="hint">Archiwizacja tylko ukrywa pobyt w widoku bieżącym — nie anuluje go i nie zwalnia pokoju. Pracownik to opiekun pobytu/recepcjonista. Rezerwacje pokoi są dobowe; czas trwania usług dodatkowych jest przechowywany osobno. Zakres dat pokazuje pobyty przecinające wybrane dni (bez dnia wymeldowania).</p>
 <form method="get" class="toolbar"><?php $v = $f['values'];
 a_input('q', 'Klient / nr rezerwacji / pokój', $v['q']);
+a_select('archiwum','Widok',['0'=>'Bieżące','1'=>'Archiwum','wszystkie'=>'Bieżące i archiwum'],a_get('archiwum','0'));
 a_input('od', 'Od dnia', $v['od'], 'date');
 a_input('do', 'Do dnia', $v['do'], 'date');
 a_select('status', 'Status', ['' => 'Wszystkie'] + array_combine(ar_statuses(), ar_statuses()), $v['status']);
@@ -67,13 +69,15 @@ a_select('pracownik', 'Opiekun', ['' => 'Wszyscy','brak' => 'Bez opiekuna'] + $e
 <?php if ($details): ?><section><h2>Rezerwacja #<?= (int)$details['ID_Rezerwacji'] ?></h2><p><?= e($details['Klient']) ?> · <?= e($details['Email']) ?> · <?= e($details['Telefon']) ?></p><p>Pokój <?= (int)$details['NrPokoju'] ?> · <?= e($details['DataOd']) ?> — <?= e($details['DataDo']) ?></p><p>Kwota pobytu: <?= e($details['Kwota']) ?> PLN · Źródło: <?= e($details['Zrodlo_rezerwacji']) ?></p><p>Uwagi: <?= e($details['Uwagi']) ?></p><h3>Zamówienia usług dodatkowych</h3>
 <?php if (!$orders): ?><p>Brak zamówień usług dla tego pobytu.</p><?php else: ?><ul><?php foreach ($orders as $o): ?><li><?= e($o['Nazwa_Uslugi']) ?> · <?= (int)$o['Ilosc'] ?> × <?= e($o['Cena_jednostkowa']) ?> PLN · <?= e($o['DataZamowienia']) ?></li><?php endforeach; ?></ul><?php endif; ?></section><?php endif; ?>
 <div class="table-wrap"><table><thead><tr><th scope="col">Rezerwacja / klient</th><th scope="col">Pobyt / pokój</th><th scope="col">Kwota</th><th scope="col">Status i opiekun</th></tr></thead><tbody>
-<?php foreach ($rows as $r): ?><tr><td><a href="?<?= e(http_build_query(array_merge($_GET, ['szczegoly' => $r['ID_Rezerwacji']]))) ?>">#<?= (int)$r['ID_Rezerwacji'] ?></a><br><?= e($r['Klient']) ?></td><td><?= e(substr($r['DataOd'], 0, 10)) ?><br><?= e(substr($r['DataDo'], 0, 10)) ?><br>Pokój <?= (int)$r['NrPokoju'] ?><br><a href="?edit=<?= (int)$r['ID_Rezerwacji'] ?>">Edytuj termin i pokój</a></td><td><?= e(number_format((float)$r['Kwota'], 2, ',', ' ')) ?> PLN</td><td>
+<?php foreach ($rows as $r): ?><tr><td><a href="?<?= e(http_build_query(array_merge($_GET, ['szczegoly' => $r['ID_Rezerwacji']]))) ?>">#<?= (int)$r['ID_Rezerwacji'] ?></a><br><?= e($r['Klient']) ?></td><td><?= e(substr($r['DataOd'], 0, 10)) ?><br><?= e(substr($r['DataDo'], 0, 10)) ?><br>Pokój <?= (int)$r['NrPokoju'] ?><br><a class="button" href="<?= e(a_url(['edit'=>$r['ID_Rezerwacji']])) ?>">Edytuj rezerwację</a></td><td><?= e(number_format((float)$r['Kwota'], 2, ',', ' ')) ?> PLN</td><td>
 <form method="post" class="toolbar" data-confirm="Zapisać status i opiekuna? Anulowanie lub ukończenie jest nieodwracalne."><?php a_hidden($r['ID_Rezerwacji']); ?><input type="hidden" name="wersja" value="<?= e(ar_version($r)) ?>">
 <?php a_select('status', 'Status', array_combine(ar_transitions($r['Status']), ar_transitions($r['Status'])), $r['Status']);
     $opts = ['' => 'Bez opiekuna'] + $activeEmployees;
     if ($r['ID_Pracownika'] && !isset($opts[$r['ID_Pracownika']])) {
         $opts[$r['ID_Pracownika']] = $r['Pracownik'].' (nieaktywny)';
     }
-    a_select('pracownik', 'Opiekun', $opts, $r['ID_Pracownika']); ?><button>Zapisz</button></form></td></tr><?php endforeach; ?>
+    a_select('pracownik', 'Opiekun', $opts, $r['ID_Pracownika']); ?><button name="action" value="update">Zapisz status / opiekuna</button></form>
+<div class="row-tools"><form method="post" data-confirm="Zmienić widoczność w archiwum? Status i zajętość pokoju nie zmienią się."><?php a_hidden($r['ID_Rezerwacji']); ?><input type="hidden" name="wersja" value="<?= e(ar_version($r)) ?>"><button name="action" value="<?= $r['Archiwum']?'restore':'archive' ?>"><?= $r['Archiwum']?'Przywróć z archiwum':'Do archiwum' ?></button></form>
+<?php if ($r['Status']==='Anulowana'): ?><form method="post" data-confirm="TRWALE usunąć anulowany pobyt bez płatności i zamówień? Operacja pozostawi wpis w historii i jest nieodwracalna."><?php a_hidden($r['ID_Rezerwacji']); ?><input type="hidden" name="wersja" value="<?= e(ar_version($r)) ?>"><button class="danger" name="action" value="delete">Usuń trwale</button></form><?php endif; ?></div></td></tr><?php endforeach; ?>
 <?php if (!$rows): ?><tr><td colspan="4" class="empty">Brak rezerwacji dla podanych filtrów.</td></tr><?php endif; ?></tbody></table></div><?php a_pages($page, $pages);
 a_end(); ?>

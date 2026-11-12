@@ -1,2 +1,4 @@
 includes/config.php
 .test-runtime/
+assets/pokoje/*
+!assets/pokoje/.htaccess

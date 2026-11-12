@@ -1,98 +1,63 @@
-# Wdrożenie na gah.gt.tc — bez kasowania istniejących danych
+# Wdrożenie GAH-FULL-007-r1
 
-## 1. Co jest obecnie nie tak
+## Aktualizacja działającego wydania 006
 
-Sprawdzenie przez publiczne konto demo było tylko do odczytu. Zastany pulpit to stara wersja. Moduły nowego panelu odpowiadały HTTP 503 z komunikatem wymagającym migracji. Strony pokoi i dostępności zwracały 404. Nie wykonano zdalnych zmian ani migracji. Ta paczka sama nie zmienia hostingu.
+Ta ścieżka jest przeznaczona dla bazy, w której 003, 004, 005 i 006 wykonano w całości. Jeżeli markeru brakuje mimo wcześniejszego importu, najpierw potwierdź kompletny schemat — nie ponawiaj ALTER ani nie wpisuj markerów dla pozoru.
 
-## 2. Backup i wgranie plików
-
-1. Z panelu InfinityFree pobierz kopię całego aktualnego `htdocs` i wyeksportuj bazę w phpMyAdmin. Sprawdź, że kopie się pobrały. Nie umieszczaj ich w publicznym katalogu ani repozytorium.
-2. Zachowaj istniejący `includes/config.php`. Paczka nie zawiera tego pliku. Nie zastępuj go konfiguracją lokalną.
-3. Na czas aktualizacji ogranicz dostęp do strony w panelu hostingu; nie przyjmuj równoległych rezerwacji podczas migracji. Samo wycofanie pokoju nie zastępuje okna serwisowego.
-4. Wgraj ZAWARTOŚĆ katalogu `projekt` do `htdocs` domeny gah.gt.tc, nie cały katalog `AKTUALNE` i nie archiwum wcześniejszych materiałów. Nadpisz cały aktualny zestaw plików, zwłaszcza `public/admin/index.php`, `includes/`, CSS, JS i grafiki. Wgraj też ukryte `.htaccess`. Nie kasuj hostingu w ciemno.
-5. W prywatnym config.php sprawdź DB_HOST, pełną nazwę bazy, DB_USER i DB_PASS z panelu MySQL InfinityFree. Nie zakładaj `localhost`. Dla domeny bez podkatalogu BASE_URL to pusty ciąg. Nie wpisuj pełnego adresu HTTPS w BASE_URL. Opcjonalne SESSION_SECURE=true dopiero gdy strona działa wyłącznie po HTTPS.
-6. Usuń stare zapasowe PHP/SQL/ZIP z publicznego katalogu po zabezpieczeniu ich kopii. Manifest nie wykrywa wszystkich dodatkowych plików. Nie wysyłaj `ARCHIWUM`, `robocze`, raportów testów ani prywatnych danych.
-
-## 3. Ustal stan bazy — zanim cokolwiek zaimportujesz
-
-Zaloguj się na `/public/logowanie.php` i otwórz `/public/admin/instalacja.php`. Ta strona nie wymaga kompletnego schematu nowego panelu, ale wymaga działającej konfiguracji, bazowych tabel kont i konta admina. Jest tylko odczytem. Pokazuje tabele, kolumny, markery i ograniczenia. Jeśli logowanie lub PDO nie działa, sprawdź bazę i log PHP w panelu hostingu.
-
-W phpMyAdmin wybierz właściwą bazę i uruchom odczyt:
+1. Pobierz prywatny backup całego htdocs, w tym includes/config.php i istniejących assets/pokoje. Wyeksportuj właściwą bazę przez phpMyAdmin. Zweryfikuj pobranie plików. Backupów nie publikuj pod domeną ani w repozytorium.
+2. Zaplanuj okno serwisowe bez nowych rezerwacji i edycji. Stare i nowe pliki nie powinny jednocześnie obsługiwać zapisów.
+3. Wgraj zawartość projekt z paczki 007 do htdocs przypisanego do gah.gt.tc, z nadpisaniem odpowiednich plików. Nie twórz dodatkowego katalogu projekt. Można użyć nakładki 007, jeżeli na serwerze jest pełne wydanie 006. Wgraj również pliki zaczynające się kropką.
+4. ZACHOWAJ prywatny includes/config.php, prawdziwe dane bazy, BASE_URL i istniejące ilustracje użytkowników. W paczce nie ma config.php. Jeśli zawiera komentarze, usuń tylko komentarze, nie wartości. Dla domeny bez podkatalogu BASE_URL jest pustym ciągiem.
+5. Otwórz /public/admin/instalacja.php. Logowanie oraz diagnostyka pozostają dostępne przed 007; pełny nowy panel wymaga 007.
+6. W phpMyAdmin wybierz właściwą istniejącą bazę. Uruchom database/PRZED_007_ODCZYT.sql. Są dwa wyniki; oba Niepoprawne muszą wynosić zero. Wynik dodatni oznacza duplikaty nazw stanowisk albo typów. Wyjaśnij je bez usuwania przypisań/historii. Nie scalamy ich automatycznie.
+7. Dopiero przy dwóch zerach importuj database/migrations/007_panel.sql. Po jakimkolwiek błędzie STOP: wcześniejsze DDL mogło już się wykonać. Nie ponawiaj w ciemno. Przywróć spójny backup albo zbadaj i napraw konkretny częściowy stan.
+8. Dopiero po pełnym sukcesie 007 zapisz marker:
 
 ```sql
-SHOW TABLES;
-SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME,ORDINAL_POSITION;
+INSERT INTO Migracje(Nazwa) VALUES ('007_panel');
 ```
 
-Jeżeli istnieje Migracje:
+9. Nie wykonuj ponownie 003, 004, 005 ani 006. Nie importuj database.sql ani nowa_baza_INFINITYFREE.sql na istniejących danych — kasują i odtwarzają tabele.
+10. Odśwież kontrolę instalacji. Wszystkie kontrole schematu muszą być OK, a wydanie GAH-FULL-007-r1 i manifest zgodne z plikiem START paczki. Wykonaj odczyty weryfikacji i checklistę odbioru.
 
-```sql
-SELECT Nazwa FROM Migracje ORDER BY Nazwa;
-```
+## Warunki przesyłania ilustracji
 
-| Migracja | Stan przed migracją | Stan po migracji |
-|---|---|---|
-| 003_panel | Uslugi_dodatkowe.Kategoria, brak KategorieUslug i LogAdministratora | KategorieUslug, LogAdministratora, Pracownicy.Aktywny/Opis, ID_Kategorii i CzasTrwania usługi |
-| 004_uzupelnienia | po 003, brak WizytyUslug | WizytyUslug z 3 FK, dodatkowe CHECK, usunięta tekstowa Kategoria |
-| 005_pokoje | po 004, brak BlokadyPokoi i nowych kolumn pokoi/pobytów | BlokadyPokoi, Pokoje.Aktywny/Wersja, Rezerwacje.LiczbaOsob/Wersja |
-| 006_integralnosc | po 005, brak CHECK o prefiksie chk_i006_ | 23 dodatkowe CHECK, indeks pobytów i dwa FK z RESTRICT |
+Wgraj assets/pokoje/.htaccess i zachowaj ten katalog. PHP musi móc w nim zapisywać; sprawdź właściciela/uprawnienia w panelu hostingu. Nie stosuj 777. Wymagane GD oraz fileinfo; ich stan i limity upload_max_filesize/post_max_size pokazuje kontrola instalacji. Bez GD nadal można używać istniejących ilustracji, ale upload zgłosi komunikat.
 
-Jeśli tabela/kolumna migracji JUŻ jest, lecz markeru brak albo część pozostałych elementów nie istnieje: STOP. To może być częściowa migracja. Nie uruchamiaj ponownie ALTER i nie dopisuj markeru dla pozoru. Porównaj pełny SQL migracji z rzeczywistym schematem, odtwórz spójny backup albo napraw indywidualnie z osobą znającą bazę. Przy nieznanym stanie nie istnieje bezpieczny uniwersalny import. Markery same w sobie nie dowodzą kompletności schematu.
+Aplikacja przyjmuje poprawne JPG/PNG/WEBP do 5 MB, 6000 px na bok i 8 mln pikseli. Limit serwera może być niższy. Plik jest dekodowany i zapisywany jako nowy JPEG z losową nazwą. Nie przesyłamy SVG ani plików wykonywalnych. Po błędzie zapisu bazy nowy plik jest usuwany.
 
-## 4. Aktualizacja istniejącej bazy przez phpMyAdmin
+Nowe ilustracje nie należą do stałego manifestu. Zachowaj je w backupie i podczas kolejnych uploadów. .gitignore pomija je, ale zachowuje ochronny .htaccess. Nie wgrywaj ich automatycznie do publicznego repozytorium.
 
-Nie importuj `database.sql` ani `nowa_baza_INFINITYFREE.sql` na istniejącej bazie. Oba kasują tabele.
+## Starsza istniejąca baza
 
-1. Jeżeli brak rejestru migracji, wykonaj `database/00_rejestr_migracji.sql`. Tworzy tylko rejestr, nie wykonuje pozostałych migracji.
-2. Przed 006, po pełnym 005, uruchom `database/PRZED_006_ODCZYT.sql`. Wszystkie 27 liczników musi wynosić zero; inaczej przerwij i wyjaśnij dane. To tylko odczyt, nie automatyczna naprawa.
-3. W kolejności 003 → 004 → 005 → 006 importuj WYŁĄCZNIE brakujące, w całości niewykonane pliki z `database/migrations/`.
-4. Po KAŻDYM imporcie upewnij się, że phpMyAdmin nie zgłosił żadnego błędu. Wykonaj odczyty z pliku `database/weryfikacja_po_migracji.sql`, porównaj elementy tabeli powyżej i cały SQL tej migracji.
-5. Dopiero po pełnym sukcesie odpowiedniej migracji zapisz jej marker, osobno:
+1. Backup i ustalenie stanu rzeczywistych tabel/kolumn/ograniczeń oraz tabeli Migracje. Sam brak markeru nie oznacza braku wykonanych ALTER.
+2. Jeżeli nie ma rejestru Migracje, wykonaj database/00_rejestr_migracji.sql.
+3. Wykonuj tylko brakujące i w całości niewykonane migracje 003_panel, 004_uzupelnienia, 005_pokoje. Po każdej sprawdź pełny sukces i dodaj wyłącznie jej marker.
+4. Przed 006 uruchom PRZED_006_ODCZYT.sql: wszystkie 27 wyników zero. Wykonaj 006, sprawdź i zapisz marker dopiero po pełnym sukcesie.
+5. Przed 007 wykonaj dwa odczyty PRZED_007_ODCZYT.sql, następnie procedurę 007 powyżej.
+6. Markery odpowiadają dokładnym nazwom plików bez .sql. Nie dodawaj wszystkich naraz bez kompletnych migracji.
 
-```sql
-INSERT INTO Migracje(Nazwa) VALUES ('003_panel');
-```
+Jeżeli część elementów migracji już istnieje, a innych brakuje, nie uruchamiaj jej od początku. Wymagany jest backup lub indywidualna naprawa schematu. Nie wyłączaj FOREIGN_KEY_CHECKS ani CHECK w celu przepchnięcia błędnych danych.
 
-Po sukcesie 004 analogicznie:
+InfinityFree zwykle nie udostępnia SSH. Jeśli środowisko ma CLI, alternatywą jest php scripts/migrate_etap3.php z poprawną prywatną konfiguracją i backupem. Skrypt pomija oznaczone migracje, wykrywa częściowy schemat i kontroluje dane przed 006/007. Nie dodawaj publicznego endpointu uruchamiającego migracje.
 
-```sql
-INSERT INTO Migracje(Nazwa) VALUES ('004_uzupelnienia');
-```
+## Nowa pusta baza
 
-Po sukcesie 005 analogicznie:
+Wyłącznie do świadomego uruchomienia fikcyjnego demo: importuj database/nowa_baza_INFINITYFREE.sql do pustej bazy. Zawiera 003–007 i markery. Nie wykonuj migracji drugi raz. database/database.sql wybiera lokalną grand_access_hotel; również jest destrukcyjnym odtworzeniem, nie aktualizacją.
 
-```sql
-INSERT INTO Migracje(Nazwa) VALUES ('005_pokoje');
-```
+## Po wdrożeniu
 
-Po sukcesie 006 analogicznie:
+- Logo panelu ma otwierać stronę hotelu; granat i złote akcenty mają odpowiadać stronie.
+- Konta: utwórz testowego klienta, pracownika i admina; edytuj i usuń konta bez historii. Sprawdź blokady własnego konta i rekordów z historią.
+- Pracownicy: sekcje kompetencji i stanowisk. Usługi: sekcja kategorii. Pokoje: typy i upload ilustracji.
+- Pobyty: edycja dat/pokoju przed rozpoczęciem, uwagi do historii, zachowanie kwoty opłaconego pobytu, archiwizacja/przywrócenie, trwałe usunięcie tylko anulowanego bez rozliczeń.
+- Archiwizacja nie anuluje pobytu i nie zwalnia pokoju. Sprawdź odrzucenie kolizji także dla aktywnego pobytu w archiwum.
+- Sprawdź na telefonie, konto klienta/pracownika, kalendarz, historię i CSV.
+- /includes/config.php, SQL oraz skrypty CLI nie mogą być publicznie dostępne. Sprawdź ochronę katalogu ilustracji.
+- 503 panelu oznacza brak wymaganej migracji. 500 wymaga odczytu logu serwera. Nie publikuj błędów z hasłami ani konfiguracji. Przy odrzuceniu dyrektywy .htaccess sprawdź konkretny błąd; nie wyłączaj ochrony bez zamiennika.
 
-```sql
-INSERT INTO Migracje(Nazwa) VALUES ('006_integralnosc');
-```
+## GitHub i hosting
 
-Nie wykonuj ponownie INSERT, jeżeli marker już istnieje. Nie dopisuj czterech markerów bez czterech kompletnych migracji. Brakujące markery dla kompletnego, wcześniej wykonanego schematu wymagają najpierw sprawdzenia całej migracji.
+Wgraj to samo wydanie do repozytorium bez prywatnego config.php, produkcyjnej bazy i dynamicznych ilustracji. Jeśli config.php był już śledzony, usuń go z bieżącej wersji repo i zmień ujawnione prawdziwe hasła. .gitignore nie usuwa sekretów z historii.
 
-DDL w MySQL nie jest atomowe: błąd w połowie nie cofa wcześniejszych ALTER. W takim przypadku przerwij, zachowaj komunikat i przywróć backup/napraw konkretny stan — nie ponawiaj całego pliku w ciemno.
-
-InfinityFree zwykle nie udostępnia SSH. Nie uruchamiaj migracji przez dopisany publiczny endpoint PHP. Jeżeli masz środowisko z CLI i prawidłowym config.php, alternatywą dla phpMyAdmin jest `php scripts/migrate_etap3.php`. Skrypt pomija oznaczone migracje i odrzuca wykryty częściowy schemat. To nadal wymaga backupu.
-
-## 5. Nowa, PUSTA baza
-
-Tylko gdy celowo zaczynasz od fikcyjnej bazy demonstracyjnej: wybierz pustą bazę w phpMyAdmin i importuj `database/nowa_baza_INFINITYFREE.sql`. Zawiera już 003–006 i ich markery. Nie importuj ich drugi raz. `database.sql` przeznaczono do lokalnego odtworzenia grand_access_hotel i zawiera CREATE DATABASE/USE.
-
-## 6. Sprawdzenie po wdrożeniu
-
-- `/public/admin/instalacja.php`: wszystkie kontrole bazy OK; brak zmienionych plików; identyczny identyfikator i odcisk jak w START paczki.
-- `/public/admin/index.php`: nowy pulpit z nawigacją do pokoi, dostępności, pobytów, kalendarza i historii.
-- Zrób ręcznie checklistę `ODBIOR_I_PODZIAL.md` na fikcyjnych danych. Dopiero po uzgodnieniu z właścicielem możesz tworzyć lub usuwać dane hostingu.
-- Sprawdź CSS, obrazy, nawigację, role, eksport i telefon. Wyczyść cache przeglądarki po aktualizacji; pliki zasobów mają adresy zależne od zawartości.
-- Sprawdź, że `/includes/config.php`, `/database/database.sql` i `/scripts/migrate_etap3.php` nie są dostępne jako publiczne treści. Dostęp do tych katalogów jest blokowany przez .htaccess.
-- Przy 503: kontrola instalacji. Przy 404: położenie plików. Przy 500: log PHP, wersja PHP i dane bazy; nie włączaj publicznego wyświetlania haseł/błędów PDO.
-- Jeśli hosting odrzuca dyrektywę .htaccess, odczytaj konkretny błąd w logu i dostosuj do jego Apache; nie wyłączaj ochrony prywatnych katalogów bez zamiennika.
-
-## 7. GitHub i hosting to to samo wydanie
-
-Przenieś do repozytorium ten sam katalog `projekt`, włącznie z `includes/wydanie.json`, ale bez `includes/config.php`. Nie nadpisuj repozytorium katalogiem backupu. Przed commitem sprawdź listę zmian i `git status`. Jeśli config był już śledzony, usuń go z indeksu i zmień ujawnione dane bazy — .gitignore nie usuwa sekretów z historii.
-
-Zrób commit po testach, wyślij go i zapisz jego SHA w protokole odbioru. Wykonaj ręcznie upload dokładnie tego wydania na InfinityFree oraz migracje. Potwierdź zgodność manifestu na hostingu. Nie twierdzimy, że obecne repozytorium lub hosting zostały zmienione przez przygotowanie tej paczki.
+Zapisz SHA commita i wynik kontroli instalacji na hostingu. Nie jest to automatyczna synchronizacja. Przygotowanie paczki oraz lokalnych testów nie oznacza, że zdalne pliki, baza lub repozytorium zostały zmienione.

@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/admin_pokoje.php';
+require_once __DIR__.'/../../includes/admin_upload.php';
+if (a_get('sekcja')==='typy') { require __DIR__.'/../../includes/admin_slowniki.php'; as_view('typy'); return; }
 a_post(function () {
     a_enum('action', ['save','delete']);
     $id = pole_tekstowe('id') === '0' ? 0 : a_id(pole_tekstowe('id'));
@@ -29,7 +31,9 @@ a_post(function () {
     $status = a_enum('status', ['Wolny','Zajęty','Serwis']);
     $active = a_enum('aktywny', ['0','1']);
     $photo = pole_tekstowe('zdjecie');
-    if ($photo !== '' && (!preg_match('~^assets/[^/]+\.(jpe?g|png|webp)$~iD', $photo) || !gah_asset_file($photo))) {
+    $uploaded=au_photo();
+    if ($uploaded!==null) { $photo=$uploaded; }
+    if ($photo !== '' && (!preg_match('~^assets/(?:pokoje/)?[^/]+\.(jpe?g|png|webp)$~iD', $photo) || !gah_asset_file($photo))) {
         throw new DomainException('Wybierz istniejący lokalny obraz.');
     }
     if ($old && ($status === 'Serwis' || $cap !== (int)$old['IloscOsob'] || $type !== (int)$old['ID_Typu'])) {
@@ -50,8 +54,8 @@ a_post(function () {
 $edit = ctype_digit(a_get('edit')) ? a_query('SELECT * FROM Pokoje WHERE ID_Pokoju=?', [a_get('edit')])->fetch() : null;
 $types = a_query('SELECT ID_Typu,NazwaTypu FROM TypyPokoi ORDER BY NazwaTypu')->fetchAll(PDO::FETCH_KEY_PAIR);
 $photos = [''=>'Ilustracja domyślna'];
-foreach (glob(__DIR__.'/../../assets/*') as $f) {
-    if (preg_match('/\.(jpe?g|png|webp)$/iD', $f)) { $photos['assets/'.basename($f)] = basename($f); }
+foreach (array_merge(glob(__DIR__.'/../../assets/*'),glob(__DIR__.'/../../assets/pokoje/*.jpg')) as $f) {
+    if (preg_match('/\.(jpe?g|png|webp)$/iD', $f)) { $key='assets/'.(basename(dirname($f))==='pokoje'?'pokoje/':'').basename($f); $photos[$key]=basename($f); }
 }
 $filter = a_get('stan');
 $where = in_array($filter, ['0','1'], true) ? ' WHERE p.Aktywny=?' : '';
@@ -62,7 +66,7 @@ $rows = a_query('SELECT p.*,t.NazwaTypu FROM Pokoje p JOIN TypyPokoi t ON t.ID_T
 a_start('Pokoje i udostępnianie oferty'); ?>
 <p class="hint">Udostępniony pokój pojawia się klientom. Wolny termin zależy dodatkowo od pobytów, blokad oraz stanu Serwis. Wycofanie oferty nie kasuje istniejących rezerwacji.</p>
 <section><h2><?= $edit ? 'Edytuj pokój' : 'Dodaj pokój' ?></h2>
-<form method="post" class="form-grid"><?= csrf_pole() ?><input type="hidden" name="id" value="<?= (int)($edit['ID_Pokoju'] ?? 0) ?>"><input type="hidden" name="wersja" value="<?= (int)($edit['Wersja'] ?? 0) ?>">
+<form method="post" enctype="multipart/form-data" class="form-grid"><?= csrf_pole() ?><input type="hidden" name="id" value="<?= (int)($edit['ID_Pokoju'] ?? 0) ?>"><input type="hidden" name="wersja" value="<?= (int)($edit['Wersja'] ?? 0) ?>">
 <?php a_input('numer','Numer pokoju',$edit['NrPokoju'] ?? '','number','required min="1" max="99999"');
 a_select('typ','Typ pokoju',$types,$edit['ID_Typu'] ?? '');
 a_input('cena','Cena dobowa PLN',$edit['CenaDobowa'] ?? '200.00','number','required min="0.01" step="0.01"');
@@ -70,9 +74,9 @@ a_input('osoby','Maksymalna liczba osób',$edit['IloscOsob'] ?? 1,'number','requ
 a_input('pietro','Piętro',$edit['Pietro'] ?? 1,'number','required min="-5" max="200"');
 a_select('status','Stan pokoju',['Wolny'=>'Wolny','Zajęty'=>'Zajęty','Serwis'=>'Serwis'],$edit['Status'] ?? 'Wolny');
 a_select('aktywny','Udostępnienie',['1'=>'Udostępniony','0'=>'Wycofany z oferty'],$edit['Aktywny'] ?? '1');
-a_select('zdjecie','Ilustracja',$photos,$edit['Zdjecie_Pokoju'] ?? ''); ?>
+a_select('zdjecie','Istniejąca ilustracja',$photos,$edit['Zdjecie_Pokoju'] ?? ''); ?><label>Prześlij nową ilustrację<input type="file" name="ilustracja" accept="image/jpeg,image/png,image/webp"><small>JPG, PNG lub WEBP, do 5 MB i 8 mln pikseli. Limit PHP: <?= e(ini_get('upload_max_filesize')) ?>. Nowy plik ma pierwszeństwo przed wyborem z listy.</small></label>
 <button name="action" value="save">Zapisz pokój</button><a href="pokoje.php">Nowy formularz</a></form></section>
 <form method="get" class="toolbar"><?php a_select('stan','Oferta',[''=>'Wszystkie','1'=>'Udostępnione','0'=>'Wycofane'],$filter); ?><button>Filtruj</button><a href="dostepnosc.php">Sprawdź terminy i blokady</a></form>
 <div class="table-wrap"><table><thead><tr><th scope="col">Pokój</th><th scope="col">Cena / miejsca</th><th scope="col">Udostępnienie</th><th scope="col">Operacje</th></tr></thead><tbody>
-<?php foreach ($rows as $r): ?><tr><td><?= (int)$r['NrPokoju'] ?> · <?= e($r['NazwaTypu']) ?><br>Piętro <?= (int)$r['Pietro'] ?></td><td><?= e($r['CenaDobowa']) ?> PLN<br><?= (int)$r['IloscOsob'] ?> os.</td><td><?= $r['Aktywny'] ? 'Udostępniony' : 'Wycofany' ?><br><?= e($r['Status']) ?></td><td><a href="?edit=<?= (int)$r['ID_Pokoju'] ?>">Edytuj</a><form method="post" data-confirm="Usunąć pokój bez historii? Jeśli ma pobyty, wycofaj go z oferty."><?= csrf_pole() ?><input type="hidden" name="id" value="<?= (int)$r['ID_Pokoju'] ?>"><input type="hidden" name="wersja" value="<?= (int)$r['Wersja'] ?>"><button class="danger" name="action" value="delete">Usuń</button></form></td></tr><?php endforeach; ?>
+<?php foreach ($rows as $r): ?><tr><td><img class="room-preview" src="<?= e(gah_asset_url(gah_room_image($r))) ?>" alt="Ilustracja pokoju <?= (int)$r['NrPokoju'] ?>" loading="lazy"><br><?= (int)$r['NrPokoju'] ?> · <?= e($r['NazwaTypu']) ?><br>Piętro <?= (int)$r['Pietro'] ?></td><td><?= e($r['CenaDobowa']) ?> PLN<br><?= (int)$r['IloscOsob'] ?> os.</td><td><?= $r['Aktywny'] ? 'Udostępniony' : 'Wycofany' ?><br><?= e($r['Status']) ?></td><td><a href="?edit=<?= (int)$r['ID_Pokoju'] ?>">Edytuj</a><form method="post" data-confirm="Usunąć pokój bez historii? Jeśli ma pobyty, wycofaj go z oferty."><?= csrf_pole() ?><input type="hidden" name="id" value="<?= (int)$r['ID_Pokoju'] ?>"><input type="hidden" name="wersja" value="<?= (int)$r['Wersja'] ?>"><button class="danger" name="action" value="delete">Usuń</button></form></td></tr><?php endforeach; ?>
 <?php if (!$rows): ?><tr><td colspan="4">Brak pokoi.</td></tr><?php endif; ?></tbody></table></div><?php a_pages($page,$pages); a_end(); ?>

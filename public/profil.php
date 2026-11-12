@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bledy = sprawdz_dane_osobowe($imie, $nazwisko, $telefon);
 
     if (empty($bledy)) {
-        $st = $pdo->prepare('UPDATE Uzytkownicy SET Imie = ?, Nazwisko = ?, Telefon = ? WHERE ID_Uzytkownika = ?');
+        $st = $pdo->prepare('UPDATE Uzytkownicy SET Imie = ?, Nazwisko = ?, Telefon = ?, Wersja=Wersja+1 WHERE ID_Uzytkownika = ?');
         $st->execute([$imie, $nazwisko, $telefon, $_SESSION['user_id']]);
         $_SESSION['imie'] = $imie;
         ustaw_komunikat('success', 'Dane zostały zapisane.');

@@ -1,44 +1,48 @@
-# Grand Access Hotel — komplet funkcji z uwag nauczyciela
+# Grand Access Hotel — wydanie GAH-FULL-007-r1
 
 Autorzy projektu: Oliwia Drygiel, Tobiasz Mućko, Dawid Domagała.
 
-To kompletne wydanie projektu, a nie nakładka samych grafik. Łączy wcześniejszą pełną wersję panelu, poprawki zasobów oraz nowe zarządzanie pokojami, blokady terminów i edycję pobytów. Nie jest kopią obecnej gałęzi głównej GitHuba ani potwierdzeniem wdrożenia na gah.gt.tc.
+Kompletny projekt rezerwacji hotelowych w PHP i MySQL/MariaDB. To rozwinięcie wydania 006, nie potwierdzenie automatycznego wdrożenia repozytorium na hosting. Kod aplikacji jest bez komentarzy; objaśnienia znajdują się w dokumentacji.
 
-## Funkcje
+## Panel administratora
 
-- Pulpit z licznikami, ostatnimi operacjami i wspólną nawigacją.
-- Rezerwacje pobytów: dodawanie, szczegóły, filtry, eksport CSV, status, opiekun, zmiana pokoju, terminu i liczby osób z przeliczeniem ceny.
-- Zakończonych rezerwacji nie wskrzeszamy. Pobyt można ukończyć po wymeldowaniu. Zmiana terminu jest możliwa przed rozpoczęciem, bez zapisanych płatności. Zamiast usuwać historię — anulowanie.
-- Pokoje: dodawanie, edycja, usuwanie bez historii, publikowanie i wycofywanie oferty, wybór istniejącej ilustracji.
-- Dostępność: kolizje pobytów i blokad, wycofana oferta, serwis. Przedziały są prawostronnie otwarte: dzień wymeldowania nie blokuje kolejnego pobytu.
-- Dostępność pracowników: grafik, urlopy, aktywność profilu i konta, wolne przedziały pomniejszone o wizyty. Kompetencje są sprawdzane przy tworzeniu wizyty. Opiekun pobytu nie oznacza całodobowego zajęcia pracownika.
-- Konta i pracownicy: dodawanie, edycja, dezaktywacja, usuwanie profilu bez historii, kompetencje, grafik i urlopy.
-- Kategorie i usługi: CRUD, czas trwania, przypisania pracowników.
-- Wizyty usług: bezpośrednie powiązania z klientem, pracownikiem i usługą, godziny pracy, brak kolizji, statusy, CSV.
-- Kalendarz pobytów, blokad pokoi i wizyt usług.
-- Historia operacji administratora z filtrowaniem; zapis poprzedniego i nowego stanu.
-- Kontrola instalacji dostępna dla administratora także przed migracją panelu: schemat, markery migracji i sumy kontrolne plików.
-- Role, CSRF, sesje, prepared statements, transakcje i blokady rekordów, kontrola nieaktualnych formularzy, zabezpieczenie CSV.
-- Lokalne grafiki i fonty, wersjonowanie adresów zasobów zawartością pliku, widoki mobilne.
+- Kolory zgodne ze stroną hotelu: granat #1d3045, jasne tło #edf0ed i złote akcenty. Logo w lewym górnym rogu otwiera stronę hotelu.
+- Konta: dodawanie, edycja danych/e-maila/roli, ustawienie nowego hasła, blokowanie i bezpieczne usuwanie klientów, pracowników oraz administratorów. Konto pracownika automatycznie otrzymuje profil. Konto z historią pozostaje do dezaktywacji. Własnego konta nie można usunąć, zablokować ani pozbawić roli admina. Reset hasła unieważnia wcześniejsze sesje.
+- Pracownicy: profile, stanowiska, kompetencje, aktywność i powiązane konta. Kompetencje i CRUD stanowisk są sekcjami modułu Pracownicy, nie oddzielnymi pozycjami głównego menu. Używanego stanowiska nie usuwamy bez zmiany przypisań.
+- Usługi: CRUD usług i kategorii w jednym module. Kategorii z usługami nie można skasować bez przeniesienia usług.
+- Pokoje: CRUD, publikowanie/wycofanie, serwis, wybór ilustracji, przesyłanie nowych JPG/PNG/WEBP. Typy pokoi mają własną sekcję CRUD wewnątrz Pokoi. Używanego typu nie usuwamy bez zmiany przypisań.
+- Pobyty: tworzenie, wyszukiwanie, szczegóły, status/opiekun, edycja dat/pokoju/liczby osób przed rozpoczęciem, edycja uwag także dla historii. Dla zmiany terminu/pokoju można przeliczyć kwotę albo zachować uzgodnioną kwotę z uzasadnieniem. Opłacony pobyt wymaga zachowania zapisanej kwoty; edytor nie rozlicza dopłat ani zwrotów.
+- Archiwizacja pobytu i przywracanie z archiwum. Archiwizacja nie anuluje pobytu ani nie zwalnia pokoju. Trwałe usuwanie tylko anulowanego pobytu bez płatności i zamówień, z pozostawieniem wpisu w historii.
+- Dostępność pokoi i pracowników, blokady terminów, grafiki/urlopy, wizyty usług, kalendarz, historia operacji, CSV, statystyki i spójna nawigacja.
+- Kontrola instalacji: schemat, markery migracji, sumy plików, odczyt danych i warunki przesyłania ilustracji.
 
-## Integralność
+Starsze adresy kategorie.php i przypisania.php pozostają zgodne z wcześniejszymi linkami, ale prowadzą do sekcji właściwych modułów.
 
-Schemat ma 17 tabel, 19 FK i 37 CHECK. Migracja 006 dodaje 23 CHECK i chroni powiązania płatności oraz zamówień przed usunięciem razem z pobytem. Reguły kolizji i pojemności są egzekwowane w transakcjach aplikacji, nie przez dowolny bezpośredni SQL. Szczegóły, granice zabezpieczeń oraz polityka dat są w `INTEGRALNOSC.md`.
+## Integralność i bezpieczeństwo
 
-## Uruchomienie
+17 tabel, 19 FK, 42 CHECK. Klucze unikalne chronią m.in. e-maile, numery pokoi, nazwy kategorii, stanowisk i typów pokoi. Płatności i zamówienia mają RESTRICT wobec usunięcia pobytu. SQL i PHP pełnią różne role: kolizji przedziałów, pojemności oraz kompetencji pilnuje aplikacja w transakcjach. Dowolny bezpośredni SQL może ominąć te reguły aplikacji — szczegółowy zakres i ograniczenia opisuje INTEGRALNOSC.md.
 
-Wymagania: PHP 8.1+ z pdo_mysql i mbstring, MySQL 8.0.16+ albo współczesna MariaDB obsługująca CHECK; Apache 2.4 z .htaccess albo lokalny serwer PHP. Testy wykonano na PHP 8.4 i MariaDB 11.8. Ostateczną zgodność z konkretną bazą InfinityFree trzeba potwierdzić po migracji.
+Zapisy używają prepared statements, CSRF, kontroli ról, transakcji, blokad rekordów i kontroli wersji edycji. Hasła są hashowane i nie są zapisywane w logu operacji. Ilustracje są dekodowane przez GD i zapisywane ponownie jako JPEG z losową nazwą, bez kopiowania metadanych.
 
-1. Przeczytaj `WDROZENIE_INFINITYFREE.md`. Istniejąca baza i nowa baza wymagają różnych czynności.
-2. Utwórz prywatny `includes/config.php` z `includes/config.example.php`.
-3. Dla PUSTEJ bazy importuj `database/nowa_baza_INFINITYFREE.sql`. Ten plik kasuje i odtwarza tabele — NIE używaj do aktualizacji istniejących danych.
-4. Dla istniejącej bazy wykonaj tylko brakujące migracje 003, 004, 005, 006. Nie zgaduj stanu częściowej migracji.
-5. Otwórz `/public/logowanie.php`, następnie `/public/admin/instalacja.php`.
-6. Lokalnie można użyć `php -S 0.0.0.0:8000 router.php` przy `BASE_URL` równym pustemu ciągowi.
+## Wymagania
 
-`database/database.sql` jest pełnym odtworzeniem lokalnej bazy grand_access_hotel; również kasuje dane. Nie jest migracją.
+PHP 8.1+ z pdo_mysql i mbstring; dla przesyłania nowych ilustracji także GD i fileinfo. MySQL 8.0.16+ albo współczesna MariaDB obsługująca CHECK. Apache 2.4 z .htaccess lub lokalny router PHP. Testy wykonano lokalnie na PHP 8.4 i MariaDB 11.8; wynik hostingu trzeba sprawdzić po wdrożeniu.
 
-## Konta demonstracyjne
+Limity ilustracji: do 5 MB, 6000 px na bok i 8 mln pikseli; zapis JPEG do 1600 px. Limit pliku i żądania w PHP hostingu może być niższy. Brak GD/fileinfo blokuje upload, ale nie wybór istniejącej ilustracji. Katalog assets/pokoje musi być zapisywalny dla PHP. Nie ustawiaj 777.
+
+## Uruchomienie i aktualizacja
+
+- Istniejące wydanie 006: backup, odczyt PRZED_007_ODCZYT.sql, migracja 007_panel.sql i marker dopiero po pełnym sukcesie. Nie uruchamiaj ponownie 003–006.
+- Starsza baza: ustal stan i wykonaj wyłącznie brakujące migracje 003–007. Procedura: WDROZENIE_INFINITYFREE.md.
+- Pusta baza: pełne odtworzenie database/nowa_baza_INFINITYFREE.sql. Ten plik kasuje tabele — nie jest aktualizacją istniejących danych.
+- database/database.sql również odtwarza dane i dodatkowo wybiera lokalną bazę grand_access_hotel.
+- Prywatny includes/config.php tworzysz z config.example.php albo zachowujesz z hostingu. Nie dodawaj go do repozytorium.
+- Dla domeny bez podkatalogu BASE_URL jest pustym ciągiem. Lokalnie: php -S 0.0.0.0:8000 router.php.
+- Sprawdź /public/admin/instalacja.php, następnie jawny protokół ODBIOR_I_PODZIAL.md.
+
+Pliki przesłane przez formularz do assets/pokoje nie są częścią stałego manifestu ani automatyczną zawartością repozytorium. Zachowaj je i prywatny config.php podczas uploadu kolejnego wydania oraz w backupach hostingu. Nie zastępuj całego katalogu tak, by skasować istniejące ilustracje.
+
+## Demonstracyjne konta fikcyjnej bazy
 
 | Rola | Login | Hasło |
 |---|---|---|
@@ -46,16 +50,10 @@ Wymagania: PHP 8.1+ z pdo_mysql i mbstring, MySQL 8.0.16+ albo współczesna Mar
 | Pracownik | john.doe@email.com | Pracownik123! |
 | Klient | anna.kowal@dk.pl | Klient123! |
 
-Dotyczą fikcyjnej bazy demonstracyjnej. Po testach usuń publiczny dostęp administracyjny lub zmień hasło. Nigdy nie publikuj config.php ani kopii bazy z prawdziwymi danymi.
+Po testach zmień publicznie znane hasła administratorów. Nie publikuj danych dostępowych do bazy ani jej produkcyjnych eksportów. .gitignore nie usuwa wcześniej opublikowanych sekretów z historii Git.
 
-## Struktura
+## Pliki i dokumentacja
 
-`public/` — strony ról i panel; `includes/` — wspólna logika; `database/` — schemat i migracje; `css/`, `js/`, `assets/` — lokalne zasoby; `scripts/` — narzędzia CLI. Katalogów prywatnych i SQL nie otwieramy przez WWW. Licencja fontów: `assets/fonts/OFL.txt`.
+public/ — strony, includes/ — wspólna logika, database/ — migracje/schemat/diagram, css/js/assets — zasoby, scripts/ — narzędzia CLI. .htaccess chronią katalogi prywatne i katalog ilustracji. Licencja lokalnych fontów: assets/fonts/OFL.txt.
 
-Kod aplikacji jest bez komentarzy. Objaśnienia są w dokumentacji, poza kodem.
-
-## Zgodność repozytorium i hostingu
-
-Wgraj na hosting i do repozytorium ten sam zestaw z tego wydania, bez prywatnego config.php. Sprawdź panel instalacji oraz `php scripts/sprawdz_instalacje.php`. Identyfikator i odcisk wydania muszą odpowiadać plikowi START z paczki. Manifest sprawdza wymienione pliki, nie wykrywa dowolnych dodatkowych plików — usuń niepotrzebne stare kopie ręcznie po backupie.
-
-Brak automatycznej synchronizacji GitHub → InfinityFree. Sam commit nie uruchamia migracji. Oceniać należy działające strony na hostingu. Uzupełnienie funkcji nie gwarantuje konkretnej oceny.
+GitHub i hosting wymagają osobnego uploadu oraz kontroli tego samego wydania. Manifest sprawdza wymienione pliki, nie dowolne pliki dodatkowe i nie zawartość dynamicznych ilustracji. Raport testów opisuje faktycznie wykonane sprawdzenia, nie gwarantuje oceny ani nie zastępuje odbioru działającej strony na hostingu.

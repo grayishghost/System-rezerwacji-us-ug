@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/admin.php';
+if (a_get('sekcja')==='kompetencje') { require __DIR__.'/../../includes/admin_kompetencje_view.php'; return; }
+if (a_get('sekcja')==='stanowiska') { require __DIR__.'/../../includes/admin_slowniki.php'; as_view('stanowiska'); return; }
 a_post(function () {
     a_enum('action', ['', 'save', 'delete']);
     global $pdo;
@@ -13,7 +15,7 @@ a_post(function () {
             throw new DomainException('Pracownik ma historię rezerwacji. Dezaktywuj profil zamiast usuwać.');
         }
         a_query('DELETE FROM Pracownicy WHERE ID_Pracownika=?', [$id]);
-        a_query("UPDATE Uzytkownicy SET Rola='klient' WHERE ID_Uzytkownika=?", [$old['ID_Uzytkownika']]);
+        a_query("UPDATE Uzytkownicy SET Rola='klient',Wersja=Wersja+1 WHERE ID_Uzytkownika=?", [$old['ID_Uzytkownika']]);
         a_log('Usunięcie profilu', 'pracownik', $id, ['ID_Uzytkownika' => $old['ID_Uzytkownika']], null);
         return;
     }
@@ -58,7 +60,7 @@ a_post(function () {
             a_query("INSERT INTO Uzytkownicy(Imie,Nazwisko,Email,Telefon,Haslo,Rola) VALUES(?,?,?,?,?,'pracownik')", [$imie,$nazwisko,$email,$phone,password_hash($password, PASSWORD_DEFAULT)]);
             $uid = (int)$pdo->lastInsertId();
         }
-        a_query("UPDATE Uzytkownicy SET Rola='pracownik' WHERE ID_Uzytkownika=?", [$uid]);
+        a_query("UPDATE Uzytkownicy SET Rola='pracownik',Wersja=Wersja+1 WHERE ID_Uzytkownika=?", [$uid]);
     }
     if ($old) {
         a_query('UPDATE Pracownicy SET ID_Stanowiska=?,Opis=?,Aktywny=? WHERE ID_Pracownika=?', [$position,$desc,$active,$id]);
@@ -68,7 +70,7 @@ a_post(function () {
         if ($errors = sprawdz_dane_osobowe($imie, $nazwisko, $phone)) {
             throw new DomainException(implode(' ', $errors));
         }
-        a_query('UPDATE Uzytkownicy SET Imie=?,Nazwisko=?,Telefon=? WHERE ID_Uzytkownika=?', [$imie,$nazwisko,$phone,$uid]);
+        a_query('UPDATE Uzytkownicy SET Imie=?,Nazwisko=?,Telefon=?,Wersja=Wersja+1 WHERE ID_Uzytkownika=?', [$imie,$nazwisko,$phone,$uid]);
     } else {
         a_query('INSERT INTO Pracownicy(ID_Uzytkownika,ID_Stanowiska,Opis,Aktywny) VALUES(?,?,?,?)', [$uid,$position,$desc,$active]);
         $id = (int)$pdo->lastInsertId();
@@ -105,6 +107,6 @@ a_select('aktywny', 'Profil pracownika', ['1' => 'Aktywny','0' => 'Nieaktywny'],
 <button name="action" value="save">Zapisz pracownika</button><a href="pracownicy.php">Nowy formularz</a></form></section>
 <form method="get" class="toolbar"><?php a_input('q', 'Imię lub nazwisko', $q); ?><button>Szukaj</button></form>
 <div class="table-wrap"><table><thead><tr><th scope="col">Pracownik</th><th scope="col">Stanowisko</th><th scope="col">Profil / konto</th><th scope="col">Operacje</th></tr></thead><tbody>
-<?php foreach ($rows as $r): ?><tr><td><?= e($r['Imie'].' '.$r['Nazwisko']) ?><br><small><?= e($r['Opis']) ?></small></td><td><?= e($r['Nazwa_stanowiska'] ?? '—') ?></td><td><?= $r['Aktywny'] ? 'Aktywny profil' : 'Nieaktywny profil' ?><br><?= $r['KontoAktywne'] ? 'Logowanie dostępne' : 'Konto zablokowane' ?></td><td><div class="actions"><a href="?edit=<?= (int)$r['ID_Pracownika'] ?>">Edytuj</a><a href="przypisania.php?pracownik=<?= (int)$r['ID_Pracownika'] ?>">Usługi</a><a href="grafik.php?pracownik=<?= (int)$r['ID_Pracownika'] ?>">Grafik</a><?php a_delete($r['ID_Pracownika'], 'Usuń profil'); ?></div></td></tr><?php endforeach; ?>
+<?php foreach ($rows as $r): ?><tr><td><?= e($r['Imie'].' '.$r['Nazwisko']) ?><br><small><?= e($r['Opis']) ?></small></td><td><?= e($r['Nazwa_stanowiska'] ?? '—') ?></td><td><?= $r['Aktywny'] ? 'Aktywny profil' : 'Nieaktywny profil' ?><br><?= $r['KontoAktywne'] ? 'Logowanie dostępne' : 'Konto zablokowane' ?></td><td><div class="actions"><a href="?edit=<?= (int)$r['ID_Pracownika'] ?>">Edytuj</a><a href="pracownicy.php?sekcja=kompetencje&amp;pracownik=<?= (int)$r['ID_Pracownika'] ?>">Usługi</a><a href="grafik.php?pracownik=<?= (int)$r['ID_Pracownika'] ?>">Grafik</a><?php a_delete($r['ID_Pracownika'], 'Usuń profil'); ?></div></td></tr><?php endforeach; ?>
 <?php if (!$rows): ?><tr><td colspan="4" class="empty">Brak pracowników.</td></tr><?php endif; ?></tbody></table></div><?php a_pages($page, $pages);
 a_end(); ?>

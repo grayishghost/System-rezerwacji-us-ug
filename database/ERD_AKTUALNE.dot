@@ -1,7 +1,7 @@
 digraph hotel {
 rankdir=LR;
 graph [bgcolor="white",pad="0.3",nodesep="0.35",ranksep="0.8"];
-node [shape=record,fontname="DejaVu Sans",fontsize=10,style=filled,fillcolor="#f1f5ee",color="#174d40"];
+node [shape=record,fontname="DejaVu Sans",fontsize=10,style=filled,fillcolor="#edf0ed",color="#1d3045"];
 edge [fontname="DejaVu Sans",fontsize=8,color="#627a70"];
 "BlokadyPokoi" [label="{BlokadyPokoi|ID_Blokady [PK]|ID_Pokoju [FK]|DataOd|DataDo|Powod|ID_Admina [FK]|DataUtworzenia}"];
 "GrafikPracownikow" [label="{GrafikPracownikow|ID_Wpisu [PK]|ID_Pracownika [FK]|Data|TypDnia|GodzinaOd|GodzinaDo}"];
@@ -13,11 +13,11 @@ edge [fontname="DejaVu Sans",fontsize=8,color="#627a70"];
 "Pracownicy" [label="{Pracownicy|ID_Pracownika [PK]|ID_Uzytkownika [FK]|ID_Stanowiska [FK]|Aktywny|Opis}"];
 "Pracownicy_Uslugi" [label="{Pracownicy_Uslugi|ID_Pracownika [PK] [FK]|ID_Uslugi [PK] [FK]}"];
 "Proby_logowania" [label="{Proby_logowania|ID_Proby [PK]|Email|IP|Czas}"];
-"Rezerwacje" [label="{Rezerwacje|ID_Rezerwacji [PK]|ID_Pokoju [FK]|ID_Klienta [FK]|ID_Pracownika [FK]|DataOd|DataDo|Kwota|Status|Zrodlo_rezerwacji|Uwagi|LiczbaOsob|Wersja}"];
-"Stanowiska" [label="{Stanowiska|ID_Stanowiska [PK]|Nazwa_stanowiska|Placa_brutto}"];
-"TypyPokoi" [label="{TypyPokoi|ID_Typu [PK]|NazwaTypu|Opis}"];
+"Rezerwacje" [label="{Rezerwacje|ID_Rezerwacji [PK]|ID_Pokoju [FK]|ID_Klienta [FK]|ID_Pracownika [FK]|DataOd|DataDo|Kwota|Status|Zrodlo_rezerwacji|Uwagi|LiczbaOsob|Wersja|Archiwum}"];
+"Stanowiska" [label="{Stanowiska|ID_Stanowiska [PK]|Nazwa_stanowiska|Placa_brutto|Wersja}"];
+"TypyPokoi" [label="{TypyPokoi|ID_Typu [PK]|NazwaTypu|Opis|Wersja}"];
 "Uslugi_dodatkowe" [label="{Uslugi_dodatkowe|ID_Uslugi [PK]|Nazwa_Uslugi|Opis|Cena|Czydostepna|ID_Kategorii [FK]|CzasTrwania}"];
-"Uzytkownicy" [label="{Uzytkownicy|ID_Uzytkownika [PK]|Imie|Nazwisko|Email|Telefon|Haslo|Rola|Aktywny|DataUtworzenia}"];
+"Uzytkownicy" [label="{Uzytkownicy|ID_Uzytkownika [PK]|Imie|Nazwisko|Email|Telefon|Haslo|Rola|Aktywny|DataUtworzenia|Wersja|SesjaWersja}"];
 "WizytyUslug" [label="{WizytyUslug|ID_Wizyty [PK]|ID_Klienta [FK]|ID_Pracownika [FK]|ID_Uslugi [FK]|DataOd|DataDo|Cena|Status|Uwagi|Wersja|DataUtworzenia}"];
 "ZamowieniaUslugi" [label="{ZamowieniaUslugi|ID_Zamowienia [PK]|ID_Rezerwacji [FK]|ID_Uslugi [FK]|DataZamowienia|Ilosc|Cena_jednostkowa}"];
 "BlokadyPokoi" -> "Uzytkownicy" [label="ID_Admina",headlabel="1",taillabel="N"];

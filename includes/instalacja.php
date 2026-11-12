@@ -10,8 +10,8 @@ function gah_installation(PDO $pdo): array
     foreach (['Uzytkownicy','Stanowiska','Pracownicy','TypyPokoi','Pokoje','Uslugi_dodatkowe','Pracownicy_Uslugi','Rezerwacje','Platnosci','ZamowieniaUslugi','GrafikPracownikow','Proby_logowania','KategorieUslug','LogAdministratora','Migracje','WizytyUslug','BlokadyPokoi'] as $t) {
         $checks[]=['element'=>'Tabela '.$t,'ok'=>in_array($t,$tables,true)];
     }
-    foreach (['003_panel','004_uzupelnienia','005_pokoje','006_integralnosc'] as $m) { $checks[]=['element'=>'Marker '.$m,'ok'=>in_array($m,$markers,true)]; }
-    foreach (['Pracownicy'=>['Aktywny','Opis'],'Uslugi_dodatkowe'=>['ID_Kategorii','CzasTrwania'],'Pokoje'=>['Aktywny','Wersja'],'Rezerwacje'=>['LiczbaOsob','Wersja']] as $t=>$fields) {
+    foreach (['003_panel','004_uzupelnienia','005_pokoje','006_integralnosc','007_panel'] as $m) { $checks[]=['element'=>'Marker '.$m,'ok'=>in_array($m,$markers,true)]; }
+    foreach (['Pracownicy'=>['Aktywny','Opis'],'Uslugi_dodatkowe'=>['ID_Kategorii','CzasTrwania'],'Pokoje'=>['Aktywny','Wersja'],'Rezerwacje'=>['LiczbaOsob','Wersja','Archiwum'],'Uzytkownicy'=>['Wersja','SesjaWersja'],'Stanowiska'=>['Wersja'],'TypyPokoi'=>['Wersja']] as $t=>$fields) {
         foreach ($fields as $f) { $checks[]=['element'=>$t.'.'.$f,'ok'=>in_array($f,$columns[$t] ?? [],true)]; }
     }
     $checks[]=['element'=>'Usunięcie starej kopii tekstowej kategorii','ok'=>!in_array('Kategoria',$columns['Uslugi_dodatkowe'] ?? [],true)];
@@ -25,6 +25,10 @@ function gah_installation(PDO $pdo): array
     $checks[]=['element'=>'Ochrona płatności i zamówień przed kaskadowym usunięciem','ok'=>(int)$q->fetchColumn()===2];
     $q=$pdo->query("SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='Rezerwacje' AND INDEX_NAME='idx_pobyt_pokoj_status_daty'");
     $checks[]=['element'=>'Indeks pokoju, statusu i dat pobytu','ok'=>(int)$q->fetchColumn()===4];
+    $q=$pdo->query("SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA=DATABASE() AND CONSTRAINT_TYPE='CHECK' AND CONSTRAINT_NAME LIKE 'chk_i007_%'");
+    $checks[]=['element'=>'5 CHECK migracji 007','ok'=>(int)$q->fetchColumn()===5];
+    $q=$pdo->query("SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA=DATABASE() AND CONSTRAINT_TYPE='UNIQUE' AND CONSTRAINT_NAME IN ('uq_i007_stanowisko','uq_i007_typ')");
+    $checks[]=['element'=>'Unikalne stanowiska i typy pokoi','ok'=>(int)$q->fetchColumn()===2];
     $ready=!in_array(false,array_column($checks,'ok'),true);
     return ['ready'=>$ready,'checks'=>$checks,'markers'=>$markers,'php'=>PHP_VERSION,'db'=>$pdo->getAttribute(PDO::ATTR_SERVER_VERSION)];
 }

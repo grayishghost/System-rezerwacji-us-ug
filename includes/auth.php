@@ -172,12 +172,17 @@ function odswiez_sesje_uzytkownika()
     if (!zalogowany()) {
         return;
     }
-    $st = $pdo->prepare('SELECT Rola, Aktywny, Imie FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
+    $st = $pdo->prepare('SELECT * FROM Uzytkownicy WHERE ID_Uzytkownika = ?');
     $st->execute([$_SESSION['user_id']]);
     $u = $st->fetch();
     if (!$u || !$u['Aktywny']) {
         wyloguj_uzytkownika();
         ustaw_komunikat('error', 'Twoje konto jest nieaktywne.');
+        przekieruj('/public/logowanie.php');
+    }
+    if ((int)($_SESSION['wersja_sesji'] ?? 1)!==(int)($u['SesjaWersja'] ?? 1)) {
+        wyloguj_uzytkownika();
+        ustaw_komunikat('info','Dane dostępu zmieniły się. Zaloguj się ponownie.');
         przekieruj('/public/logowanie.php');
     }
     $_SESSION['imie'] = $u['Imie'];

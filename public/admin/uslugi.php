@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/admin.php';
+if (a_get('sekcja')==='kategorie') { require __DIR__.'/../../includes/admin_kategorie_view.php'; return; }
 a_post(function () {
     a_enum('action', ['', 'save', 'delete']);
     global $pdo;
@@ -62,7 +63,7 @@ $count = a_query('SELECT COUNT(*) FROM Uslugi_dodatkowe u'.$where, $params)->fet
 $rows = a_query('SELECT u.*,k.Nazwa AS NazwaKategorii FROM Uslugi_dodatkowe u JOIN KategorieUslug k ON k.ID_Kategorii=u.ID_Kategorii'.$where." ORDER BY u.ID_Uslugi DESC LIMIT $limit OFFSET $offset", $params)->fetchAll();
 a_start('Usługi dodatkowe'); ?>
 <section><h2><?= $edit ? 'Edycja usługi' : 'Nowa usługa' ?></h2>
-<?php if (!$cats): ?><p>Najpierw <a href="kategorie.php">dodaj kategorię</a>.</p><?php else: ?>
+<?php if (!$cats): ?><p>Najpierw <a href="uslugi.php?sekcja=kategorie">dodaj kategorię</a>.</p><?php else: ?>
 <form method="post" class="form-grid"><?php a_hidden($edit['ID_Uslugi'] ?? 0);
     a_input('nazwa', 'Nazwa', $edit['Nazwa_Uslugi'] ?? '', 'text', 'required maxlength="100"');
     a_select('kategoria', 'Kategoria', $cats, $edit['ID_Kategorii'] ?? '');

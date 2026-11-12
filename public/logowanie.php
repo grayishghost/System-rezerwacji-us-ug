@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $blad = 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za 15 minut.';
         } else {
             
-            $st = $pdo->prepare('SELECT ID_Uzytkownika, Imie, Haslo, Rola, Aktywny FROM Uzytkownicy WHERE Email = ?');
+            $st = $pdo->prepare('SELECT * FROM Uzytkownicy WHERE Email = ?');
             $st->execute([$email]);
             $u = $st->fetch();
 
@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['imie'] = $u['Imie'];
                     $_SESSION['rola'] = $u['Rola'];
                     $_SESSION['ostatnia_aktywnosc'] = time();
+                    $_SESSION['wersja_sesji'] = (int)($u['SesjaWersja'] ?? 1);
 
                     
                     $pdo->prepare('DELETE FROM Proby_logowania WHERE Email = ?')->execute([$email]);

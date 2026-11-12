@@ -93,7 +93,8 @@ function a_log($action, $object, $id, $before, $after)
 }
 function a_post(callable $action)
 {
-    global $pdo;
+    global $pdo,$a_created_files;
+    $a_created_files=[];
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         return;
     }
@@ -102,6 +103,7 @@ function a_post(callable $action)
         $pdo->beginTransaction();
         $action();
         $pdo->commit();
+        $a_created_files=[];
         ustaw_komunikat('success', 'Zapisano zmiany.');
     } catch (DomainException $ex) {
         if ($pdo->inTransaction()) {
@@ -116,9 +118,9 @@ function a_post(callable $action)
         ustaw_komunikat('error', 'Nie udało się zapisać. Sprawdź, czy dane nie są powtórzone lub powiązane z innymi rekordami.');
     }
     
-    $file = basename($_SERVER['SCRIPT_NAME']);
-    $query = $_SERVER['QUERY_STRING'] ?? '';
-    przekieruj('/public/admin/' . $file . ($query ? '?' . $query : ''));
+    foreach ($a_created_files as $path) { if (is_file($path)) { unlink($path); } }
+    header('Location: '.a_url());
+    exit;
 }
 function a_page($count, $size = 12)
 {
@@ -139,18 +141,18 @@ function a_pages($page, $pages)
 function a_start($title)
 {
     $links = ['index.php' => 'Pulpit', 'pokoje.php'=>'Pokoje i oferta', 'dostepnosc.php'=>'Dostępność', 'uzytkownicy.php' => 'Konta', 'pracownicy.php' => 'Pracownicy',
-        'przypisania.php' => 'Kompetencje', 'grafik.php' => 'Grafik i urlopy', 'kategorie.php' => 'Kategorie',
+        'grafik.php' => 'Grafik i urlopy',
         'uslugi.php' => 'Usługi', 'rezerwacje.php' => 'Pobyty', 'wizyty.php' => 'Wizyty usług', 'kalendarz.php' => 'Kalendarz', 'logi.php' => 'Historia', 'instalacja.php'=>'Kontrola instalacji'];
     ?><!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <title><?= e($title) ?> | GAH</title><link rel="stylesheet" href="<?= e(gah_asset_url('css/admin.css')) ?>"></head><body>
     <a class="skip-link" href="#tresc">Przejdź do treści</a>
-    <header class="top"><a href="index.php" class="brand">GAH <small>Grand Access Hotel</small></a>
+    <header class="top"><a href="<?= e(BASE_URL) ?>/public/index.php" class="brand" aria-label="Grand Access Hotel — strona główna"><img src="<?= e(gah_asset_url('assets/logo.png')) ?>" alt="" width="48" height="48"><span>Grand Access Hotel</span></a>
     <a href="<?= e(BASE_URL) ?>/public/index.php">Strona hotelu</a><a href="<?= e(BASE_URL) ?>/public/profil.php">Profil</a>
     <form method="post" action="<?= e(BASE_URL) ?>/public/wyloguj.php"><?= csrf_pole() ?><button>Wyloguj</button></form></header>
     <div class="layout"><aside><p class="eyebrow">ADMINISTRACJA</p><nav aria-label="Moduły administracji">
-    <?php foreach ($links as $url => $label): ?><a <?= basename($_SERVER['SCRIPT_NAME']) === $url ? 'aria-current="page"' : '' ?> href="<?= e($url) ?>"><?= e($label) ?></a><?php endforeach; ?>
+    <?php foreach ($links as $url => $label): ?><a <?= a_module() === $url ? 'aria-current="page"' : '' ?> href="<?= e($url) ?>"><?= e($label) ?></a><?php endforeach; ?>
     </nav><p class="muted">Etap 3 · panel hotelu</p></aside><main id="tresc"><p class="eyebrow">GRAND ACCESS / ZARZĄDZANIE</p><h1><?= e($title) ?></h1>
-    <?php pokaz_komunikat();
+    <?php pokaz_komunikat(); a_tabs();
 }
 function a_end()
 {
@@ -187,4 +189,38 @@ function a_csv_row($output, array $row)
     }
     unset($cell);
     fputcsv($output, $row, ';', '"', '');
+}
+
+function a_module()
+{
+    $f=basename($_SERVER['SCRIPT_NAME']);
+    return ['kategorie.php'=>'uslugi.php','przypisania.php'=>'pracownicy.php'][$f] ?? $f;
+}
+function a_url($changes=[])
+{
+    $q=$_GET;
+    $f=basename($_SERVER['SCRIPT_NAME']);
+    if ($f==='kategorie.php') { $q['sekcja']='kategorie'; }
+    if ($f==='przypisania.php') { $q['sekcja']='kompetencje'; }
+    $q=array_merge($q,$changes);
+    foreach ($q as $k=>$v) { if ($v===null) { unset($q[$k]); } }
+    return BASE_URL.'/public/admin/'.a_module().($q?'?'.http_build_query($q):'');
+}
+function a_tabs()
+{
+    $f=a_module();
+    $map=['uslugi.php'=>[''=>'Usługi','kategorie'=>'Kategorie usług'],'pracownicy.php'=>[''=>'Pracownicy','kompetencje'=>'Kompetencje','stanowiska'=>'Stanowiska'],'pokoje.php'=>[''=>'Pokoje i oferta','typy'=>'Typy pokoi']];
+    if (!isset($map[$f])) { return; }
+    $section=a_get('sekcja');
+    if (basename($_SERVER['SCRIPT_NAME'])==='kategorie.php') { $section='kategorie'; }
+    if (basename($_SERVER['SCRIPT_NAME'])==='przypisania.php') { $section='kompetencje'; }
+    echo '<nav class="subnav" aria-label="Sekcje modułu">';
+    foreach ($map[$f] as $key=>$text) {
+        echo '<a '.($section===$key?'aria-current="page"':'').' href="'.e(BASE_URL.'/public/admin/'.$f.($key?'?sekcja='.$key:'')).'">'.e($text).'</a>';
+    }
+    echo '</nav>';
+}
+function a_version($row)
+{
+    if ((string)$row['Wersja']!==pole_tekstowe('wersja')) { throw new DomainException('Rekord zmienił się w innej karcie. Odśwież formularz.'); }
 }

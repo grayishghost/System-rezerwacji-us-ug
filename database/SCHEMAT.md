@@ -1,10 +1,10 @@
-# Schemat aktualnego wydania
+# Schemat wydania 007
 
-17 tabel, 19 kluczy obcych. Wygenerowano z rzeczywiście odtworzonego schematu 003–006, nie ze starego rysunku.
+17 tabel, 19 kluczy obcych i 42 CHECK. Dokument odzwierciedla rzeczywiście odtworzony schemat 003–007.
 
-`WizytyUslug` jest bezpośrednią rezerwacją usługi: klient, pracownik i usługa to trzy oddzielne FK. `Pracownicy_Uslugi` realizuje N:M kompetencji. `Rezerwacje` opisuje pobyty dobowe, a `BlokadyPokoi` okresy wyłączone z oferty. Kategorie usług mają osobną tabelę; tekstowa kopia Kategoria została usunięta. Kwota pobytu i cena wizyty są historycznymi cenami transakcji, nie bieżącym cennikiem. LiczbaOsob pozostaje NULL w starych pobytach, gdy tej informacji wcześniej nie zbierano.
+WizytyUslug wiąże bezpośrednio klienta, pracownika i usługę. Pracownicy_Uslugi to kompetencje N:M. Archiwum w Rezerwacje jest flagą widoczności administracyjnej, nie statusem zajętości. Wersja kontroluje nieaktualne edycje; SesjaWersja konta unieważnia sesje po zmianie hasła. Starsze pobyty zachowują nieznaną LiczbaOsob=NULL. Dwie unikalne nazwy słowników dodaje 007. Szczegóły reguł SQL i PHP opisuje ../INTEGRALNOSC.md.
 
-Diagram: `ERD_AKTUALNE.svg`.
+Diagram: ERD_AKTUALNE.svg.
 
 ## BlokadyPokoi
 
@@ -126,22 +126,25 @@ Diagram: `ERD_AKTUALNE.svg`.
 | Uwagi | text | YES | — |
 | LiczbaOsob | int(11) | YES | — |
 | Wersja | int(11) | NO | — |
+| Archiwum | tinyint(1) | NO | — |
 
 ## Stanowiska
 
 | Kolumna | Typ | NULL | Klucz |
 |---|---|---|---|
 | ID_Stanowiska | int(11) | NO | PRI |
-| Nazwa_stanowiska | varchar(50) | NO | — |
+| Nazwa_stanowiska | varchar(50) | NO | UNI |
 | Placa_brutto | decimal(10,2) | NO | — |
+| Wersja | int(11) | NO | — |
 
 ## TypyPokoi
 
 | Kolumna | Typ | NULL | Klucz |
 |---|---|---|---|
 | ID_Typu | int(11) | NO | PRI |
-| NazwaTypu | varchar(50) | NO | — |
+| NazwaTypu | varchar(50) | NO | UNI |
 | Opis | text | YES | — |
+| Wersja | int(11) | NO | — |
 
 ## Uslugi_dodatkowe
 
@@ -168,6 +171,8 @@ Diagram: `ERD_AKTUALNE.svg`.
 | Rola | enum('klient','pracownik','admin') | NO | — |
 | Aktywny | tinyint(1) | NO | — |
 | DataUtworzenia | datetime | NO | — |
+| Wersja | int(11) | NO | — |
+| SesjaWersja | int(11) | NO | — |
 
 ## WizytyUslug
 
@@ -220,6 +225,49 @@ Diagram: `ERD_AKTUALNE.svg`.
 | ZamowieniaUslugi.ID_Rezerwacji | Rezerwacje.ID_Rezerwacji |
 | ZamowieniaUslugi.ID_Uslugi | Uslugi_dodatkowe.ID_Uslugi |
 
-## Integralność wydania 006
+## Ograniczenia CHECK
 
-37 CHECK; 19 FK. Powiązania płatności i zamówień z pobytem mają DELETE RESTRICT. Szczegółowy podział reguł SQL/PHP i ograniczenia modelu opisuje `../INTEGRALNOSC.md`.
+| Tabela | Nazwa |
+|---|---|
+| BlokadyPokoi | chk_blokada_przedzial |
+| BlokadyPokoi | chk_i006_blokada_powod |
+| GrafikPracownikow | chk_grafik_godziny |
+| GrafikPracownikow | chk_i006_grafik_doba |
+| GrafikPracownikow | chk_i006_grafik_typ |
+| KategorieUslug | chk_i006_kategoria_nazwa |
+| Platnosci | chk_platnosc_kwota |
+| Pokoje | chk_i006_pokoj_flaga |
+| Pokoje | chk_i006_pokoj_numer |
+| Pokoje | chk_i006_pokoj_status |
+| Pokoje | chk_i006_pokoj_wersja |
+| Pokoje | chk_pokoj_cena |
+| Pokoje | chk_pokoj_osoby |
+| Pracownicy | chk_i006_pracownik_flaga |
+| Rezerwacje | chk_i006_pobyt_status |
+| Rezerwacje | chk_i006_pobyt_wersja |
+| Rezerwacje | chk_i007_archiwum |
+| Rezerwacje | chk_pobyt_kwota |
+| Rezerwacje | chk_pobyt_osoby |
+| Rezerwacje | chk_rezerwacje_daty |
+| Stanowiska | chk_i006_placa |
+| Stanowiska | chk_i006_stanowisko_nazwa |
+| Stanowiska | chk_i007_stanowisko_wersja |
+| TypyPokoi | chk_i006_typ_nazwa |
+| TypyPokoi | chk_i007_typ_wersja |
+| Uslugi_dodatkowe | chk_i006_usluga_flaga |
+| Uslugi_dodatkowe | chk_i006_usluga_nazwa |
+| Uslugi_dodatkowe | chk_usluga_cena |
+| Uslugi_dodatkowe | chk_usluga_czas |
+| Uzytkownicy | chk_i006_konto_email |
+| Uzytkownicy | chk_i006_konto_flaga |
+| Uzytkownicy | chk_i006_konto_imie |
+| Uzytkownicy | chk_i006_konto_nazwisko |
+| Uzytkownicy | chk_i006_konto_rola |
+| Uzytkownicy | chk_i007_konto_wersja |
+| Uzytkownicy | chk_i007_sesja_wersja |
+| WizytyUslug | chk_i006_wizyta_status |
+| WizytyUslug | chk_i006_wizyta_wersja |
+| WizytyUslug | chk_wizyta_cena |
+| WizytyUslug | chk_wizyta_przedzial |
+| ZamowieniaUslugi | chk_zamowienie_cena |
+| ZamowieniaUslugi | chk_zamowienie_ilosc |

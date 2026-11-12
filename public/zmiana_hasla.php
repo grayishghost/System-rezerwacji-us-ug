@@ -32,8 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     
     if (empty($bledy)) {
-        $st = $pdo->prepare('UPDATE Uzytkownicy SET Haslo = ? WHERE ID_Uzytkownika = ?');
+        $st = $pdo->prepare('UPDATE Uzytkownicy SET Haslo = ?, Wersja=Wersja+1, SesjaWersja=SesjaWersja+1 WHERE ID_Uzytkownika = ?');
         $st->execute([password_hash($nowe, PASSWORD_DEFAULT), $_SESSION['user_id']]);
+        $_SESSION['wersja_sesji']=(int)$pdo->query('SELECT SesjaWersja FROM Uzytkownicy WHERE ID_Uzytkownika='.(int)$_SESSION['user_id'])->fetchColumn();
         session_regenerate_id(true);
         ustaw_komunikat('success', 'Hasło zostało zmienione.');
         przekieruj('/public/profil.php');
