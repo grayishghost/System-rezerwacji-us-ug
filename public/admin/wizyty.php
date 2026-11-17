@@ -5,22 +5,10 @@ a_post(function () {
         aw_create();
         return;
     }
-    $id = a_id(pole_tekstowe('id'));
-    $peek = a_record('WizytyUslug', 'ID_Wizyty', $id);
-    a_record('Pracownicy', 'ID_Pracownika', $peek['ID_Pracownika'], true);
-    $old = a_record('WizytyUslug', 'ID_Wizyty', $id, true);
-    if ((string)$old['Wersja'] !== pole_tekstowe('wersja')) {
-        throw new DomainException('Wizyta została zmieniona. Odśwież listę.');
-    }
-    $status = a_enum('status', ar_statuses());
-    if (!in_array($status, ar_transitions($old['Status']), true)) {
-        throw new DomainException('Niedozwolone przejście statusu.');
-    }
-    if ($status === 'Ukończone' && new DateTimeImmutable($old['DataDo']) > new DateTimeImmutable()) {
-        throw new DomainException('Nie można ukończyć przyszłej wizyty.');
-    }
-    a_query('UPDATE WizytyUslug SET Status=?,Wersja=Wersja+1 WHERE ID_Wizyty=?', [$status,$id]);
-    a_log('Status wizyty', 'wizyta', $id, ['Status' => $old['Status']], ['Status' => $status]);
+    $id=a_id(pole_tekstowe('id'));
+    $before=t_record($id);
+    t_change($id,pole_tekstowe('wersja'),'status',a_enum('status',ar_statuses()));
+    a_log('Status wizyty','wizyta',$id,['Status'=>$before['Status']],['Status'=>pole_tekstowe('status')]);
 });
 $f = aw_filter();
 if (a_get('format') === 'csv') {

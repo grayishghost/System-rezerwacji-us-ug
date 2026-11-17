@@ -49,52 +49,9 @@ function aw_filter()
     }
     return ['sql' => ' WHERE '.implode(' AND ', $where),'params' => $params,'error' => $error];
 }
+require_once __DIR__.'/terminarz.php';
 function aw_create()
 {
-    global $pdo;
-    
-    $eid = a_id(pole_tekstowe('pracownik'));
-    $emp = a_record('Pracownicy', 'ID_Pracownika', $eid, true);
-    $user = a_record('Uzytkownicy', 'ID_Uzytkownika', $emp['ID_Uzytkownika']);
-    if (!$emp['Aktywny'] || !$user['Aktywny'] || $user['Rola'] !== 'pracownik') {
-        throw new DomainException('Pracownik musi mieć aktywny profil i konto.');
-    }
-    $cid = a_id(pole_tekstowe('klient'));
-    $client = a_record('Uzytkownicy', 'ID_Uzytkownika', $cid);
-    if ($client['Rola'] !== 'klient' || !$client['Aktywny']) {
-        throw new DomainException('Wybierz aktywnego klienta.');
-    }
-    $sid = a_id(pole_tekstowe('usluga'));
-    $service = a_record('Uslugi_dodatkowe', 'ID_Uslugi', $sid, true);
-    if (!$service['Czydostepna']) {
-        throw new DomainException('Usługa jest nieaktywna.');
-    }
-    if (!a_query('SELECT 1 FROM Pracownicy_Uslugi WHERE ID_Pracownika=? AND ID_Uslugi=?', [$eid,$sid])->fetchColumn()) {
-        throw new DomainException('Pracownik nie ma przypisanej tej usługi.');
-    }
-    $raw = pole_tekstowe('termin');
-    $start = DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $raw);
-    if (!$start || $start->format('Y-m-d\TH:i') !== $raw || $start < new DateTimeImmutable()) {
-        throw new DomainException('Podaj poprawny przyszły termin.');
-    }
-    a_date($start->format('Y-m-d'));
-    $end = $start->modify('+'.(int)$service['CzasTrwania'].' minutes');
-    a_date($end->format('Y-m-d'));
-    if ($start->format('Y-m-d') !== $end->format('Y-m-d')) {
-        throw new DomainException('Wizyta musi mieścić się w jednym dniu pracy.');
-    }
-    $day = $start->format('Y-m-d');
-    $schedule = a_query('SELECT * FROM GrafikPracownikow WHERE ID_Pracownika=? AND Data=? FOR UPDATE', [$eid,$day])->fetch();
-    if (!$schedule || $schedule['TypDnia'] !== 'Praca' || $start->format('H:i:s') < $schedule['GodzinaOd'] || $end->format('H:i:s') > $schedule['GodzinaDo']) {
-        throw new DomainException('Termin jest poza grafikiem pracy lub przypada w dniu wolnym/urlopie.');
-    }
-    $from = $start->format('Y-m-d H:i:s');
-    $to = $end->format('Y-m-d H:i:s');
-    if (a_query("SELECT COUNT(*) FROM WizytyUslug WHERE ID_Pracownika=? AND Status IN ('Oczekująca','Potwierdzona') AND DataOd<? AND DataDo>?", [$eid,$to,$from])->fetchColumn()) {
-        throw new DomainException('Termin nakłada się na inną wizytę pracownika.');
-    }
-    $notes = a_text('uwagi', 1000, false);
-    a_query('INSERT INTO WizytyUslug(ID_Klienta,ID_Pracownika,ID_Uslugi,DataOd,DataDo,Cena,Uwagi) VALUES(?,?,?,?,?,?,?)', [$cid,$eid,$sid,$from,$to,$service['Cena'],$notes]);
-    $id = (int)$pdo->lastInsertId();
-    a_log('Utworzenie wizyty', 'wizyta', $id, null, ['ID_Pracownika' => $eid,'ID_Uslugi' => $sid,'DataOd' => $from,'DataDo' => $to,'Status' => 'Oczekująca']);
+    $id=t_create(a_id(pole_tekstowe('klient')),a_id(pole_tekstowe('usluga')),a_id(pole_tekstowe('pracownik')),pole_tekstowe('termin'),a_text('uwagi',1000,false));
+    a_log('Utworzenie wizyty','wizyta',$id,null,['Status'=>'Oczekująca']);
 }
