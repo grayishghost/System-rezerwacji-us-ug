@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../includes/auth.php';
-wymagaj_roli('klient');      
+require_once __DIR__ . '/../../includes/terminarz_widok.php';
+wymagaj_roli('klient');t_ready();      
 
 
 $st = $pdo->prepare(
@@ -27,8 +27,10 @@ require __DIR__ . '/../../includes/header.php';
             <a class="booking-button small-button" href="<?= e(BASE_URL) ?>/public/pokoje.php">Zobacz pokoje</a>
         </p>
     </section>
+    <section class="panel-box"><h2>Rezerwacje usług</h2><div class="booking-nav"><a class="booking-button small-button" href="<?= e(BASE_URL) ?>/public/uslugi.php">Zarezerwuj usługę</a><a href="<?= e(BASE_URL) ?>/public/klient/kalendarz.php">Mój kalendarz wizyt</a></div></section>
+    <?php t_list(); ?>
     <section class="panel-box">
-        <h2>Moje pobyty</h2>
+        <h2>Moje pobyty w pokojach</h2>
         <?php if ($rezerwacje): ?>
             <div class="table-wrap"><table class="panel-table">
                 <thead><tr><th>Numer</th><th>Pokój</th><th>Od</th><th>Do</th><th>Kwota</th><th>Status</th></tr></thead>
