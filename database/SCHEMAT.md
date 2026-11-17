@@ -1,8 +1,8 @@
-# Schemat wydania 007
+# Schemat wydania 008
 
-17 tabel, 19 kluczy obcych i 42 CHECK. Dokument odzwierciedla rzeczywiście odtworzony schemat 003–007.
+18 tabel, 21 kluczy obcych i 44 CHECK. Dokument odzwierciedla rzeczywiście odtworzony schemat 003–008.
 
-WizytyUslug wiąże bezpośrednio klienta, pracownika i usługę. Pracownicy_Uslugi to kompetencje N:M. Archiwum w Rezerwacje jest flagą widoczności administracyjnej, nie statusem zajętości. Wersja kontroluje nieaktualne edycje; SesjaWersja konta unieważnia sesje po zmianie hasła. Starsze pobyty zachowują nieznaną LiczbaOsob=NULL. Dwie unikalne nazwy słowników dodaje 007. Szczegóły reguł SQL i PHP opisuje ../INTEGRALNOSC.md.
+WizytyUslug wiąże bezpośrednio klienta, pracownika i usługę. Pracownicy_Uslugi to kompetencje N:M. Archiwum w Rezerwacje jest flagą widoczności administracyjnej, nie statusem zajętości. Wersja kontroluje nieaktualne edycje; SesjaWersja konta unieważnia sesje po zmianie hasła. Starsze pobyty zachowują nieznaną LiczbaOsob=NULL. Dwie unikalne nazwy słowników dodaje 007. HistoriaWizyt dodana w 008 przechowuje kolejne wersje statusów i terminów. Istniejące wizyty otrzymują uczciwie oznaczony stan początkowy; nie odtwarzamy nieznanej historii. Szczegóły reguł SQL i PHP opisuje ../INTEGRALNOSC.md.
 
 Diagram: ERD_AKTUALNE.svg.
 
@@ -28,6 +28,20 @@ Diagram: ERD_AKTUALNE.svg.
 | TypDnia | enum('Praca','Urlop','Zwolnienie','Wolne') | NO | — |
 | GodzinaOd | time | YES | — |
 | GodzinaDo | time | YES | — |
+
+## HistoriaWizyt
+
+| Kolumna | Typ | NULL | Klucz |
+|---|---|---|---|
+| ID_Zmiany | int(11) | NO | PRI |
+| ID_Wizyty | int(11) | NO | MUL |
+| Wersja | int(11) | NO | — |
+| Typ | enum('Utworzenie','Status','Przełożenie','Stan początkowy') | NO | — |
+| Status | enum('Oczekująca','Potwierdzona','Ukończone','Anulowana') | NO | — |
+| DataOd | datetime | NO | — |
+| DataDo | datetime | NO | — |
+| ID_Autora | int(11) | YES | MUL |
+| Czas | datetime | NO | — |
 
 ## KategorieUslug
 
@@ -208,6 +222,8 @@ Diagram: ERD_AKTUALNE.svg.
 | BlokadyPokoi.ID_Admina | Uzytkownicy.ID_Uzytkownika |
 | BlokadyPokoi.ID_Pokoju | Pokoje.ID_Pokoju |
 | GrafikPracownikow.ID_Pracownika | Pracownicy.ID_Pracownika |
+| HistoriaWizyt.ID_Autora | Uzytkownicy.ID_Uzytkownika |
+| HistoriaWizyt.ID_Wizyty | WizytyUslug.ID_Wizyty |
 | LogAdministratora.ID_Admina | Uzytkownicy.ID_Uzytkownika |
 | Platnosci.ID_Rezerwacji | Rezerwacje.ID_Rezerwacji |
 | Pokoje.ID_Typu | TypyPokoi.ID_Typu |
@@ -234,6 +250,8 @@ Diagram: ERD_AKTUALNE.svg.
 | GrafikPracownikow | chk_grafik_godziny |
 | GrafikPracownikow | chk_i006_grafik_doba |
 | GrafikPracownikow | chk_i006_grafik_typ |
+| HistoriaWizyt | chk_i008_historia_daty |
+| HistoriaWizyt | chk_i008_historia_wersja |
 | KategorieUslug | chk_i006_kategoria_nazwa |
 | Platnosci | chk_platnosc_kwota |
 | Pokoje | chk_i006_pokoj_flaga |

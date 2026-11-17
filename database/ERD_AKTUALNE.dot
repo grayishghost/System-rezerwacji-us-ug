@@ -5,6 +5,7 @@ node [shape=record,fontname="DejaVu Sans",fontsize=10,style=filled,fillcolor="#e
 edge [fontname="DejaVu Sans",fontsize=8,color="#627a70"];
 "BlokadyPokoi" [label="{BlokadyPokoi|ID_Blokady [PK]|ID_Pokoju [FK]|DataOd|DataDo|Powod|ID_Admina [FK]|DataUtworzenia}"];
 "GrafikPracownikow" [label="{GrafikPracownikow|ID_Wpisu [PK]|ID_Pracownika [FK]|Data|TypDnia|GodzinaOd|GodzinaDo}"];
+"HistoriaWizyt" [label="{HistoriaWizyt|ID_Zmiany [PK]|ID_Wizyty [FK]|Wersja|Typ|Status|DataOd|DataDo|ID_Autora [FK]|Czas}"];
 "KategorieUslug" [label="{KategorieUslug|ID_Kategorii [PK]|Nazwa|Opis}"];
 "LogAdministratora" [label="{LogAdministratora|ID_Logu [PK]|ID_Admina [FK]|Akcja|Obiekt|ID_Obiektu|Przed|Po|Czas}"];
 "Migracje" [label="{Migracje|Nazwa [PK]|Czas}"];
@@ -23,6 +24,8 @@ edge [fontname="DejaVu Sans",fontsize=8,color="#627a70"];
 "BlokadyPokoi" -> "Uzytkownicy" [label="ID_Admina",headlabel="1",taillabel="N"];
 "BlokadyPokoi" -> "Pokoje" [label="ID_Pokoju",headlabel="1",taillabel="N"];
 "GrafikPracownikow" -> "Pracownicy" [label="ID_Pracownika",headlabel="1",taillabel="N"];
+"HistoriaWizyt" -> "Uzytkownicy" [label="ID_Autora",headlabel="1",taillabel="N"];
+"HistoriaWizyt" -> "WizytyUslug" [label="ID_Wizyty",headlabel="1",taillabel="N"];
 "LogAdministratora" -> "Uzytkownicy" [label="ID_Admina",headlabel="1",taillabel="N"];
 "Platnosci" -> "Rezerwacje" [label="ID_Rezerwacji",headlabel="1",taillabel="N"];
 "Pokoje" -> "TypyPokoi" [label="ID_Typu",headlabel="1",taillabel="N"];
