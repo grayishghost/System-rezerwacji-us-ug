@@ -7,10 +7,10 @@ function gah_installation(PDO $pdo): array
     foreach ($c as $v) { $columns[$v[0]][]=$v[1]; }
     $markers=in_array('Migracje',$tables,true) ? $pdo->query('SELECT Nazwa FROM Migracje ORDER BY Nazwa')->fetchAll(PDO::FETCH_COLUMN) : [];
     $checks=[['element'=>'PHP co najmniej 8.1','ok'=>version_compare(PHP_VERSION,'8.1.0','>=')],['element'=>'pdo_mysql','ok'=>extension_loaded('pdo_mysql')],['element'=>'mbstring','ok'=>extension_loaded('mbstring')]];
-    foreach (['Uzytkownicy','Stanowiska','Pracownicy','TypyPokoi','Pokoje','Uslugi_dodatkowe','Pracownicy_Uslugi','Rezerwacje','Platnosci','ZamowieniaUslugi','GrafikPracownikow','Proby_logowania','KategorieUslug','LogAdministratora','Migracje','WizytyUslug','BlokadyPokoi'] as $t) {
+    foreach (['Uzytkownicy','Stanowiska','Pracownicy','TypyPokoi','Pokoje','Uslugi_dodatkowe','Pracownicy_Uslugi','Rezerwacje','Platnosci','ZamowieniaUslugi','GrafikPracownikow','Proby_logowania','KategorieUslug','LogAdministratora','Migracje','WizytyUslug','BlokadyPokoi','HistoriaWizyt'] as $t) {
         $checks[]=['element'=>'Tabela '.$t,'ok'=>in_array($t,$tables,true)];
     }
-    foreach (['003_panel','004_uzupelnienia','005_pokoje','006_integralnosc','007_panel'] as $m) { $checks[]=['element'=>'Marker '.$m,'ok'=>in_array($m,$markers,true)]; }
+    foreach (['003_panel','004_uzupelnienia','005_pokoje','006_integralnosc','007_panel','008_terminarz'] as $m) { $checks[]=['element'=>'Marker '.$m,'ok'=>in_array($m,$markers,true)]; }
     foreach (['Pracownicy'=>['Aktywny','Opis'],'Uslugi_dodatkowe'=>['ID_Kategorii','CzasTrwania'],'Pokoje'=>['Aktywny','Wersja'],'Rezerwacje'=>['LiczbaOsob','Wersja','Archiwum'],'Uzytkownicy'=>['Wersja','SesjaWersja'],'Stanowiska'=>['Wersja'],'TypyPokoi'=>['Wersja']] as $t=>$fields) {
         foreach ($fields as $f) { $checks[]=['element'=>$t.'.'.$f,'ok'=>in_array($f,$columns[$t] ?? [],true)]; }
     }
@@ -29,6 +29,8 @@ function gah_installation(PDO $pdo): array
     $checks[]=['element'=>'5 CHECK migracji 007','ok'=>(int)$q->fetchColumn()===5];
     $q=$pdo->query("SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA=DATABASE() AND CONSTRAINT_TYPE='UNIQUE' AND CONSTRAINT_NAME IN ('uq_i007_stanowisko','uq_i007_typ')");
     $checks[]=['element'=>'Unikalne stanowiska i typy pokoi','ok'=>(int)$q->fetchColumn()===2];
+    $q=$pdo->query("SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='HistoriaWizyt' AND CONSTRAINT_NAME IN ('chk_i008_historia_wersja','chk_i008_historia_daty','uq_i008_historia_wersja','fk_i008_historia_wizyta','fk_i008_historia_autor')");
+    $checks[]=['element'=>'Historia wizyt: 2 FK, 2 CHECK, unikalna wersja','ok'=>(int)$q->fetchColumn()===5];
     $ready=!in_array(false,array_column($checks,'ok'),true);
     return ['ready'=>$ready,'checks'=>$checks,'markers'=>$markers,'php'=>PHP_VERSION,'db'=>$pdo->getAttribute(PDO::ATTR_SERVER_VERSION)];
 }
@@ -50,7 +52,7 @@ function gah_release_check(): array
 function gah_integrity_data(PDO $pdo): array
 {
     $rows=[];
-    $sql=file_get_contents(__DIR__.'/../database/PRZED_006_ODCZYT.sql');
+    $sql=file_get_contents(__DIR__.'/../database/PRZED_006_ODCZYT.sql')."\n".file_get_contents(__DIR__.'/../database/PO_008_ODCZYT.sql');
     foreach (preg_split('/;\s*(?:\n|$)/',trim($sql)) as $statement) {
         if (trim($statement)!=='') { $rows[]=$pdo->query($statement)->fetch(PDO::FETCH_ASSOC); }
     }
