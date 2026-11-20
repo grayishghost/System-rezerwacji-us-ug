@@ -1,0 +1,2 @@
+SELECT 'brak_biezacej_historii_008' AS Regula,COUNT(*) AS Niepoprawne FROM WizytyUslug w LEFT JOIN HistoriaWizyt h ON h.ID_Wizyty=w.ID_Wizyty AND h.Wersja=w.Wersja WHERE h.ID_Zmiany IS NULL;
+SELECT 'niespojna_biezaca_historia_008' AS Regula,COUNT(*) AS Niepoprawne FROM WizytyUslug w JOIN HistoriaWizyt h ON h.ID_Wizyty=w.ID_Wizyty AND h.Wersja=w.Wersja WHERE h.Status<>w.Status OR h.DataOd<>w.DataOd OR h.DataDo<>w.DataDo;
