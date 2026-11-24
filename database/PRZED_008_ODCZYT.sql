@@ -1,0 +1,2 @@
+SELECT 'niepoprawne_wizyty_008' AS Regula,COUNT(*) AS Niepoprawne FROM WizytyUslug WHERE DataDo<=DataOd OR Cena<0 OR Wersja<1 OR Status NOT IN ('Oczekująca','Potwierdzona','Ukończone','Anulowana');
+SELECT 'osierocone_wizyty_008' AS Regula,COUNT(*) AS Niepoprawne FROM WizytyUslug w LEFT JOIN Uzytkownicy k ON k.ID_Uzytkownika=w.ID_Klienta LEFT JOIN Pracownicy p ON p.ID_Pracownika=w.ID_Pracownika LEFT JOIN Uslugi_dodatkowe s ON s.ID_Uslugi=w.ID_Uslugi WHERE k.ID_Uzytkownika IS NULL OR p.ID_Pracownika IS NULL OR s.ID_Uslugi IS NULL;

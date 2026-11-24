@@ -1,6 +1,7 @@
 SET NAMES utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS HistoriaWizyt;
 DROP TABLE IF EXISTS BlokadyPokoi;
 DROP TABLE IF EXISTS `WizytyUslug`;
 DROP TABLE IF EXISTS `LogAdministratora`;
@@ -322,3 +323,33 @@ ALTER TABLE TypyPokoi ADD Wersja INT NOT NULL DEFAULT 1, ADD CONSTRAINT chk_i007
 ALTER TABLE Rezerwacje ADD Archiwum TINYINT(1) NOT NULL DEFAULT 0, ADD CONSTRAINT chk_i007_archiwum CHECK(Archiwum IN (0,1));
 
 INSERT INTO Migracje(Nazwa) VALUES ('007_panel');
+
+CREATE TABLE HistoriaWizyt (
+ ID_Zmiany INT AUTO_INCREMENT PRIMARY KEY,
+ ID_Wizyty INT NOT NULL,
+ Wersja INT NOT NULL,
+ Typ ENUM('Utworzenie','Status','Przełożenie','Stan początkowy') NOT NULL,
+ Status ENUM('Oczekująca','Potwierdzona','Ukończone','Anulowana') NOT NULL,
+ DataOd DATETIME NOT NULL,
+ DataDo DATETIME NOT NULL,
+ ID_Autora INT NULL,
+ Czas DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ CONSTRAINT fk_i008_historia_wizyta FOREIGN KEY(ID_Wizyty) REFERENCES WizytyUslug(ID_Wizyty) ON DELETE RESTRICT,
+ CONSTRAINT fk_i008_historia_autor FOREIGN KEY(ID_Autora) REFERENCES Uzytkownicy(ID_Uzytkownika) ON DELETE SET NULL,
+ CONSTRAINT chk_i008_historia_wersja CHECK(Wersja>=1),
+ CONSTRAINT chk_i008_historia_daty CHECK(DataDo>DataOd),
+ CONSTRAINT uq_i008_historia_wersja UNIQUE(ID_Wizyty,Wersja)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO HistoriaWizyt(ID_Wizyty,Wersja,Typ,Status,DataOd,DataDo) SELECT ID_Wizyty,Wersja,'Stan początkowy',Status,DataOd,DataDo FROM WizytyUslug;
+INSERT INTO Migracje(Nazwa) VALUES ('008_terminarz');
+
+INSERT INTO GrafikPracownikow(ID_Pracownika,Data,TypDnia,GodzinaOd,GodzinaDo)
+SELECT p.ID_Pracownika,DATE_ADD(CURRENT_DATE,INTERVAL d.n DAY),
+CASE WHEN d.n=5 THEN 'Urlop' WHEN DAYOFWEEK(DATE_ADD(CURRENT_DATE,INTERVAL d.n DAY)) IN (1,7) THEN 'Wolne' ELSE 'Praca' END,
+CASE WHEN d.n=5 OR DAYOFWEEK(DATE_ADD(CURRENT_DATE,INTERVAL d.n DAY)) IN (1,7) THEN NULL WHEN MOD(d.n,2)=0 THEN '10:00:00' ELSE '08:00:00' END,
+CASE WHEN d.n=5 OR DAYOFWEEK(DATE_ADD(CURRENT_DATE,INTERVAL d.n DAY)) IN (1,7) THEN NULL WHEN MOD(d.n,2)=0 THEN '18:00:00' ELSE '16:00:00' END
+FROM Pracownicy p
+JOIN Uzytkownicy u ON u.ID_Uzytkownika=p.ID_Uzytkownika
+CROSS JOIN (SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14) d
+WHERE u.Email IN ('john.doe@email.com','will.dafie@email.com') AND p.Aktywny=1 AND u.Aktywny=1 AND u.Rola='pracownik'
+AND NOT EXISTS(SELECT 1 FROM GrafikPracownikow g WHERE g.ID_Pracownika=p.ID_Pracownika AND g.Data=DATE_ADD(CURRENT_DATE,INTERVAL d.n DAY));

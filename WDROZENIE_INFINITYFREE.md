@@ -1,63 +1,70 @@
-# Wdrożenie GAH-FULL-007-r1
+# Aktualizacja 007 → etap 4 / 008
 
-## Aktualizacja działającego wydania 006
+## Założenia i backup
 
-Ta ścieżka jest przeznaczona dla bazy, w której 003, 004, 005 i 006 wykonano w całości. Jeżeli markeru brakuje mimo wcześniejszego importu, najpierw potwierdź kompletny schemat — nie ponawiaj ALTER ani nie wpisuj markerów dla pozoru.
+To instrukcja dla kompletnego, poprawnego wydania 007. Przed zmianą sprawdź kontrolę instalacji i rzeczywisty stan bazy. Brak markera mimo wcześniej wykonanych ALTER nie oznacza, że wolno wykonać je ponownie.
 
-1. Pobierz prywatny backup całego htdocs, w tym includes/config.php i istniejących assets/pokoje. Wyeksportuj właściwą bazę przez phpMyAdmin. Zweryfikuj pobranie plików. Backupów nie publikuj pod domeną ani w repozytorium.
-2. Zaplanuj okno serwisowe bez nowych rezerwacji i edycji. Stare i nowe pliki nie powinny jednocześnie obsługiwać zapisów.
-3. Wgraj zawartość projekt z paczki 007 do htdocs przypisanego do gah.gt.tc, z nadpisaniem odpowiednich plików. Nie twórz dodatkowego katalogu projekt. Można użyć nakładki 007, jeżeli na serwerze jest pełne wydanie 006. Wgraj również pliki zaczynające się kropką.
-4. ZACHOWAJ prywatny includes/config.php, prawdziwe dane bazy, BASE_URL i istniejące ilustracje użytkowników. W paczce nie ma config.php. Jeśli zawiera komentarze, usuń tylko komentarze, nie wartości. Dla domeny bez podkatalogu BASE_URL jest pustym ciągiem.
-5. Otwórz /public/admin/instalacja.php. Logowanie oraz diagnostyka pozostają dostępne przed 007; pełny nowy panel wymaga 007.
-6. W phpMyAdmin wybierz właściwą istniejącą bazę. Uruchom database/PRZED_007_ODCZYT.sql. Są dwa wyniki; oba Niepoprawne muszą wynosić zero. Wynik dodatni oznacza duplikaty nazw stanowisk albo typów. Wyjaśnij je bez usuwania przypisań/historii. Nie scalamy ich automatycznie.
-7. Dopiero przy dwóch zerach importuj database/migrations/007_panel.sql. Po jakimkolwiek błędzie STOP: wcześniejsze DDL mogło już się wykonać. Nie ponawiaj w ciemno. Przywróć spójny backup albo zbadaj i napraw konkretny częściowy stan.
-8. Dopiero po pełnym sukcesie 007 zapisz marker:
+1. Pobierz prywatny backup wszystkich plików strony, includes/config.php i dynamicznych ilustracji assets/pokoje. Wyeksportuj całą właściwą bazę w phpMyAdmin. Sprawdź pobranie i możliwość odtworzenia.
+2. Ustal okno serwisowe bez zapisów klientów i administratorów. Nie uruchamiaj jednocześnie mieszanego starego i nowego kodu. Nowe pliki wymagają kompletnego 008; stary kod nie zapisuje nowej historii.
+3. Nie wysyłaj prywatnych backupów, produkcyjnych eksportów ani config.php do GitHuba lub publicznego htdocs.
+
+## Stan wyjściowy
+
+W phpMyAdmin wybierz bazę strony i odczytaj:
 
 ```sql
-INSERT INTO Migracje(Nazwa) VALUES ('007_panel');
+SELECT Nazwa FROM Migracje ORDER BY Nazwa;
 ```
 
-9. Nie wykonuj ponownie 003, 004, 005 ani 006. Nie importuj database.sql ani nowa_baza_INFINITYFREE.sql na istniejących danych — kasują i odtwarzają tabele.
-10. Odśwież kontrolę instalacji. Wszystkie kontrole schematu muszą być OK, a wydanie GAH-FULL-007-r1 i manifest zgodne z plikiem START paczki. Wykonaj odczyty weryfikacji i checklistę odbioru.
+Oczekiwane: 003_panel, 004_uzupelnienia, 005_pokoje, 006_integralnosc, 007_panel. Jeżeli 008_terminarz już jest, nie importuj jej ponownie. Jeśli brakuje wcześniejszej migracji albo jej markeru, najpierw potwierdź schemat; nie dopisuj markerów dla pozoru. Nowy runner CLI zawiera przywróconą obsługę 007, której brakowało w sprawdzonym commicie GitHuba.
 
-## Warunki przesyłania ilustracji
+## Upload plików
 
-Wgraj assets/pokoje/.htaccess i zachowaj ten katalog. PHP musi móc w nim zapisywać; sprawdź właściciela/uprawnienia w panelu hostingu. Nie stosuj 777. Wymagane GD oraz fileinfo; ich stan i limity upload_max_filesize/post_max_size pokazuje kontrola instalacji. Bez GD nadal można używać istniejących ilustracji, ale upload zgłosi komunikat.
+Wgraj zawartość projekt/ z pełnego wydania 008 albo komplet nakładki 007 → 008 bezpośrednio do htdocs przypisanego do gah.gt.tc. Nie twórz htdocs/projekt i nie pozostawiaj ZIP w miejscu publicznym. Zachowaj katalogi i pliki zaczynające się kropką.
 
-Aplikacja przyjmuje poprawne JPG/PNG/WEBP do 5 MB, 6000 px na bok i 8 mln pikseli. Limit serwera może być niższy. Plik jest dekodowany i zapisywany jako nowy JPEG z losową nazwą. Nie przesyłamy SVG ani plików wykonywalnych. Po błędzie zapisu bazy nowy plik jest usuwany.
+Zachowaj prywatny includes/config.php i istniejące ilustracje użytkowników. Nie zastępuj konfiguracji przykładem. Nie kasuj całych katalogów podczas nadpisywania plików. Dla domeny bez podkatalogu BASE_URL jest pustym ciągiem. Nakładka nie uzupełnia brakujących niezmienionych plików starego wydania; niezgodne zasoby napraw wskazanymi plikami pełnego kompletu, nie modyfikacją manifestu.
 
-Nowe ilustracje nie należą do stałego manifestu. Zachowaj je w backupie i podczas kolejnych uploadów. .gitignore pomija je, ale zachowuje ochronny .htaccess. Nie wgrywaj ich automatycznie do publicznego repozytorium.
+Komplet trzech paczek osobowych jest jedną zmianą. Nie wdrażaj na hosting pojedynczej paczki osoby ani części dnia. Najpierw scal wszystkie zmiany, sprawdź zgodność z kompletem, potem wykonaj jeden spójny upload w oknie serwisowym. README i dokumentacja wewnątrz projekt należą do manifestu i też są częścią uploadu.
 
-## Starsza istniejąca baza
+## Wykonaj tylko brakującą 008
 
-1. Backup i ustalenie stanu rzeczywistych tabel/kolumn/ograniczeń oraz tabeli Migracje. Sam brak markeru nie oznacza braku wykonanych ALTER.
-2. Jeżeli nie ma rejestru Migracje, wykonaj database/00_rejestr_migracji.sql.
-3. Wykonuj tylko brakujące i w całości niewykonane migracje 003_panel, 004_uzupelnienia, 005_pokoje. Po każdej sprawdź pełny sukces i dodaj wyłącznie jej marker.
-4. Przed 006 uruchom PRZED_006_ODCZYT.sql: wszystkie 27 wyników zero. Wykonaj 006, sprawdź i zapisz marker dopiero po pełnym sukcesie.
-5. Przed 007 wykonaj dwa odczyty PRZED_007_ODCZYT.sql, następnie procedurę 007 powyżej.
-6. Markery odpowiadają dokładnym nazwom plików bez .sql. Nie dodawaj wszystkich naraz bez kompletnych migracji.
+1. W phpMyAdmin tej samej bazy uruchom database/PRZED_008_ODCZYT.sql. Dwa liczniki Niepoprawne muszą wynosić zero. Wynik dodatni oznacza STOP i analizę, nie kasowanie historii.
+2. Upewnij się, że tabela HistoriaWizyt jeszcze nie istnieje. Jeżeli istnieje bez markeru, stan może być częściowy — nie importuj od początku.
+3. Importuj wyłącznie database/migrations/008_terminarz.sql. Tworzy nową tabelę i oznaczony stan początkowy istniejących wizyt. Nie zmienia ich dat, statusów, cen, przypisań, grafików ani kont.
+4. Po jakimkolwiek błędzie STOP: DDL może być częściowo wykonane. Nie ponawiaj w ciemno, nie dodawaj markera. Zachowaj komunikat i przywróć spójny backup albo napraw konkretny stan po analizie.
+5. Dopiero po pełnym sukcesie wykonaj:
 
-Jeżeli część elementów migracji już istnieje, a innych brakuje, nie uruchamiaj jej od początku. Wymagany jest backup lub indywidualna naprawa schematu. Nie wyłączaj FOREIGN_KEY_CHECKS ani CHECK w celu przepchnięcia błędnych danych.
+```sql
+INSERT INTO Migracje(Nazwa) VALUES ('008_terminarz');
+```
 
-InfinityFree zwykle nie udostępnia SSH. Jeśli środowisko ma CLI, alternatywą jest php scripts/migrate_etap3.php z poprawną prywatną konfiguracją i backupem. Skrypt pomija oznaczone migracje, wykrywa częściowy schemat i kontroluje dane przed 006/007. Nie dodawaj publicznego endpointu uruchamiającego migracje.
+6. Uruchom database/PO_008_ODCZYT.sql. Dwa liczniki muszą wynosić zero.
+7. Odśwież /public/admin/instalacja.php: GAH-ETAP4-008-r1, sześć markerów 003–008, wszystkie kontrole schematu oraz zgodne pliki. Oczekiwane 18 tabel, 21 FK i 44 CHECK. Odcisk manifestu i liczbę plików znajdziesz w START paczki.
 
-## Nowa pusta baza
+Nie ponawiaj 003–007. Nie importuj database.sql ani nowa_baza_INFINITYFREE.sql do istniejącej bazy — kasują i odtwarzają tabele. Nie wyłączaj FK/CHECK w celu wymuszenia importu.
 
-Wyłącznie do świadomego uruchomienia fikcyjnego demo: importuj database/nowa_baza_INFINITYFREE.sql do pustej bazy. Zawiera 003–007 i markery. Nie wykonuj migracji drugi raz. database/database.sql wybiera lokalną grand_access_hotel; również jest destrukcyjnym odtworzeniem, nie aktualizacją.
+Jeżeli masz bezpieczny dostęp CLI, alternatywą jest php scripts/migrate_etap3.php z poprawną prywatną konfiguracją i backupem. Skrypt pomija oznaczone migracje, wykonuje odczyty przed 006/007/008 i zatrzymuje częściowy schemat. Nie dodawaj publicznego endpointu uruchamiającego migracje.
 
-## Po wdrożeniu
+## Grafik i właściwe dane
 
-- Logo panelu ma otwierać stronę hotelu; granat i złote akcenty mają odpowiadać stronie.
-- Konta: utwórz testowego klienta, pracownika i admina; edytuj i usuń konta bez historii. Sprawdź blokady własnego konta i rekordów z historią.
-- Pracownicy: sekcje kompetencji i stanowisk. Usługi: sekcja kategorii. Pokoje: typy i upload ilustracji.
-- Pobyty: edycja dat/pokoju przed rozpoczęciem, uwagi do historii, zachowanie kwoty opłaconego pobytu, archiwizacja/przywrócenie, trwałe usunięcie tylko anulowanego bez rozliczeń.
-- Archiwizacja nie anuluje pobytu i nie zwalnia pokoju. Sprawdź odrzucenie kolizji także dla aktywnego pobytu w archiwum.
-- Sprawdź na telefonie, konto klienta/pracownika, kalendarz, historię i CSV.
-- /includes/config.php, SQL oraz skrypty CLI nie mogą być publicznie dostępne. Sprawdź ochronę katalogu ilustracji.
-- 503 panelu oznacza brak wymaganej migracji. 500 wymaga odczytu logu serwera. Nie publikuj błędów z hasłami ani konfiguracji. Przy odrzuceniu dyrektywy .htaccess sprawdź konkretny błąd; nie wyłączaj ochrony bez zamiennika.
+Migracja nie wymyśla przyszłych terminów na hostingu. W panelu Pracownicy → Kompetencje przypisz odpowiednie usługi aktywnym pracownikom, a w Grafiku ustaw prawdziwe dni i godziny pracy. Urlop albo Wolne oznaczają brak dostępności. Brak dnia pracy daje brak godzin — to nie błąd zapisu. Używaj wyłącznie danych, które wolno przetwarzać i publikować.
 
-## GitHub i hosting
+DEMO_TERMINARZ.sql i pełny SQL są do fikcyjnego środowiska demonstracyjnego. Pełne odtworzenie tworzy grafik kolejnych 14 dni. Nie importuj demonstracyjnego grafiku na rzeczywisty hosting bez świadomej decyzji właściciela. Nie wpisuj sztucznych wizyt jako rzekomo wykonanych rezerwacji klientów.
 
-Wgraj to samo wydanie do repozytorium bez prywatnego config.php, produkcyjnej bazy i dynamicznych ilustracji. Jeśli config.php był już śledzony, usuń go z bieżącej wersji repo i zmień ujawnione prawdziwe hasła. .gitignore nie usuwa sekretów z historii.
+## Kontrola działania na hostingu
 
-Zapisz SHA commita i wynik kontroli instalacji na hostingu. Nie jest to automatyczna synchronizacja. Przygotowanie paczki oraz lokalnych testów nie oznacza, że zdalne pliki, baza lub repozytorium zostały zmienione.
+- Ctrl+F5 po uploadzie CSS/JS.
+- Oferta /public/uslugi.php → szczegóły → klient: usługa, odpowiedni pracownik, data, godzina, podsumowanie, potwierdzenie.
+- Konto klienta widzi tylko własne wizyty, ich szczegóły, anulowanie i przełożenie przyszłej aktywnej wizyty, kalendarz oraz historię.
+- Konto pracownika widzi własne wizyty na dziś/przyszłe/historię i zmienia status własnej wizyty, nigdy cudzej.
+- Próby konfliktów, stykanie granic oraz dwa równoległe zapisy według ETAP4_TESTY.md.
+- Różne godziny, urlop i dzień wolny, AJAX oraz rezerwacja z wyłączonym JavaScript.
+- Ochrona includes/config.php, SQL i skryptów CLI. GD/fileinfo i zapisywalny assets/pokoje dla ilustracji; bez uprawnień 777.
+
+Testy zapisujące dane wykonuj wyłącznie na uzgodnionych fikcyjnych rekordach za zgodą właściciela. Publiczne hasło demonstracyjnego administratora zmień po próbach. Nie wysyłaj do czatu haseł, konfiguracji ani danych prawdziwych klientów.
+
+## Awaria i wycofanie
+
+503 nowego panelu oznacza m.in. brak wymaganej migracji. Diagnostyka administratora powinna pozostać dostępna; 500 wymaga prywatnego logu serwera. Nie pokazuj szczegółów połączenia publicznie. Przy częściowym DDL lub wycofaniu przywróć zgodną parę backup plików + backup bazy. Samo cofnięcie plików po nowych zapisach może zatrzymać historię — nie mieszaj wersji w normalnym ruchu.
+
+Wypełnij protokół ODBIOR_I_PODZIAL.md rzeczywistymi wynikami hostingu. Przygotowanie paczek i lokalnych testów nie oznacza zdalnego wdrożenia ani gwarancji oceny.

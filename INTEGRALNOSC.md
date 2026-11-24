@@ -1,12 +1,12 @@
 # Integralność danych i reguły rezerwacji
 
-Wydanie GAH-FULL-007-r1 zawiera ograniczenia bazy oraz reguły transakcyjne w PHP. Nie istnieje jeden uniwersalny zestaw zasad dla wszystkich hoteli. To podstawy odpowiednie dla tego projektu rezerwacji, nie deklaracja kompletnego komercyjnego systemu PMS, księgowości lub obsługi prawnej hotelu.
+Wydanie GAH-ETAP4-008-r1 zawiera ograniczenia bazy oraz reguły transakcyjne w PHP. Nie istnieje jeden uniwersalny zestaw zasad dla wszystkich hoteli. To podstawy odpowiednie dla tego projektu rezerwacji, nie deklaracja kompletnego komercyjnego systemu PMS, księgowości lub obsługi prawnej hotelu.
 
 ## Warstwa bazy danych
 
 | Reguła | Realizacja |
 |---|---|
-| Jednoznaczna identyfikacja rekordów | Klucze główne we wszystkich 17 tabelach |
+| Jednoznaczna identyfikacja rekordów | Klucze główne we wszystkich 18 tabelach |
 | Istniejący klient, pokój, pracownik, usługa itd. | 19 kluczy obcych |
 | Brak duplikatów identyfikatorów biznesowych | UNIQUE adresu e-mail, numeru pokoju, profilu pracownika dla konta, nazwy kategorii, wpisu grafiku pracownik/dzień; złożony PK kompetencji |
 | Brak wymaganych wartości NULL | NOT NULL odpowiednich kolumn; historyczne wyjątki opisane niżej |
@@ -22,7 +22,7 @@ Wydanie GAH-FULL-007-r1 zawiera ograniczenia bazy oraz reguły transakcyjne w PH
 | Godziny grafiku w obrębie doby | CHECK początku od 00:00 i końca przed 24:00 |
 | Zachowanie powiązanych rozliczeń | RESTRICT zamiast CASCADE na powiązaniach płatności i zamówienia usługi z pobytem |
 
-Łącznie w pełnym schemacie są 42 ograniczenia CHECK: 23 dodała migracja 006, a 5 migracja 007. Migracja 007 dodaje też unikalne nazwy stanowisk i typów pokoi. Migracja 006 nie usuwa rekordów i nie podmienia historycznych kwot. Rozpoznaje istniejące nazwy dwóch kluczy obcych przez information_schema, zamiast zakładać ich nazwę na hostingu.
+Łącznie w pełnym schemacie są 44 ograniczenia CHECK: 23 dodała migracja 006, 5 migracja 007, a 2 migracja 008. Migracja 007 dodaje też unikalne nazwy stanowisk i typów pokoi. Migracja 006 nie usuwa rekordów i nie podmienia historycznych kwot. Rozpoznaje istniejące nazwy dwóch kluczy obcych przez information_schema, zamiast zakładać ich nazwę na hostingu.
 
 Płatności i zamówienia nie są dziennikiem księgowym: ich własne rekordy nadal można zmienić/usunąć kontem SQL z odpowiednimi prawami. RESTRICT zapobiega konkretnie ich niezamierzonemu usunięciu razem z rezerwacją. Historia panelu również nie jest niezmiennym audytem kryptograficznym.
 
@@ -77,3 +77,21 @@ Archiwizacja pobytu nie anuluje go i nie zwalnia pokoju. Trwałe usunięcie w ap
 Ilustracje przesyła tylko administrator po CSRF. JPG/PNG/WEBP do 5 MB, 6000 px na bok i 8 mln pikseli są dekodowane przez GD i zapisywane ponownie jako JPEG do 1600 px. Nazwa jest losowa, metadane nie są kopiowane, SVG i pliki wykonywalne są odrzucane. Nowy plik jest usuwany po nieudanym zapisie bazy. Pliki użytkownika nie należą do stałego manifestu i wymagają własnego backupu. Limit serwera PHP może być niższy niż 5 MB.
 
 Przed 007 uruchom PRZED_007_ODCZYT.sql: dwa wyniki zero. Duplikatów nazw nie usuwamy ani nie scalamy automatycznie. Po ustaleniu i poprawieniu właściwych nazw dopiero wykonujemy 007. Nie ponawiaj w ciemno częściowo wykonanego ALTER.
+
+## Etap 4 — terminarz usług 008
+
+WizytyUslug to godzinowe rezerwacje usług, a Rezerwacje to pobyty w pokojach. Nie mieszamy obu przedziałów ani nie uznajemy wyboru pokoju za realizację wyboru usługi i pracownika.
+
+includes/terminarz.php jest wspólną logiką tworzenia wizyty przez klienta i administratora oraz zmiany statusu przez właściciela/pracownika/admina. Zapis następuje w transakcji, po zablokowaniu nadrzędnego rekordu pracownika FOR UPDATE. Grafik i kompetencje w panelu administratora korzystają z tego samego nadrzędnego rekordu. Tuż przed INSERT/UPDATE ponownie sprawdzamy aktywność usługi i pracownika, kompetencje, czas, grafik i wszystkie aktywne nakładające się przedziały. Ten sam zakres blokowany jest niezależnie od przeglądarki i wyświetlonych wcześniej godzin.
+
+Warunek konfliktu to istniejący_początek < nowy_koniec AND istniejący_koniec > nowy_początek. Stykanie się końca i początku jest dozwolone. Anulowanie zwalnia czas; archiwum pobytu hotelowego nie wpływa na ten terminarz. Po porażce transakcji nie pozostaje ani nowa wizyta, ani jej historia.
+
+Klient pochodzi wyłącznie z zalogowanej sesji. Serwer przy każdym odczycie i zapisie sprawdza właściciela wizyty; pracownik ma dostęp wyłącznie do własnego aktywnego profilu i przypisanych mu wizyt. Nie udostępniamy klientowi danych innych klientów w API godzin. Ukończenie jest możliwe dopiero po końcu wizyty. Statusy końcowe są nieodwracalne. Zmianę przestarzałej wersji blokuje Wersja.
+
+Wybór terminu jest odczytem, nie blokadą/rezerwacją wstępną. Podsumowanie ważne 15 minut zawiera cenę i czas sprawdzone na serwerze. Jednorazowy losowy token w sesji wiąże potwierdzenie z tymi danymi. Nie przyjmujemy ceny, czasu ani ID_Klienta od przeglądarki. Zmiana oferty wymaga ponownego podsumowania. Równoległe klienty mogą zobaczyć tę samą godzinę, ale transakcja dopuszcza tylko jeden zapis.
+
+Przełożenie dotyczy własnej przyszłej aktywnej wizyty, zachowuje usługę, pracownika, uzgodnioną cenę i zapisany czas trwania. Dostępność jest ponownie weryfikowana z wyłączeniem starej pozycji tej samej wizyty. Nie implementujemy tu dopłat, zmiany usługi lub zmiany pracownika.
+
+HistoriaWizyt ma 2 FK, 2 CHECK i unikalne (ID_Wizyty,Wersja). Migracja 008 dopisuje tylko nową tabelę i stan początkowy istniejących wizyt, nie zmienia danych biznesowych. Historia blokuje fizyczne kasowanie wizyty. Konto autora może zostać usunięte zgodnie z dotychczasowymi regułami; odniesienie do autora staje się NULL, a zdarzenie pozostaje. Historia nie jest kryptograficznie niezmiennym dziennikiem i nie rekonstruuje wcześniejszych operacji.
+
+Świeża baza zawiera fikcyjne konta i demonstracyjny grafik kolejnych 14 dni. Aktualizacja 007 → 008 nie tworzy grafików ani danych klientów na hostingu. Administrator ustala rzeczywiste dni pracy, urlopy i wolne. DEMO_TERMINARZ.sql jest przeznaczony do fikcyjnego demo, nie do automatycznego importu na istniejący hosting.
