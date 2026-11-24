@@ -59,7 +59,7 @@ function a_enum($name, $allowed)
 }
 function a_date($v)
 {
-    if (!is_string($v)) {
+    if (!gah_poprawna_data($v)) {
         throw new DomainException('Niepoprawna data.');
     }
     $d = DateTimeImmutable::createFromFormat('!Y-m-d', $v);

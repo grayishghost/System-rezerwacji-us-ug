@@ -3,6 +3,7 @@
 
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__.'/reguly.php';
 
 date_default_timezone_set('Europe/Warsaw');
 $pdo->exec('SET time_zone = '.$pdo->quote(date('P')));
