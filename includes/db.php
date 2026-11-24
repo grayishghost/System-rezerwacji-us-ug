@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/bezpieczenstwo.php';
+gah_security_headers();
 ini_set('display_errors', '0');
 set_exception_handler(function (Throwable $ex) {
     error_log('Błąd aplikacji: ' . $ex->getMessage());
