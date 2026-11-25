@@ -62,6 +62,7 @@ function t_detail($worker=false)
     echo '<section class="panel-box"><h2>'.e($r['Nazwa_Uslugi']).'</h2><dl class="visit-details"><dt>Status</dt><dd>'.e($r['Status']).'</dd><dt>Pracownik</dt><dd>'.e($r['Pracownik']).'</dd><dt>Termin</dt><dd>'.e($r['DataOd']).' – '.e($r['DataDo']).'</dd><dt>Cena uzgodniona</dt><dd>'.e(t_price($r['Cena'])).'</dd>';
     if ($worker) { echo '<dt>Klient</dt><dd>'.e($r['Klient']).'</dd><dt>Telefon klienta</dt><dd>'.e($r['Telefon']).'</dd>'; }
     echo '<dt>Uwagi</dt><dd>'.nl2br(e($r['Uwagi']?:'Brak')).'</dd></dl>';
+    echo '<p><a class="booking-button small-button" href="'.e(BASE_URL).'/public/wizyta_kalendarz.php?id='.$id.'">Pobierz termin do kalendarza (.ics)</a></p><p class="field-hint">Pobierasz kopię aktualnego stanu wizyty. To nie jest automatyczna synchronizacja; po zmianie terminu lub anulowaniu zaktualizuj wpis w swoim kalendarzu. Plik nie zawiera telefonu, e-maila ani uwag klienta.</p>';
     $active=in_array($r['Status'],['Oczekująca','Potwierdzona'],true);$future=$r['DataOd']>date('Y-m-d H:i:s');
     if ($worker && $active) {
         echo '<form method="post" class="booking-form" data-confirm="Zapisać status wizyty?">'.csrf_pole().'<input type="hidden" name="wersja" value="'.(int)$r['Wersja'].'"><label>Nowy status<select name="status">';
