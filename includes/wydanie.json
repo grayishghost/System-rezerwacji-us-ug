@@ -1,12 +1,13 @@
 {
-  "id": "GAH-ETAP5-008-D1",
-  "hash": "115927457a835c60a7885125e97983309f9939349de4630640ca487f01289dba",
+  "id": "GAH-ETAP5-008-D2",
+  "hash": "5de7afc404902e673ef7b23b6c89acb2dcb59b959cb4e71a319e62144dbe0b71",
   "files": {
     ".gitignore": "1c97c41ca10ec7767476024bb2cc848568d75288a32c8c5ce44ec0775440d9f2",
     ".htaccess": "5d56f5a735ccde9a1b7aa8e2b5217b7a5cf3590566e01dd803f93f443eb31258",
     "ETAP4_TESTY.md": "60eaabd343b3d0369f506dde5d063f99910155bb30af679dab6b6680b5ab1ffb",
     "ETAP4_WYMAGANIA.md": "63579d89852be1726cfc9cc012ba1c44026db5012d1d84e29fda38abffd4fa4c",
     "INTEGRALNOSC.md": "fbcaf4fc8c3b85e0d8bd28af711a9726f72e67ef47b02683fb3040f015fac03c",
+    "KALENDARZ_ICS.md": "9239e92b7830d44c934f9c7def33f9bb3541ddf44a1bafdc466b8d3593e2a579",
     "ODBIOR_I_PODZIAL.md": "b7c3b1fec5f1d579932265ccbbc105f366c09fa186a65b23b7fb1c267aef8d6f",
     "README.md": "f981ed0caa157de3ba300056f5e4d7984af9d2f733ce865dd54ed09453517569",
     "WDROZENIE_INFINITYFREE.md": "b2a7ce6622e67d7e751032a97514fbd5b084dbbe03e077a15efb9781faade3ae",
@@ -57,12 +58,12 @@
     "includes/db.php": "fa0149517ae637d5ba5093d45f7638c2b98f8df523ce28966f80dfd0bf71f999",
     "includes/footer.php": "c9f2c5b3b5c3fdbcbf9137b0af3ae4e71565c6197f8cf05fdc60f830c7161e35",
     "includes/header.php": "0873e839b330a3eb7570a5015985d5ee4dd602b51553fa4cf6176c971e5cae37",
-    "includes/instalacja.php": "0147dcb42520775fd77b6e4ee08248c37c48844f656cb3d949fd9e8e29f21303",
+    "includes/instalacja.php": "81ccb9b583f724d16c9b3d6d944c11e6e3216ef08217d54952ce2acd0e350851",
     "includes/kalendarz_ics.php": "e66caa42050a7c80482786e5a620de4a7cb3f6a639f66b9607747591acee9464",
     "includes/reguly.php": "016921fd0a3f077f9d289bb783ca36e1774aa5667b1c416dd00dbffb18d6539c",
-    "includes/rezerwacje.php": "e839bb53dbaf65dca0440d43abc38a45bd438af42db1348771208af25c6d03ed",
-    "includes/terminarz.php": "4654c86d3d74835364e457a91a156e1aea998dcbd9b60d78d5fc0ff80e5f16fa",
-    "includes/terminarz_widok.php": "f3c3a3078803a1611cc5b9177c7216ebe4d35a94337cf0bb490182836820c75f",
+    "includes/rezerwacje.php": "192acc9ea0005e807f9e9868d4bfab1ed72fde8d0cacf7849d25447bfcd5fad9",
+    "includes/terminarz.php": "5d008c915bf6d70b49697b9b34b53058925a0eebb67816e079e2c21980fd0357",
+    "includes/terminarz_widok.php": "e917d335da841dc16de3da15fbfb763e41d61a98ce0fc4de4692ebbce5e1d65c",
     "index.php": "c3da6a9943c568f34c9ef04ade17065344d18a8578a50838eeaeaf3a94b3408d",
     "js/admin.js": "ff3910ea9503b7b213720fdcf13bf648609aee79647df174f69c0bb2f8caf4ad",
     "js/formularze.js": "277120752854a37ca7dd57623855d06da9cce7ba7eb2ac70878001b668b11966",
@@ -100,6 +101,7 @@
     "public/rezerwacja.php": "af4de9a241031c382e110586699bc79451f858634b8f4b0dabe2c3fc6d43587f",
     "public/usluga.php": "cfbc00cf1979d8ab45ecf0752fac454302c265b7839585bbab21362b396d00c4",
     "public/uslugi.php": "ff64d5dbc5b16d0c797b2c9f9d0f264565e5a2737f8e63abfccafaf6fd8843f7",
+    "public/wizyta_kalendarz.php": "42a4b051c97590df1bf2cdf47786416c4e8c04ab895f73224e4a686d1d99312b",
     "public/wyloguj.php": "dc2a09c6c71b3166c04ee63b134e7ec009cd13a931244f6d50f5471bcf830eca",
     "public/zmiana_hasla.php": "d0b10fd358042e10e958b9874696750ff641b93dbe8e55926aaab2d9ef6ff8bf",
     "router.php": "3d33a9a2bd6b2c8edeb0f6bea071d805dab5fd174d6d605f850ac268c302ac4b",
@@ -109,6 +111,9 @@
     "scripts/migrate_etap3.php": "b00c617d5f201c6ef4dfcbd2f3c1b1713d2e00438903a907c710217c71915f37",
     "scripts/sprawdz_instalacje.php": "009118ec58127209ef0355beeeba22fee443f29af7348bb5a229a01a26a0d9d1",
     "scripts/test_http.py": "b29c773bc4a06178a432417fe56c65b335d77d54ba138913181b5dce484ac950",
-    "scripts/test_jednostkowe.php": "270bfc03fd49f9b61afb9c9f5c3aaa9fa6bbda802bb38126093d3f2329188d41"
+    "scripts/test_instalacji.php": "1aad37db01c2008badc0911bf51b9ce36e6116cdd0a70d2bfc147e538cb9d74c",
+    "scripts/test_jednostkowe.php": "270bfc03fd49f9b61afb9c9f5c3aaa9fa6bbda802bb38126093d3f2329188d41",
+    "scripts/test_manifestu.php": "4eb2ca9b9eeb29b203372bbe8e3113b7d554203baa38ce5822b6a2a087b53abd",
+    "scripts/test_regul.php": "5e02aefc64baff1940f9fb600e057d27a31cf24a99a00546ec5d236070c3dca0"
   }
 }

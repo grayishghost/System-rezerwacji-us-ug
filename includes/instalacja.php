@@ -36,17 +36,27 @@ function gah_installation(PDO $pdo): array
 }
 function gah_release_check(): array
 {
-    $file=__DIR__.'/wydanie.json';
-    if (!is_file($file)) { return ['id'=>'Brak manifestu','changed'=>['includes/wydanie.json'],'checked'=>0,'hash'=>'']; }
+    return gah_manifest_check(dirname(__DIR__));
+}
+function gah_manifest_check(string $root): array
+{
+    $file=$root.'/includes/wydanie.json';
+    $invalid=['id'=>'Nieprawidłowy manifest','changed'=>['includes/wydanie.json'],'checked'=>0,'hash'=>''];
+    if (!is_file($file)) { return $invalid; }
     $m=json_decode(file_get_contents($file),true);
-    if (!is_array($m) || !isset($m['files'],$m['id'],$m['hash'])) { return ['id'=>'Nieprawidłowy manifest','changed'=>['includes/wydanie.json'],'checked'=>0,'hash'=>'']; }
-    $root=dirname(__DIR__); $changed=[];
-    foreach ($m['files'] as $path=>$hash) {
-        if (str_contains($path,'..') || str_starts_with($path,'/') || $path==='includes/config.php') { $changed[]='Niedozwolony wpis manifestu'; continue; }
-        $p=$root.'/'.$path;
-        if (!is_file($p) || hash_file('sha256',$p)!==$hash) { $changed[]=$path; }
+    if (!is_array($m) || !isset($m['files'],$m['id'],$m['hash']) || !is_array($m['files']) || !$m['files'] || !is_string($m['id']) || !is_string($m['hash']) || !preg_match('/^[a-f0-9]{64}$/D',$m['hash'])) { return $invalid; }
+    $files=$m['files'];ksort($files,SORT_STRING);$canonical='';
+    foreach ($files as $path=>$hash) {
+        if (!is_string($path) || !preg_match('~^[A-Za-z0-9_. /()-]+$~D',$path) || str_contains($path,'..') || str_starts_with($path,'/') || in_array($path,['includes/config.php','includes/wydanie.json'],true) || !is_string($hash) || !preg_match('/^[a-f0-9]{64}$/D',$hash)) { return $invalid; }
+        $canonical.=$path."\0".$hash."\n";
     }
-    return ['id'=>$m['id'],'hash'=>$m['hash'],'checked'=>count($m['files']),'changed'=>$changed];
+    if (!hash_equals($m['hash'],hash('sha256',$canonical))) { return $invalid; }
+    $changed=[];
+    foreach ($files as $path=>$hash) {
+        $p=$root.'/'.$path;
+        if (!is_file($p) || is_link($p) || hash_file('sha256',$p)!==$hash) { $changed[]=$path; }
+    }
+    return ['id'=>$m['id'],'hash'=>$m['hash'],'checked'=>count($files),'changed'=>$changed];
 }
 
 function gah_integrity_data(PDO $pdo): array
