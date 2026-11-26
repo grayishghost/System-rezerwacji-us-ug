@@ -16,7 +16,7 @@ function t_get($key,$default='')
 }
 function t_day($raw)
 {
-    if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D',$raw)) { throw new DomainException('Podaj poprawną datę.'); }
+    if (!gah_poprawna_data($raw)) { throw new DomainException('Podaj poprawną datę.'); }
     $d=DateTimeImmutable::createFromFormat('!Y-m-d',$raw);
     if (!$d || $d->format('Y-m-d')!==$raw || $d->format('Y')>'9998') { throw new DomainException('Podaj poprawną datę.'); }
     return $d;
@@ -105,7 +105,7 @@ function t_slots($sid,$eid,$day,$except=null)
         $to=$at->modify('+'.$duration.' minutes');
         if ($at<$now || $to>$end || $to->format('Y-m-d')!==$day) { continue; }
         $collision=false;
-        foreach ($busy as $b) { if ($at->format('Y-m-d H:i:s')<$b['DataDo'] && $to->format('Y-m-d H:i:s')>$b['DataOd']) { $collision=true;break; } }
+        foreach ($busy as $b) { if (gah_nakladanie($b['DataOd'],$b['DataDo'],$at->format('Y-m-d H:i:s'),$to->format('Y-m-d H:i:s'))) { $collision=true;break; } }
         if (!$collision) { $slots[]=['value'=>$at->format('H:i'),'end'=>$to->format('H:i')]; }
     }
     return $slots;

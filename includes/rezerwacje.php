@@ -25,6 +25,7 @@ function pokoj_do_rezerwacji($pdo, $id, $zablokuj = false)
 
 function sprawdz_daty_pobytu($od, $do)
 {
+    if (!gah_poprawna_data($od) || !gah_poprawna_data($do)) { return 'Podaj poprawne daty pobytu.'; }
     $start = DateTimeImmutable::createFromFormat('!Y-m-d', $od);
     $koniec = DateTimeImmutable::createFromFormat('!Y-m-d', $do);
     if (!$start || !$koniec || $start->format('Y') > '9998' || $koniec->format('Y') > '9998' || $start->format('Y-m-d') !== $od || $koniec->format('Y-m-d') !== $do) {
