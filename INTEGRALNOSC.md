@@ -1,3 +1,15 @@
+# Integralność etapu 5 — schemat 008 bez migracji
+
+Etap 5 nie zmienia tabel, kluczy ani danych. Nadal 18 tabel, 21 FK i 44 CHECK. Nie importuj ponownie 008, pełnego SQL ani demo na działającym hostingu.
+
+Nowe moduły: includes/reguly.php (ścisłe daty i półotwarte kolizje), includes/bezpieczenstwo.php (nagłówki na odpowiedziach PHP aplikacji), includes/kalendarz_ics.php (prywatny eksport), rozszerzone sprawdzanie manifestu w includes/instalacja.php. Nagłówki PHP nie obejmują automatycznie statycznych obrazów ani stron błędów generowanych przez hosting.
+
+Manifest kontroluje typy, dozwolone ścieżki, zbiorczy SHA-256 i hashe wymienionych plików, odrzuca linki symboliczne wskazanych plików. Nie uwierzytelnia autora: osoba mająca prawo zmiany plików może też przeliczyć manifest. Odcisk porównuj z osobno zachowaną instrukcją wydania; nie traktuj samego JSON jako podpisu cyfrowego. Dodatkowych plików hostingu i prywatnej konfiguracji nie obejmuje manifest.
+
+Eksport ICS nie zapisuje danych. Uprawnienie wynika z bieżącej sesji, aktywności konta i t_own; samo odgadnięcie ID nie wystarcza. Ochronę błędnych dat stosuje także serwer, niezależnie od walidacji HTML/JS. Progi logowania z poprzedniego etapu pozostają: 5 nieudanych prób na e-mail w 15 minut; nie deklarujemy nowego limitera per IP.
+
+Poniżej zachowane szczegóły architektury wcześniejszych etapów.
+
 # Integralność danych i reguły rezerwacji
 
 Wydanie GAH-ETAP4-008-r1 zawiera ograniczenia bazy oraz reguły transakcyjne w PHP. Nie istnieje jeden uniwersalny zestaw zasad dla wszystkich hoteli. To podstawy odpowiednie dla tego projektu rezerwacji, nie deklaracja kompletnego komercyjnego systemu PMS, księgowości lub obsługi prawnej hotelu.
