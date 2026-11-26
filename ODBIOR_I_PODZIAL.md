@@ -1,112 +1,50 @@
-# Etap 4 — odbiór i równy podział 3 osoby × 3 dni
+# Etap 5 — trzy osoby, trzy dni, rzeczywista praca
 
-Termin z PDF: 20.11.2026. Plan przyjmuje wskazane przez zespół krótsze okno 16–18.11. Trzyosobowy skład został zatwierdzony. Podział dotyczy odpowiedzialności za przegląd, testy, poprawki i integrację — nie jest deklaracją, że każda osoba samodzielnie napisała wygenerowane pliki.
+Plan przyjęty dla 24–26.11.2026; termin PDF: 27.11.2026. To harmonogram zespołu, nie deklaracja już wykonanych commitów. Trzy osoby są zaakceptowane. Zakres nie obejmuje prezentacji ani obrony.
 
-PDF wyraźnie mówi, że samo przesłanie cudzych plików nie oznacza wkładu. Każda osoba powinna rzeczywiście przejrzeć swój moduł, wykonać przypisane próby, rozumieć zmiany i zapisać prawdziwy opis commita. Nie fabrykuj dat, autorów, historii pracy ani wyników.
+Paczki są materiałem do przeglądu, uruchomienia, testów i integracji. Sam upload nie oznacza autorstwa całego dostarczonego kodu. Każdy używa własnego konta i opisuje rzeczywiście wykonane czynności. Nie cofamy dat commitów i nie tworzymy fikcyjnej historii. Jeśli pracujecie w inne dni, zmieńcie harmonogram na prawdziwe daty.
 
-## Dokładnie 12 plików na osobę
+## Podział obowiązków
 
-Pliki są rozłączne. Razem 36 nowych/zmienionych plików wobec kompletnego 007. Nie dzielimy jednego pliku między dwa równoczesne uploady. Współdzielone zależności scalcie przed wdrożeniem. Manifest należy do ostatniej integracji Dawida, a nie do każdej części z osobna.
-
-### Oliwia — klient, wybór i interfejs
-
-```text
-public/uslugi.php
-public/usluga.php
-public/klient/rezerwuj.php
-public/klient/terminy.php
-public/klient/index.php
-public/klient/wizyta.php
-public/klient/kalendarz.php
-js/terminarz.js
-css/panel.css
-includes/header.php
-ETAP4_WYMAGANIA.md
-database/PO_008_ODCZYT.sql
-```
-
-Odpowiedzialność: przejść cały proces na komputerze i telefonie, sprawdzić ofertę, AJAX i brak JS, podsumowanie, własność danych, kalendarz oraz powiązanie każdego punktu PDF z ekranem. Przejrzeć z Tobiaszem serwerową kontrolę żądań. Zweryfikować PO_008 na fikcyjnej bazie i zapisać wyniki.
-
-### Tobiasz — wspólna logika i pracownik
-
-```text
-includes/terminarz.php
-includes/terminarz_widok.php
-includes/auth.php
-database/migrations/008_terminarz.sql
-includes/admin_wizyty.php
-public/admin/wizyty.php
-public/pracownik/index.php
-public/pracownik/wizyta.php
-includes/instalacja.php
-public/admin/instalacja.php
-database/DEMO_TERMINARZ.sql
-INTEGRALNOSC.md
-```
-
-Odpowiedzialność: kontrola grafików i ról, wszystkie konflikty z PDF i obie granice, dwa równoległe klienty, statusy, transakcje, rollback, historia, nieaktywny profil. Z Oliwią sprawdzić przełożenie bez zmiany uzgodnionej ceny/czasu; z Dawidem przejrzeć migrację i ograniczenia SQL.
-
-### Dawid — baza, migracje i integracja wydania
-
-```text
-database/database.sql
-database/nowa_baza_INFINITYFREE.sql
-scripts/migrate_etap3.php
-database/PRZED_008_ODCZYT.sql
-database/ERD_AKTUALNE.dot
-database/ERD_AKTUALNE.svg
-database/SCHEMAT.md
-README.md
-WDROZENIE_INFINITYFREE.md
-ODBIOR_I_PODZIAL.md
-ETAP4_TESTY.md
-includes/wydanie.json
-```
-
-Odpowiedzialność: odtworzyć fikcyjną bazę, porównać schemat z ERD, sprawdzić zachowanie danych po 007 → 008, przerwanie częściowej migracji i brak fałszywych markerów, poprawiony runner 007/008. Scalić wszystkie części, sprawdzić manifest i zgodność paczki. Razem wykonać backup oraz odbiór hostingu.
-
-## Trzy dni — po 4 pliki dziennie na osobę
-
-Kolejność poniżej odpowiada kolejności list w każdej paczce. To plan commitów do przeglądu i scalenia, nie pozwolenie na wdrażanie częściowo zmienionego hostingu.
-
-| Osoba | Dzień 1 — 16.11 | Dzień 2 — 17.11 | Dzień 3 — 18.11 |
+| Dzień | Oliwia Drygiel — daty i logika | Tobiasz Mućko — bezpieczeństwo i wydanie | Dawid Domagała — kalendarz i integracja |
 |---|---|---|---|
-| Oliwia | Pierwsze 4 pliki listy: oferta i wybór. Przejście poziomów 2–3 na spójnym projekcie lokalnym | Kolejne 4: własne wizyty, kalendarz, AJAX. Własność, brak JS, urządzenia | Ostatnie 4: styl/nawigacja, mapa wymagań i odczyt po migracji. Pełny odbiór oraz przegląd pracownika |
-| Tobiasz | Pierwsze 4: wspólna logika, sesja i 008. Przegląd reguł 2–3, transakcji i schematu | Kolejne 4: administrator/pracownik. Reguły 4–5, wszystkie przedziały i równoczesność | Ostatnie 4: diagnostyka, demo i opis integralności. Rozszerzenia 6, regresja, przegląd klienta |
-| Dawid | Pierwsze 4: pełne SQL, runner i odczyt przed 008. Backup i migracja na kopii | Kolejne 4: ERD/schemat/README. Porównanie danych i ograniczeń, przegląd logiki Tobiasza | Ostatnie 4: wdrożenie, odbiór, testy, manifest. Ostateczne scalenie, upload i wspólna kontrola |
+| 1 / 24.11 | Wspólna ścisła data, podłączenie auth i walidacji admina; uzupełnienie brakujących historycznych dokumentów wymagań/testów. Test poprawnych dat, 29.02 i NUL. Przegląd ICS Dawida | Nagłówki, CSP, zewnętrzny JS pobytu, test odczytu HTTP; przywrócenie spójnych dokumentów 008. Test stron i konsoli bez łamania CSP. Przegląd dat Oliwii | Generator ICS i jego testy bez bazy; uzgodnienie jednostrefowego czasu, pól prywatnych i braku synchronizacji. Naprawa świeżego SQL i brakującego PRZED_008 jako plików repo, bez importu na hosting. Przegląd nagłówków Tobiasza |
+| 2 / 25.11 | Podłączenie reguł do pobytów i terminarza, wspólne kolizje, CLI test_regul. Sprawdzenie 7 wymaganych wariantów przedziałów, dat i konfliktu zapisu | Wzmocnienie manifestu i testy jego uszkodzeń; CLI odczytu instalacji. Sprawdzenie braku pliku, zmiany hasha i zgodności schematu bez zapisów | Endpoint ICS, link w szczegółach klienta/pracownika i instrukcja. Test własnej/cudzej wizyty, gościa, pobrania załącznika i braku danych kontaktowych |
+| 3 / 26.11 | Aktualna mapa kryteriów i raport; oznaczenie historycznych raportów. Odbiór pełnej rezerwacji, kolizji, anulowania, przełożenia, telefonu i wersji bez JS | Aktualna instrukcja wdrożenia i integralności, końcowy manifest; odbiór diagnostyki na hostingu, prywatności i backupu. Przegląd raportu Oliwii | README, plan/odbiór i integracja całości; próba świeżej fikcyjnej bazy lokalnie, ERD i SQL, zgodność main i hostingu. Przegląd instrukcji Tobiasza |
 
-## Jak pracować w repozytorium
+Obciążenie jest wyrównane zakresem kodu, testów i odpowiedzialności, nie sztuczną identyczną liczbą plików. Zarezerwujcie po około 60–90 minut dziennie na osobę; jeśli test wykaże błąd, poprawa ma pierwszeństwo przed liczbą commitów.
 
-- Zapiszcie punkt wyjściowy i zróbcie prywatny backup. Każdy pracuje ze swojego konta i na własnej gałęzi, np. etap4/oliwia-klient, etap4/tobiasz-terminarz, etap4/dawid-integracja.
-- Używajcie opisów odpowiadających rzeczywistemu zakresowi: „Etap 4: oferta i formularz klienta — przegląd i integracja”, „Etap 4: kontrola przedziałów i panel pracownika”, „Etap 4: migracja 008, ERD i kontrola wydania”. Jeśli dany commit nie zawiera wszystkich tych czynności, nazwę zawęźcie.
-- Każda paczka osobowa ma folder projekt. Do odpowiedniej gałęzi trafia jego ZAWARTOŚĆ, nie ZIP ani dodatkowy folder projekt. Nie przesyłajcie prywatnego config.php, produkcyjnej bazy ani dowodów z danymi osobowymi.
-- Przeglądajcie pull requesty i scalajcie rozłączne pliki. Nie usuwajcie plików spoza paczek. Poprawki wspólnych plików wymagają uzgodnienia i ponownego testu.
-- Przy niezmienionych plikach z paczek po scaleniu manifest musi być zgodny z pełnym kompletem. Jeśli wprowadzicie własne poprawki, trzeba uczciwie przeliczyć manifest dla końcowego stanu, a nie ukrywać różnice.
-- Na hosting wgrywacie dopiero CAŁOŚĆ po scaleniu i testach, jednym spójnym wdrożeniem. Nigdy pojedynczej paczki osoby. GitHub nie aktualizuje automatycznie plików PHP ani bazy InfinityFree.
+## Kolejność pracy i scalania
 
-## Bramki odbioru, dokładnie w tej kolejności
+1. Backup aktualnego repo i hostingu. Porównana baza Git: 84cdee975a4f34007250fd1e6135e40ac2ebe9b0. Jeśli main jest nowszy, przejrzyjcie różnice, nie nadpisujcie ich w ciemno.
+2. Dzień 1: każdy zakłada gałąź z aktualnego main, bierze własny folder projekt z paczki DZIEN_1. Po testach otwiera PR. Scalenie Oliwia → Dawid → Tobiasz; Tobiasz scala manifest dnia jako ostatni. Zależności auth/reguly oraz db/bezpieczenstwo muszą znaleźć się razem na hostingu.
+3. Dzień 2: najpierw pobierzcie scalony dzień 1. Nowe gałęzie i własne paczki DZIEN_2. Znowu Oliwia → Dawid → Tobiasz. Manifest dnia jako ostatni.
+4. Dzień 3: analogicznie po dniu 2. Uzupełnijcie realne wyniki odbioru, nie sam plan. Ostateczny manifest i wdrożenie po wszystkich częściach.
+5. Hosting aktualizuje jedna osoba spójną paczką dzienną dopiero po scaleniu całego dnia. Nie przesyłajcie oddzielnie pojedynczych paczek autorów na działającą stronę.
 
-1. 2 — publiczna oferta, wybór usługi/pracownika/daty/godziny i zapis.
-2. 3 — właściwi pracownicy, klient z sesji, własna lista/szczegóły, zakaz cudzych danych, zajętość.
-3. 4 — grafik, przeszłość, zajęty termin, anulowanie, statusy i panel pracownika.
-4. 5 — czas trwania, pięć konfliktów z PDF, obie granice, kontrola serwera, role i dwa równoległe zapisy.
-5. 6 — AJAX, automatyczne godziny, różne dni/godziny/urlopy, kalendarz, przełożenie i historia.
-6. Regresja wcześniejszych etapów, telefony, brak JS, brak komentarzy/sekretów, schemat, manifest i rzeczywisty hosting.
+W każdej paczce osobistej jest lista ścieżek i sugerowany opis commita. Wgrajcie zawartość projekt do głównego katalogu gałęzi, nie ZIP i nie nowy folder projekt. Nigdy prywatny includes/config.php, eksport hostingu, lokalne logi ani własne hasła.
 
-Każda bramka obejmuje poprzednie. Szczegółowy scenariusz: ETAP4_TESTY.md. Gdy próba nie przechodzi, nie zastępuj jej dodatkiem i nie oznaczaj kolejnego poziomu jako zakończonego.
+## Sugerowane opisy — tylko po wykonaniu czynności
 
-## Protokół hostingu — do faktycznego uzupełnienia
+| Dzień | Oliwia | Tobiasz | Dawid |
+|---|---|---|---|
+| 1 | Etap5: przegląd i test ścisłych dat oraz uzupełnienie mapy 008 | Etap5: integracja CSP i test zasobów strony | Etap5: generator ICS, testy UTF-8 i spójny SQL 008 |
+| 2 | Etap5: wspólne reguły pobytów i terminarza, test kolizji | Etap5: walidacja manifestu i odczyt instalacji CLI | Etap5: prywatny eksport wizyty, test własności i pobierania |
+| 3 | Etap5: odbiór rezerwacji i aktualny raport wymagań | Etap5: sprawdzenie wdrożenia, prywatności i wydania | Etap5: README, świeża baza testowa i integracja końcowa |
 
-- Wykonujący i data: ______
-- Prywatna lokalizacja sprawdzonego backupu plików i bazy: ______
-- Potwierdzony stan 003–007 przed aktualizacją: ______
-- Dwa wyniki PRZED_008: ______
-- Pełny sukces importu 008 i dopiero wtedy marker: ______
-- Dwa wyniki PO_008: ______
-- SHA końcowego commita i wynik scalenia 3 gałęzi: ______
-- Wydanie, manifest i liczba zgodnych plików na hostingu: ______
-- Rzeczywisty grafik i kompetencje oraz wyniki bramek 2–6: ______
-- Wyniki telefonu, braku JS i regresji: ______
-- Pozostałe błędy lub ograniczenia: ______
+## Odbiór hostingu — do rzeczywistego wypełnienia
 
-Nie deklarujemy wyniku niewykonanych prób, przyszłego wkładu ani konkretnej oceny. Nie zakładamy obecnej obrony ustnej. Gotowy kod i lokalne testy są dowodem zakresu przygotowania, a nie zastępstwem rzeczywistego działania strony po wdrożeniu.
+- [ ] Backup zrobiony i zachowany poza publicznym htdocs.
+- [ ] Zachowane includes/config.php i własne assets/pokoje; bez ponownego importu 008.
+- [ ] Diagnostyka administratora: schemat gotowy, oczekiwane wydanie/odcisk i liczba plików, zero niezgodności.
+- [ ] Wszystkie 29 odczytanych reguł danych pokazują 0. Jeśli nie, STOP i analiza, nie kasowanie danych.
+- [ ] Rejestracja testowego klienta, logowanie i prawidłowe uprawnienia.
+- [ ] Oferta usług → pracownik → dzień → godzina → podsumowanie → zapis; zapis widoczny po odświeżeniu.
+- [ ] Konflikt, urlop i brak kompetencji odrzucone; druga próba nie dubluje zapisu.
+- [ ] Własna przyszła wizyta: przełożenie, anulowanie i historia; pracownik widzi wyłącznie własne wizyty.
+- [ ] Pobranie ICS ma właściwy termin; nie zawiera telefonu, e-maila i uwag; cudze ID nie udostępnia wizyty.
+- [ ] Klient/admin/pracownik na telefonie, bez brakujących zdjęć/fontów/skryptów.
+- [ ] Ustalony aktualny grafik i kompetencje w bazie hostingu. Brak wolnych godzin nie zawsze oznacza błąd programu.
+- [ ] Repo ma rzeczywiste zmiany i przeglądy trzech osób; końcowe pliki odpowiadają hostingowi.
+
+Nie zaznaczono tych punktów za użytkownika. Lokalny raport nie jest dowodem wdrożenia na InfinityFree.
